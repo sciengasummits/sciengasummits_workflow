@@ -1,0 +1,61 @@
+// Conference accounts configuration
+export const CONFERENCE_ACCOUNTS = [
+    {
+        username: 'LIUTEXSUMMIT2026',
+        email: process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com',
+        conferenceId: 'liutex',
+        displayName: 'LIUTEX SUMMIT 2026',
+    },
+    {
+        username: 'FOODAGRISUMMIT2026',
+        email: process.env.FOODAGRI_EMAIL || 'foodagri@sciengasummits.com',
+        conferenceId: 'foodagri',
+        displayName: 'FOOD AGRI SUMMIT 2026',
+    },
+    {
+        username: 'FLUIDMECHSUMMIT2026',
+        email: process.env.FLUID_EMAIL || 'fluid@sciengasummits.com',
+        conferenceId: 'fluid',
+        displayName: 'FLUID MECHANICS & TURBOMACHINERY 2026',
+    },
+];
+
+// Conference config for frontend
+export const CONFERENCE_CONFIG = {
+    liutex: {
+        conferenceId: 'liutex',
+        displayName: 'LIUTEX VORTEX SUMMIT 2026',
+        shortName: 'LIUTEX SUMMIT',
+        logoText: 'LV',
+        logoSub: 'Summit',
+        brandTop: 'LIUTEX',
+        brandSub: 'VORTEX SUMMIT',
+        footerText: '© Copyright 2026 LIUTEX SUMMIT.',
+        accentColor: '#6366f1',
+        accentGlow: 'rgba(99,102,241,0.35)',
+    },
+    foodagri: {
+        conferenceId: 'foodagri',
+        displayName: 'FOOD AGRI SUMMIT 2026',
+        shortName: 'FOOD AGRI SUMMIT',
+        logoText: 'FA',
+        logoSub: 'Summit',
+        brandTop: 'FOOD AGRI',
+        brandSub: 'SUMMIT 2026',
+        footerText: '© Copyright 2026 FOOD AGRI SUMMIT.',
+        accentColor: '#16a34a',
+        accentGlow: 'rgba(22,163,74,0.35)',
+    },
+    fluid: {
+        conferenceId: 'fluid',
+        displayName: 'FLUID MECHANICS & TURBOMACHINERY 2026',
+        shortName: 'FLUID SUMMIT',
+        logoText: 'FM',
+        logoSub: 'Summit',
+        brandTop: 'FLUID MECHANICS',
+        brandSub: '& TURBOMACHINERY',
+        footerText: '© Copyright 2026 FLUID MECHANICS & TURBOMACHINERY SUMMIT.',
+        accentColor: '#0891b2',
+        accentGlow: 'rgba(8,145,178,0.35)',
+    },
+};
