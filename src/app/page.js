@@ -96,6 +96,8 @@ function PageContent({ activeNav, setActiveNav }) {
     case 'committee': return <OrganizingCommittee />;
     case 'committee-speakers': return <CommitteeSpeakers />;
     case 'speakers-list': return <Speakers />;
+    case 'keynote-speakers': return <KeynoteSpeakers />;
+    case 'plenary-speakers': return <PlenarySpeakers />;
     case 'posters-speakers': return <PostersSpeakers />;
     case 'students-speakers': return <StudentsSpeakers />;
     case 'delegates-speakers': return <DelegatesSpeakers />;

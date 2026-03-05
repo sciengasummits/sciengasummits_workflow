@@ -72,6 +72,8 @@ const NAV_ITEMS = [
         children: [
             { id: 'committee-speakers', label: 'Committee Speakers', icon: <Users size={childIconSize} /> },
             { id: 'speakers-list', label: 'Speakers', icon: <Mic size={childIconSize} /> },
+            { id: 'keynote-speakers', label: 'Keynote Speakers', icon: <BookOpen size={childIconSize} /> },
+            { id: 'plenary-speakers', label: 'Plenary Speakers', icon: <GalleryHorizontalEnd size={childIconSize} /> },
             { id: 'posters-speakers', label: 'Posters Speakers', icon: <Presentation size={childIconSize} /> },
             { id: 'students-speakers', label: 'Students Speakers', icon: <GraduationCap size={childIconSize} /> },
             { id: 'delegates-speakers', label: 'Delegates Speakers', icon: <Briefcase size={childIconSize} /> },
