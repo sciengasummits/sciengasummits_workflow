@@ -76,6 +76,18 @@ const CONFERENCE_CONFIG = {
     accentColor: '#0891b2',
     accentGlow: 'rgba(8,145,178,0.35)',
   },
+  renewable: {
+    conferenceId: 'renewable',
+    displayName: 'RENEWABLE ENERGY & CLIMATE CHANGE 2026',
+    shortName: 'RENEWABLE CLI SUMMIT',
+    logoText: 'RE',
+    logoSub: 'Summit',
+    brandTop: 'RENEWABLE ENERGY',
+    brandSub: '& CLIMATE CHANGE',
+    footerText: '© Copyright 2026 RENEWABLE ENERGY & CLIMATE CHANGE SUMMIT.',
+    accentColor: '#16a34a',
+    accentGlow: 'rgba(22,163,74,0.35)',
+  },
 };
 
 /* ── Simple page router ── */
