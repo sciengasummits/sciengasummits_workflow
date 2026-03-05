@@ -37,6 +37,23 @@ export default function Sponsors() {
     const pickFile = async (e, setter) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // Validation: Limit 2MB, formats jpg, png, jpeg
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (!validTypes.includes(file.type)) {
+            alert('Invalid file format. Please upload JPG, PNG or JPEG.');
+            e.target.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size exceeds 2MB limit.');
+            e.target.value = '';
+            return;
+        }
+
         e.target.value = '';
         try {
             const { url } = await uploadImage(file);
@@ -154,6 +171,9 @@ export default function Sponsors() {
                                                     <button className="sp-photo-btn" onClick={() => editFileRef.current.click()} title="Change photo">
                                                         <ImageIcon size={13} />
                                                     </button>
+                                                    <p style={{ color: 'red', fontSize: '10px', marginTop: '4px' }}>
+                                                        * 2MB limit
+                                                    </p>
                                                 </div>
                                             </td>
                                             <td className="sp-td" style={{ textAlign: 'center' }}>
@@ -247,6 +267,9 @@ export default function Sponsors() {
                                     <button className="sp-choose-btn" onClick={() => addFileRef.current.click()}>
                                         <ImageIcon size={14} /> Choose Image
                                     </button>
+                                    <p style={{ color: 'red', fontSize: '11px', marginTop: '10px' }}>
+                                        * Image size limit: 2MB (JPG, PNG, JPEG)
+                                    </p>
                                 </div>
                             </div>
 

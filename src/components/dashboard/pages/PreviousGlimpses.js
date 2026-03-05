@@ -23,6 +23,23 @@ export default function PreviousGlimpses() {
     const pickFile = (e) => {
         const f = e.target.files[0];
         if (!f) return;
+
+        // Validation: Limit 2MB, formats jpg, png, jpeg
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (!validTypes.includes(f.type)) {
+            alert('Invalid file format. Please upload JPG, PNG or JPEG.');
+            e.target.value = '';
+            return;
+        }
+
+        if (f.size > maxSize) {
+            alert('File size exceeds 2MB limit.');
+            e.target.value = '';
+            return;
+        }
+
         setForm(p => ({ ...p, file: f, photoUrl: URL.createObjectURL(f) }));
         e.target.value = '';
     };
@@ -239,6 +256,9 @@ export default function PreviousGlimpses() {
                                         <button className="pg2-upload-btn" onClick={() => fileRef.current.click()}>
                                             <Plus size={14} /> Choose Image
                                         </button>
+                                        <p style={{ color: 'red', fontSize: '12px', marginTop: '8px' }}>
+                                            * Image size limit: 2MB (JPG, PNG, JPEG)
+                                        </p>
                                     </div>
                                 </div>
                             </div>

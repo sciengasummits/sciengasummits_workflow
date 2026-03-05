@@ -127,6 +127,23 @@ export default function KeynoteSpeakers() {
     const handlePhotoChange = useCallback((e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // Validation: Limit 2MB, formats jpg, png, jpeg
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (!validTypes.includes(file.type)) {
+            alert('Invalid file format. Please upload JPG, PNG or JPEG.');
+            e.target.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size exceeds 2MB limit.');
+            e.target.value = '';
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (ev) => setForm(f => ({ ...f, photo: ev.target.result }));
         reader.readAsDataURL(file);
@@ -331,6 +348,9 @@ export default function KeynoteSpeakers() {
                                 <button className="sp-upload-btn" onClick={() => fileRef.current?.click()}>
                                     <Upload size={14} /> Choose Photo
                                 </button>
+                                <p style={{ color: 'red', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+                                    * Image size limit: 2MB (JPG, PNG, JPEG)
+                                </p>
                             </div>
 
                             <label className="sp-label">Full Name <span className="sp-req">*</span></label>

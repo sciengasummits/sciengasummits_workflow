@@ -168,7 +168,19 @@ export default function DailyUpdate() {
                                             <td className="du-td"><input className="du-cell-input" value={editBuf.name} onChange={e => setEdit('name', e.target.value)} /></td>
                                             <td className="du-td"><input className="du-cell-input" value={editBuf.response} onChange={e => setEdit('response', e.target.value)} /></td>
                                             <td className="du-td"><input className="du-cell-input" type="date" value={editBuf.date} onChange={e => setEdit('date', e.target.value)} /></td>
-                                            <td className="du-td"><input className="du-cell-input" value={editBuf.category} onChange={e => setEdit('category', e.target.value)} /></td>
+                                            <td className="du-td">
+                                                <select
+                                                    className="du-cell-input"
+                                                    value={editBuf.category}
+                                                    onChange={e => setEdit('category', e.target.value)}
+                                                >
+                                                    <option value="">Select Category</option>
+                                                    <option value="Unable to attend">Unable to attend</option>
+                                                    <option value="Positive">Positive</option>
+                                                    <option value="Asking Support">Asking Support</option>
+                                                    <option value="Unsubscribe">Unsubscribe</option>
+                                                </select>
+                                            </td>
                                             <td className="du-td">
                                                 <button className="du-icon-btn du-save" onClick={saveEdit} title="Save"><Save size={15} /></button>
                                             </td>
@@ -230,12 +242,26 @@ export default function DailyUpdate() {
                             ].map(([label, field, type]) => (
                                 <div className="du-modal-field" key={field}>
                                     <label className="du-modal-label">{label}</label>
-                                    <input
-                                        className="du-modal-input"
-                                        type={type}
-                                        value={addBuf[field]}
-                                        onChange={e => setAdd(field, e.target.value)}
-                                    />
+                                    {field === 'category' ? (
+                                        <select
+                                            className="du-modal-input"
+                                            value={addBuf[field]}
+                                            onChange={e => setAdd(field, e.target.value)}
+                                        >
+                                            <option value="">Select Category</option>
+                                            <option value="Unable to attend">Unable to attend</option>
+                                            <option value="Positive">Positive</option>
+                                            <option value="Asking Support">Asking Support</option>
+                                            <option value="Unsubscribe">Unsubscribe</option>
+                                        </select>
+                                    ) : (
+                                        <input
+                                            className="du-modal-input"
+                                            type={type}
+                                            value={addBuf[field]}
+                                            onChange={e => setAdd(field, e.target.value)}
+                                        />
+                                    )}
                                 </div>
                             ))}
                         </div>

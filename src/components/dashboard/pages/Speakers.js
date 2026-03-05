@@ -118,6 +118,23 @@ export default function AllSpeakers() {
     const handlePhotoChange = useCallback(async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // Validation: Limit 2MB, formats jpg, png, jpeg
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (!validTypes.includes(file.type)) {
+            alert('Invalid file format. Please upload JPG, PNG or JPEG.');
+            e.target.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size exceeds 2MB limit.');
+            e.target.value = '';
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = ev => setImagePreview(ev.target.result);
         reader.readAsDataURL(file);
@@ -444,6 +461,9 @@ export default function AllSpeakers() {
                                 <button className="sp-upload-btn" onClick={() => fileRef.current?.click()}>
                                     <Upload size={14} /> {uploading ? 'Uploadingâ€¦' : 'Choose Photo'}
                                 </button>
+                                <p style={{ color: 'red', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+                                    * Image size limit: 2MB (JPG, PNG, JPEG)
+                                </p>
                                 {form.image && !uploading && <p style={{ margin: '6px 0 0', fontSize: '11px', color: '#10b981', textAlign: 'center' }}>âœ“ Image uploaded</p>}
                             </div>
 

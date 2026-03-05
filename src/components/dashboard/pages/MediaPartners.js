@@ -47,6 +47,23 @@ export default function MediaPartners() {
     const pickFile = (e, setter) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // Validation: Limit 2MB, formats jpg, png, jpeg
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (!validTypes.includes(file.type)) {
+            alert('Invalid file format. Please upload JPG, PNG or JPEG.');
+            e.target.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size exceeds 2MB limit.');
+            e.target.value = '';
+            return;
+        }
+
         const url = URL.createObjectURL(file);
         setter(prev => ({ ...prev, photo: file, photoUrl: url }));
         e.target.value = '';
@@ -284,6 +301,9 @@ export default function MediaPartners() {
                                     <button className="mp-choose-btn" onClick={() => addFileRef.current.click()}>
                                         <ImageIcon size={14} /> Choose Image
                                     </button>
+                                    <p style={{ color: 'red', fontSize: '11px', marginTop: '10px' }}>
+                                        * Image size limit: 2MB (JPG, PNG, JPEG)
+                                    </p>
                                 </div>
                             </div>
 
