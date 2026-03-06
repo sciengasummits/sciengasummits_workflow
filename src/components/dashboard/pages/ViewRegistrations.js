@@ -225,7 +225,7 @@ export default function ViewRegistrations() {
                                                         border: `1px solid ${statusCfg.border}`, cursor: 'pointer', outline: 'none',
                                                     }}
                                                 >
-                                                    {['Pending', 'Confirmed', 'Paid', 'Cancelled'].map(s => (
+                                                    {['Pending', 'Paid',].map(s => (
                                                         <option key={s} value={s}>{s}</option>
                                                     ))}
                                                 </select>
