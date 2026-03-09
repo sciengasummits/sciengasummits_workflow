@@ -91,8 +91,9 @@ export async function POST(request) {
       used: false
     });
 
-    // Send email in background (non-blocking)
-    sendOTPEmail(account.email, otp, account.username, account.conferenceId).catch(console.error);
+    // Await email send so Vercel doesn't terminate the function before it completes
+    const emailResult = await sendOTPEmail(account.email, otp, account.username, account.conferenceId);
+    console.log(`[generate-otp] Email result for ${account.conferenceId}:`, JSON.stringify(emailResult));
 
     return NextResponse.json({
       success: true,
