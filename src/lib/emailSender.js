@@ -32,6 +32,10 @@ export class RealEmailSender {
                 user: process.env.RENEWABLE_SMTP_USER || this._defaultUser,
                 pass: (process.env.RENEWABLE_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            cyber: {
+                user: process.env.CYBER_SMTP_USER || this._defaultUser,
+                pass: (process.env.CYBER_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account

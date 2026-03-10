@@ -24,6 +24,12 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'renewable',
         displayName: 'RENEWABLE ENERGY & CLIMATE CHANGE 2026',
     },
+    {
+        username: 'CYBERQUANTUMSUMMIT2026',
+        email: process.env.CYBER_EMAIL || 'contact@cyberquantumsummit.com',
+        conferenceId: 'cyber',
+        displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026',
+    },
 ];
 
 // Conference config for frontend
@@ -75,5 +81,17 @@ export const CONFERENCE_CONFIG = {
         footerText: '© Copyright 2026 RENEWABLE ENERGY & CLIMATE CHANGE SUMMIT.',
         accentColor: '#16a34a',
         accentGlow: 'rgba(22,163,74,0.35)',
+    },
+    cyber: {
+        conferenceId: 'cyber',
+        displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026',
+        shortName: 'CYBERQUANTUM SUMMIT',
+        logoText: 'CQ',
+        logoSub: 'Summit',
+        brandTop: 'CYBERQUANTUM',
+        brandSub: 'SUMMIT 2026',
+        footerText: '© Copyright 2026 CYBERQUANTUM SUMMIT.',
+        accentColor: '#2563eb',
+        accentGlow: 'rgba(37,99,235,0.35)',
     },
 };

@@ -88,6 +88,18 @@ const CONFERENCE_CONFIG = {
     accentColor: '#16a34a',
     accentGlow: 'rgba(22,163,74,0.35)',
   },
+  cyber: {
+    conferenceId: 'cyber',
+    displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026',
+    shortName: 'CYBERQUANTUM SUMMIT',
+    logoText: 'CQ',
+    logoSub: 'Summit',
+    brandTop: 'CYBERQUANTUM',
+    brandSub: 'SUMMIT 2026',
+    footerText: '© Copyright 2026 CYBERQUANTUM SUMMIT.',
+    accentColor: '#2563eb',
+    accentGlow: 'rgba(37,99,235,0.35)',
+  },
 };
 
 /* ── Simple page router ── */
