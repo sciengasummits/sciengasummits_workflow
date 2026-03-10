@@ -17,6 +17,8 @@ const RegistrationSchema = new mongoose.Schema({
     description: { type: String, default: '' },
     status: { type: String, default: 'Pending' },
     txnId: { type: String, default: '' },
+    paymentId: { type: String, default: '' },
+    orderId: { type: String, default: '' },
     createdAt: { type: Date, default: Date.now }
 });
 
