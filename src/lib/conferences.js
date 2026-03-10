@@ -30,6 +30,12 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'cyber',
         displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026',
     },
+    {
+        username: 'POWERENGSUMMIT2026',
+        email: process.env.POWERENG_EMAIL || 'contact@powerenergysummit.com',
+        conferenceId: 'powereng',
+        displayName: 'POWER ENERGY & ELECTRICAL ENGINEERING 2026',
+    },
 ];
 
 // Conference config for frontend
@@ -93,5 +99,17 @@ export const CONFERENCE_CONFIG = {
         footerText: '© Copyright 2026 CYBERQUANTUM SUMMIT.',
         accentColor: '#2563eb',
         accentGlow: 'rgba(37,99,235,0.35)',
+    },
+    powereng: {
+        conferenceId: 'powereng',
+        displayName: 'POWER ENERGY & ELECTRICAL ENGINEERING 2026',
+        shortName: 'POWERENG SUMMIT',
+        logoText: 'PE',
+        logoSub: 'Summit',
+        brandTop: 'POWER ENERGY',
+        brandSub: '& ELECTRICAL ENG.',
+        footerText: '© Copyright 2026 POWER ENERGY & ELECTRICAL ENGINEERING SUMMIT.',
+        accentColor: '#d97706',
+        accentGlow: 'rgba(217,119,6,0.35)',
     },
 };
