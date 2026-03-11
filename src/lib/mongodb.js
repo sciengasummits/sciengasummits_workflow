@@ -27,19 +27,32 @@ const mongoOptions = {
 };
 
 export default async function dbConnect() {
-  if (cached.conn) {
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, mongoOptions).then((mongoose) => {
-      console.log('✅ MongoDB Atlas connected');
-      return mongoose;
+    console.log('🔌 Connecting to MongoDB Atlas (Next.js)...');
+    console.log('📍 URI:', MONGODB_URI.substring(0, 20) + '...');
+    
+    cached.promise = mongoose.connect(MONGODB_URI, mongoOptions).then((mongooseInstance) => {
+      console.log('✅ MongoDB Atlas connected (readyState: ' + mongooseInstance.connection.readyState + ')');
+      return mongooseInstance;
     });
   }
 
   try {
     cached.conn = await cached.promise;
+    
+    // Ensure the connection is actually open
+    if (mongoose.connection.readyState !== 1) {
+      console.warn('⚠️ MongoDB connection established but readyState is not 1 (it is ' + mongoose.connection.readyState + ')');
+      // Wait up to 5 seconds for it to become 1
+      for (let i = 0; i < 50; i++) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        if (mongoose.connection.readyState === 1) break;
+      }
+    }
   } catch (e) {
     cached.promise = null;
     console.error('❌ MongoDB connect failed:', e.message);
