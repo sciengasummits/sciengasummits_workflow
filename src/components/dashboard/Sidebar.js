@@ -43,6 +43,10 @@ import {
     Mail,
     Phone,
     MessageCircle,
+    DollarSign,
+    MoreHorizontal,
+    Plane,
+    HelpCircle
 } from 'lucide-react';
 
 const iconSize = 20;
@@ -118,6 +122,7 @@ const NAV_ITEMS = [
         children: [
             { id: 'view-registrations', label: 'View Registrations', icon: <Clipboard size={childIconSize} /> },
             { id: 'view-abstracts', label: 'View Abstracts', icon: <FileText size={childIconSize} /> },
+            { id: 'registration-prices', label: 'Registration Prices', icon: <DollarSign size={childIconSize} /> },
             { id: 'payment-link', label: 'Generate Payment Link', icon: <Link size={childIconSize} /> },
             { id: 'export-conf-unsubscribes', label: 'Export Conference Unsubscribes', icon: <Ban size={childIconSize} /> },
             { id: 'export-unsubscribes', label: 'Export Global Unsubscribes', icon: <FileDown size={childIconSize} /> },
@@ -134,6 +139,13 @@ const NAV_ITEMS = [
         ]
     },
     { id: 'website-sections', label: 'Website Sections', icon: <Globe size={iconSize} /> },
+    {
+        id: 'more', label: 'More', icon: <MoreHorizontal size={iconSize} />,
+        children: [
+            { id: 'visa-info', label: 'Visa Info', icon: <Plane size={childIconSize} /> },
+            { id: 'faq', label: 'FAQ', icon: <HelpCircle size={childIconSize} /> },
+        ]
+    },
 ];
 
 export default function Sidebar({ collapsed, activeNav, onNavClick, conf }) {

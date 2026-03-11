@@ -38,6 +38,9 @@ import WebsiteSections from '@/components/dashboard/pages/WebsiteSections';
 import Sessions from '@/components/dashboard/pages/Sessions';
 import ConferenceSchedule from '@/components/dashboard/pages/ConferenceSchedule';
 import ContactSettings from '@/components/dashboard/pages/ContactSettings';
+import RegistrationPrices from '@/components/dashboard/pages/RegistrationPrices';
+import VisaInfo from '@/components/dashboard/pages/VisaInfo';
+import FAQManager from '@/components/dashboard/pages/FAQManager';
 
 /* ── Conference config map ── */
 const CONFERENCE_CONFIG = {
@@ -143,6 +146,7 @@ function PageContent({ activeNav, setActiveNav }) {
     case 'discount': return <Discount />;
     case 'invoices': return <Invoices />;
     case 'receipts': return <Receipts />;
+    case 'registration-prices': return <RegistrationPrices />;
     case 'work-reports': return <WorkReports />;
     case 'positives': return <Positives />;
     case 'website-sections': return <WebsiteSections />;
@@ -151,6 +155,8 @@ function PageContent({ activeNav, setActiveNav }) {
     case 'ws-marquee': return <WebsiteSections section="marquee" />;
     case 'ws-pricing': return <WebsiteSections section="pricing" />;
     case 'ws-partners': return <WebsiteSections section="partners" />;
+    case 'visa-info': return <VisaInfo />;
+    case 'faq': return <FAQManager />;
 
     case 'abstracts': return <ViewAbstracts />;
     case 'registrations': return <ViewRegistrations />;
