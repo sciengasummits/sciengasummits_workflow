@@ -32,9 +32,9 @@ export default function ContactSettings({ type }) {
     const handleSave = async () => {
         setStatus('saving');
         try {
-            const currentData = await getContent('contact') || {};
+            // PUT uses $set with upsert:true — no need to pre-fetch existing data.
+            // Sending just the single field is safe and works on first save too.
             await updateContent('contact', {
-                ...currentData,
                 [config.field]: form.value
             });
             setStatus('saved');
