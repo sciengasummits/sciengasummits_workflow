@@ -7,8 +7,6 @@ const OTPSchema = new mongoose.Schema({
     expiresAt: { type: Date, required: true, index: { expireAfterSeconds: 0 } },
     used: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
-}, {
-    bufferCommands: false
 });
 
 export default mongoose.models.OTP || mongoose.model('OTP', OTPSchema);

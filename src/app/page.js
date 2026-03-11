@@ -37,8 +37,6 @@ import Positives from '@/components/dashboard/pages/Positives';
 import WebsiteSections from '@/components/dashboard/pages/WebsiteSections';
 import Sessions from '@/components/dashboard/pages/Sessions';
 import ConferenceSchedule from '@/components/dashboard/pages/ConferenceSchedule';
-import VisaInfo from '@/components/dashboard/pages/VisaInfo';
-import FAQ from '@/components/dashboard/pages/FAQ';
 
 /* ── Conference config map ── */
 const CONFERENCE_CONFIG = {
@@ -136,9 +134,6 @@ function PageContent({ activeNav, setActiveNav }) {
     case 'sponsors': return <Sponsors />;
     case 'mediapartners': return <MediaPartners />;
     case 'venue-hospitality': return <VenueHospitality />;
-    case 'venue': return <VenueHospitality />;
-    case 'visa-info': return <VisaInfo />;
-    case 'faq': return <FAQ />;
     case 'accommodation': return <Accommodation />;
     case 'prev-glimpses': return <PreviousGlimpses />;
     case 'view-registrations': return <ViewRegistrations />;

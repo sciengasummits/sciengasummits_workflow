@@ -39,10 +39,7 @@ import {
     BadgeDollarSign,
     Handshake,
     ListChecks,
-    CalendarRange,
-    MoreHorizontal,
-    Plane,
-    HelpCircle
+    CalendarRange
 } from 'lucide-react';
 
 const iconSize = 20;
@@ -126,14 +123,6 @@ const NAV_ITEMS = [
         ]
     },
     { id: 'website-sections', label: 'Website Sections', icon: <Globe size={iconSize} /> },
-    {
-        id: 'more-options', label: 'More', icon: <MoreHorizontal size={iconSize} />,
-        children: [
-            { id: 'venue', label: 'Venue', icon: <Building size={childIconSize} /> },
-            { id: 'visa-info', label: 'Visa Info', icon: <Plane size={childIconSize} /> },
-            { id: 'faq', label: 'FAQ', icon: <HelpCircle size={childIconSize} /> },
-        ]
-    },
 ];
 
 export default function Sidebar({ collapsed, activeNav, onNavClick, conf }) {
