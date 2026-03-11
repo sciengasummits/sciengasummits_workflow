@@ -37,6 +37,7 @@ import Positives from '@/components/dashboard/pages/Positives';
 import WebsiteSections from '@/components/dashboard/pages/WebsiteSections';
 import Sessions from '@/components/dashboard/pages/Sessions';
 import ConferenceSchedule from '@/components/dashboard/pages/ConferenceSchedule';
+import ContactSettings from '@/components/dashboard/pages/ContactSettings';
 
 /* ── Conference config map ── */
 const CONFERENCE_CONFIG = {
@@ -162,6 +163,10 @@ function PageContent({ activeNav, setActiveNav }) {
     case 'student': return <StudentsSpeakers />;
     case 'delegate': return <DelegatesSpeakers />;
     case 'tracks': return <Sessions />;
+
+    case 'contact-email': return <ContactSettings type="email" />;
+    case 'contact-phone': return <ContactSettings type="phone" />;
+    case 'contact-whatsapp': return <ContactSettings type="whatsapp" />;
 
     default:
       return (

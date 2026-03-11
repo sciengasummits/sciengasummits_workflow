@@ -39,14 +39,25 @@ import {
     BadgeDollarSign,
     Handshake,
     ListChecks,
-    CalendarRange
+    CalendarRange,
+    Mail,
+    Phone,
+    MessageCircle,
 } from 'lucide-react';
 
 const iconSize = 20;
 const childIconSize = 16;
 
 const NAV_ITEMS = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={iconSize} />, active: true },
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={iconSize} /> },
+    {
+        id: 'contact-info', label: 'Contact Info', icon: <Phone size={iconSize} />,
+        children: [
+            { id: 'contact-email', label: 'Send Email', icon: <Mail size={childIconSize} /> },
+            { id: 'contact-phone', label: 'Call Us Now', icon: <Phone size={childIconSize} /> },
+            { id: 'contact-whatsapp', label: 'WhatsApp', icon: <MessageCircle size={childIconSize} /> },
+        ]
+    },
     {
         id: 'homepage', label: 'Home Page', icon: <Home size={iconSize} />,
         children: [
