@@ -11,7 +11,8 @@ export default function StatsGrid({ onCardClick }) {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentConference, setCurrentConference] = useState('liutex');
+    const activeConf = getConference();
+    const [currentConference, setCurrentConference] = useState(activeConf);
 
     useEffect(() => {
         const fetchStats = async () => {

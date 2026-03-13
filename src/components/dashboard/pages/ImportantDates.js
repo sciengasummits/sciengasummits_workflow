@@ -2,22 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { Save, RotateCcw, CheckCircle, AlertCircle, X, Plus } from 'lucide-react';
-import { getContent, updateContent } from '@/lib/api';
+import { getContent, updateContent, getConference } from '@/lib/api';
+import { CONFERENCE_CONFIG } from '@/lib/conferences';
 
 const ICON_OPTIONS = ['CalendarDays', 'CheckCircle', 'Clock', 'Star', 'Calendar', 'MapPin'];
 
-export default function ImportantDates() {
+export default function ImportantDates({ conf }) {
+    const activeConf = getConference();
+    const confSpecs = conf || CONFERENCE_CONFIG[activeConf] || CONFERENCE_CONFIG.liutex;
+
     const [form, setForm] = useState({
-        shortName: 'LIUTEXSUMMIT2026',
-        completeUrl: 'https://liutexvortexsummit.com/',
-        title: 'Annual International Conference on Liutex and Vortex Identification',
-        subject: 'Liutex and Vortex Identification',
-        venue: 'Outram, Singapore',
-        dates: 'December 14-16, 2026',
-        theme: 'Liutex Theory and Applications in Vortex Identification and Vortex Dynamics',
-        email: 'info@liutexvortexsummit.com',
+        shortName: confSpecs.shortName,
+        completeUrl: '',
+        title: confSpecs.displayName,
+        subject: '',
+        venue: '',
+        dates: '',
+        theme: '',
+        fullName: confSpecs.displayName,
+        email: confSpecs.email || '',
         facebook: '', twitter: '', linkedin: '',
-        fullName: 'Conference Organizer',
         countdownTarget: '2026-12-14T09:00:00',
     });
     const [importantDates, setImportantDates] = useState([
@@ -31,16 +35,23 @@ export default function ImportantDates() {
 
     useEffect(() => {
         async function load() {
+            setLoading(true);
             try {
                 const info = await getContent('hero');
                 const datesData = await getContent('importantDates');
                 const contactData = await getContent('contact');
                 setForm(prev => ({
                     ...prev,
-                    dates: info?.conferenceDate || prev.dates,
-                    venue: info?.venue || prev.venue,
-                    countdownTarget: info?.countdownTarget || prev.countdownTarget,
-                    email: contactData?.email || prev.email,
+                    shortName: info?.shortName || confSpecs.shortName,
+                    completeUrl: info?.completeUrl || '',
+                    title: info?.title || confSpecs.displayName,
+                    subject: info?.subject || '',
+                    theme: info?.theme || '',
+                    fullName: info?.fullName || confSpecs.displayName,
+                    dates: info?.conferenceDate || '',
+                    venue: info?.venue || '',
+                    countdownTarget: info?.countdownTarget || '',
+                    email: contactData?.email || confSpecs.email || '',
                     facebook: contactData?.socialLinks?.facebook || '',
                     twitter: contactData?.socialLinks?.twitter || '',
                     linkedin: contactData?.socialLinks?.linkedin || '',
@@ -50,7 +61,7 @@ export default function ImportantDates() {
             setLoading(false);
         }
         load();
-    }, []);
+    }, [confSpecs]);
 
     const set = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }));
 
@@ -75,6 +86,12 @@ export default function ImportantDates() {
         try {
             // Save hero info
             await updateContent('hero', {
+                shortName: form.shortName,
+                completeUrl: form.completeUrl,
+                title: form.title,
+                fullName: form.fullName,
+                subject: form.subject,
+                theme: form.theme,
                 conferenceDate: form.dates,
                 venue: form.venue,
                 countdownTarget: form.countdownTarget,
@@ -114,7 +131,7 @@ export default function ImportantDates() {
             <div className="id-page-header">
                 <div>
                     <h1 className="id-title">Conference Info & Important Dates</h1>
-                    <p className="id-subtitle">All changes sync live to the LIUTEXSUMMIT2026 website via backend API.</p>
+                    <p className="id-subtitle">All changes sync live to the {confSpecs.shortName} website via backend API.</p>
                 </div>
                 {status === 'saved' && (
                     <div className="id-save-badge"><CheckCircle size={15} /> Saved to database</div>
@@ -135,8 +152,8 @@ export default function ImportantDates() {
                     </div>
 
                     {[
-                        { key: 'shortName', label: 'Conference Short Name', type: 'text', placeholder: 'LIUTEXSUMMIT2026' },
-                        { key: 'completeUrl', label: 'Conference URL', type: 'url', placeholder: 'https://liutexvortexsummit.com/' },
+                        { key: 'shortName', label: 'Conference Short Name', type: 'text', placeholder: confSpecs.shortName },
+                        { key: 'completeUrl', label: 'Conference URL', type: 'url', placeholder: `https://${activeConf}vortexsummit.com/` },
                         { key: 'title', label: 'Full Conference Title', type: 'text', placeholder: 'Annual International Conference on...' },
                         { key: 'subject', label: 'Conference Subject', type: 'text', placeholder: 'Subject area' },
                         { key: 'venue', label: 'Conference Venue', type: 'text', placeholder: 'City, Country' },

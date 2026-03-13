@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Save, CheckCircle, AlertCircle, Plus, X, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
-import { getContent, updateContent } from '@/lib/api';
+import { getContent, updateContent, getConference } from '@/lib/api';
+import { CONFERENCE_CONFIG } from '@/lib/conferences';
 
 /* â”€â”€ Collapsible Section Wrapper â”€â”€ */
 function Section({ title, color = '#6366f1', children, sectionRef, highlighted }) {
@@ -46,11 +47,14 @@ const inp = {
 };
 const textarea = { ...inp, resize: 'vertical', minHeight: '80px' };
 
-export default function WebsiteSections({ section }) {
+export default function WebsiteSections({ section, conf }) {
+    const activeConf = getConference();
+    const confSpecs = conf || CONFERENCE_CONFIG[activeConf] || CONFERENCE_CONFIG.liutex;
+
     const [hero, setHero] = useState({
-        subtitle: 'ANNUAL INTERNATIONAL CONFERENCE ON',
-        title: 'LIUTEX AND VORTEX\nIDENTIFICATION',
-        description: 'International Conference on Liutex and Vortex Identification. where global experts unite to shape the future of fluid mechanics.',
+        subtitle: 'INTERNATIONAL CONFERENCE ON',
+        title: confSpecs.displayName,
+        description: `International Conference on ${confSpecs.shortName}. where global experts unite to shape the future of science.`,
         conferenceDate: 'December 14-16, 2026',
         venue: 'Outram, Singapore',
         countdownTarget: '2026-12-14T09:00:00',
@@ -58,7 +62,7 @@ export default function WebsiteSections({ section }) {
     });
 
     const [about, setAbout] = useState({
-        subtitle: 'Liutex and Vortex Identification and Its Applications',
+        subtitle: `${confSpecs.displayName} and Its Applications`,
         title: 'About The Conference',
         paragraph1: '',
         paragraph2: '',
@@ -67,7 +71,7 @@ export default function WebsiteSections({ section }) {
     });
 
     const [stats, setStats] = useState({
-        title: 'LIUTEX VORTEX SUMMIT CONFERENCES APPROACH',
+        title: `${confSpecs.shortName} CONFERENCES APPROACH`,
         items: [],
     });
 
@@ -117,7 +121,7 @@ export default function WebsiteSections({ section }) {
             setLoading(false);
         }
         load();
-    }, []);
+    }, [confSpecs]);
 
     const save = async () => {
         setStatus('saving');
@@ -195,7 +199,7 @@ export default function WebsiteSections({ section }) {
             <div className="id-page-header">
                 <div>
                     <h1 className="id-title">Website Sections Manager</h1>
-                    <p className="id-subtitle">Edit all sections of the LIUTEXSUMMIT2026 website. Changes save directly to MongoDB and reflect live on the site.</p>
+                    <p className="id-subtitle">Edit all sections of the {confSpecs.shortName} website. Changes save directly to MongoDB and reflect live on the site.</p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {status === 'saved' && <div className="id-save-badge"><CheckCircle size={15} /> Saved!</div>}
@@ -277,7 +281,8 @@ export default function WebsiteSections({ section }) {
                                     const fd = new FormData();
                                     fd.append('image', file);
                                     try {
-                                        const res = await fetch('http://localhost:5000/api/upload', { method: 'POST', body: fd });
+                                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                                        const res = await fetch(`${apiUrl}/upload`, { method: 'POST', body: fd });
                                         const data = await res.json();
                                         if (data.url) setHero(h => ({ ...h, bgImage: data.url }));
                                         else if (data.error) alert(`Upload failed: ${data.error}`);

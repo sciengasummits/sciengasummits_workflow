@@ -4,8 +4,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Conference Management System | LIUTEX SUMMIT 2026",
-  description: "Conference Management Dashboard for LIUTEX VORTEX SUMMIT 2026, FOOD AGRI SUMMIT 2026 & FLUID MECHANICS SUMMIT 2026",
+  title: "Conference Management System | SCIENGASUMMITS",
+  description: "Advanced Conference Management Dashboard for SCIENGASUMMITS events.",
 };
 
 export default function RootLayout({ children }) {

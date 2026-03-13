@@ -18,7 +18,7 @@ export default function Topbar({ onToggleSidebar, eventName, username, onLogout,
             </div>
             <div className="topbar-right">
                 <div className="event-badge">
-                    {eventName || 'LIUTEXSUMMIT2026'}
+                    {eventName || 'Conference Dashboard'}
                 </div>
 
                 <div style={{ position: 'relative' }}>
@@ -36,7 +36,7 @@ export default function Topbar({ onToggleSidebar, eventName, username, onLogout,
                         }}
                     >
                         <User size={14} />
-                        {username || 'LIUTEXSUMMIT2026'}
+                        {username || 'Admin'}
                     </button>
 
                     {showMenu && (

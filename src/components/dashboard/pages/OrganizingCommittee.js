@@ -1,21 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Pencil, Trash2, Plus, X, GripVertical, Info } from 'lucide-react';
-
-const INITIAL_MEMBERS = [
-    { id: 1, name: 'Dr. Jaroslav Jerz', affiliation: 'Institute of Materials & Machine Mechanics', country: 'Slovakia' },
-    { id: 2, name: 'Dr. Xingxing Huang', affiliation: 'Future Energy Research Institute', country: 'Switzerland' },
-    { id: 3, name: 'Prof. Sankar Kr Acharya', affiliation: 'Bidhan Chandra Krishi Viswavidyalaya', country: 'India' },
-    { id: 4, name: 'Dr. Anwesha Mandal', affiliation: 'GD Goenka University, India', country: '' },
-    { id: 5, name: 'Dr. Giulio Teodoro Maellaro', affiliation: 'GECO â€“ Global Engineering Constructions s.r.l', country: 'Italy' },
-    { id: 6, name: 'Dr. Albin Kaelin', affiliation: 'CEO of EPEA', country: 'Switzerland' },
-    { id: 7, name: 'Dr. Dimitrios Rakopoulos', affiliation: 'Centre for Research & Technology Hellas (CERTH)', country: 'Greece' },
-    { id: 8, name: 'Dr. Joudi Dibsi', affiliation: 'University of Wollongong', country: 'Australia' },
-    { id: 9, name: 'Salhi Nassima', affiliation: 'University of Blida', country: 'Algeria' },
-    { id: 10, name: 'Prof. Dongling Ma', affiliation: 'INRS â€“ EMT Canada Research Chair (Tier 1) in Advanced Functional Nanocomposites', country: 'Canada' },
-    { id: 11, name: 'Prof. Manfred Doepp', affiliation: 'Head of Holistic Center Switzerland', country: 'Switzerland' },
-];
+import { getContent, updateContent, getConference } from '@/lib/api';
+import { CONFERENCE_CONFIG } from '@/lib/conferences';
 
 const EMPTY_FORM = { name: '', affiliation: '', country: '' };
 
@@ -30,16 +18,48 @@ function getInitials(name) {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export default function OrganizingCommittee() {
-    const [members, setMembers] = useState(INITIAL_MEMBERS);
+export default function OrganizingCommittee({ conf }) {
+    const [members, setMembers] = useState([]);
     const [modal, setModal] = useState(null); // null | { mode:'add' } | { mode:'edit', id }
     const [form, setForm] = useState(EMPTY_FORM);
     const [deleteId, setDeleteId] = useState(null);
-    const [nextId, setNextId] = useState(INITIAL_MEMBERS.length + 1);
+    const [loading, setLoading] = useState(true);
+    const [status, setStatus] = useState(null);
+
+    const activeConf = getConference();
+    const confSpecs = conf || CONFERENCE_CONFIG[activeConf] || CONFERENCE_CONFIG.liutex;
 
     // Drag-and-drop state
     const dragIdx = useRef(null);
     const overIdx = useRef(null);
+
+    /* ─── API Handlers ─── */
+    const load = async () => {
+        setLoading(true);
+        try {
+            const data = await getContent('committee');
+            if (data?.members) setMembers(data.members);
+        } catch (e) {
+            console.error('Failed to load committee:', e);
+        }
+        setLoading(false);
+    };
+
+    const save = async (updatedMembers) => {
+        setStatus('saving');
+        try {
+            await updateContent('committee', { members: updatedMembers });
+            setStatus('saved');
+            setTimeout(() => setStatus(null), 3000);
+        } catch (e) {
+            setStatus('error');
+            setTimeout(() => setStatus(null), 3000);
+        }
+    };
+
+    useEffect(() => {
+        load();
+    }, [confSpecs]);
 
     /* â”€â”€â”€ Drag handlers â”€â”€â”€ */
     const onDragStart = (i) => { dragIdx.current = i; };
@@ -51,6 +71,7 @@ export default function OrganizingCommittee() {
         const [moved] = arr.splice(from, 1);
         arr.splice(to, 0, moved);
         setMembers(arr);
+        save(arr);
         dragIdx.current = overIdx.current = null;
     };
 
@@ -61,17 +82,25 @@ export default function OrganizingCommittee() {
 
     const handleSave = () => {
         if (!form.name.trim()) return;
+        let updated;
         if (modal.mode === 'add') {
-            setMembers(prev => [...prev, { id: nextId, ...form }]);
-            setNextId(n => n + 1);
+            const newId = members.length > 0 ? Math.max(...members.map(m => m.id)) + 1 : 1;
+            updated = [...members, { id: newId, ...form }];
         } else {
-            setMembers(prev => prev.map(m => m.id === modal.id ? { ...m, ...form } : m));
+            updated = members.map(m => m.id === modal.id ? { ...m, ...form } : m);
         }
+        setMembers(updated);
+        save(updated);
         closeModal();
     };
 
     const confirmDelete = (id) => setDeleteId(id);
-    const handleDelete = () => { setMembers(prev => prev.filter(m => m.id !== deleteId)); setDeleteId(null); };
+    const handleDelete = () => {
+        const updated = members.filter(m => m.id !== deleteId);
+        setMembers(updated);
+        save(updated);
+        setDeleteId(null);
+    };
 
     const modalOpen = !!modal || !!deleteId;
 
@@ -81,7 +110,12 @@ export default function OrganizingCommittee() {
             <div style={modalOpen ? { filter: 'blur(4px)', transition: 'filter 0.2s ease', pointerEvents: 'none', userSelect: 'none' } : { transition: 'filter 0.2s ease' }}>
                 {/* Header */}
                 <div className="oc-page-header">
-                    <h1 className="oc-title">List of Organizing Committee</h1>
+                    <div>
+                        <h1 className="oc-title">List of Organizing Committee</h1>
+                        <p style={{ color: '#64748b', fontSize: '13px', margin: '4px 0 0' }}>Managing committee for {confSpecs.shortName}</p>
+                    </div>
+                    {status === 'saving' && <div className="id-save-badge">Saving...</div>}
+                    {status === 'saved' && <div className="id-save-badge"><Info size={14} /> Saved</div>}
                 </div>
 
                 {/* Hint */}

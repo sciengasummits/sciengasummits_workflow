@@ -2,13 +2,23 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // ── Active conference (set at login, used in all requests) ──────────────────
-let _conference = 'liutex';
+let _conference = (typeof window !== 'undefined' && localStorage.getItem('activeConference')) || 'liutex';
 
 export function setConference(id) {
-    _conference = id || 'liutex';
+    if (!id) return;
+    _conference = id;
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('activeConference', id);
+        // Force update any listeners if needed, though most components will re-mount
+        window.dispatchEvent(new CustomEvent('conference-change', { detail: id }));
+    }
 }
 
 export function getConference() {
+    if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('activeConference');
+        if (stored) _conference = stored;
+    }
     return _conference;
 }
 
@@ -21,10 +31,15 @@ async function request(method, endpoint, body = null) {
     const opts = {
         method,
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
     };
     if (body) opts.body = JSON.stringify(body);
-    const res = await fetch(`${BASE_URL}${endpoint}`, opts);
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+        ...opts,
+        next: { revalidate: 0 } // Extra insurance for Next.js caching
+    });
     if (!res.ok) {
+        if (res.status === 404) return null; // Gracefully handle missing content
         const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error(err.error || 'Request failed');
     }
@@ -71,7 +86,8 @@ export const updateRegistrationStatus = (id, data) => request('PATCH', `/registr
 export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('image', file);
-    const res = await fetch(`${BASE_URL}/upload`, { method: 'POST', body: formData });
+    // Point directly to the central backend for persistence and absolute URLs
+    const res = await fetch(`http://localhost:5000/api/upload`, { method: 'POST', body: formData });
     if (!res.ok) throw new Error('Upload failed');
     return res.json();
 }

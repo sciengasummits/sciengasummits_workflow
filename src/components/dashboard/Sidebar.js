@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
     LayoutDashboard,
     Home,
+    LogOut,
     Calendar,
     Tag,
     Users,
@@ -66,6 +67,7 @@ const NAV_ITEMS = [
         id: 'homepage', label: 'Home Page', icon: <Home size={iconSize} />,
         children: [
             { id: 'ws-hero', label: 'Hero Section', icon: <MonitorPlay size={childIconSize} /> },
+            { id: 'ws-hero-chairs', label: 'Hero Chairs', icon: <Users size={childIconSize} /> },
             { id: 'ws-about', label: 'About Section', icon: <BookOpen size={childIconSize} /> },
             { id: 'important-dates', label: 'Important Dates', icon: <Calendar size={childIconSize} /> },
             { id: 'ws-marquee', label: 'Marquee', icon: <GalleryHorizontalEnd size={childIconSize} /> },
@@ -142,13 +144,14 @@ const NAV_ITEMS = [
     {
         id: 'more', label: 'More', icon: <MoreHorizontal size={iconSize} />,
         children: [
+            { id: 'venue', label: 'Venue', icon: <MapPin size={childIconSize} /> },
             { id: 'visa-info', label: 'Visa Info', icon: <Plane size={childIconSize} /> },
             { id: 'faq', label: 'FAQ', icon: <HelpCircle size={childIconSize} /> },
         ]
     },
 ];
 
-export default function Sidebar({ collapsed, activeNav, onNavClick, conf }) {
+export default function Sidebar({ collapsed, activeNav, onNavClick, conf, onLogout }) {
     const [openMenus, setOpenMenus] = useState({});
 
     const toggleMenu = (id) => {
@@ -201,6 +204,18 @@ export default function Sidebar({ collapsed, activeNav, onNavClick, conf }) {
                     </div>
                 ))}
             </nav>
+
+            <div className="sidebar-footer" style={{ padding: '10px 0', borderTop: '1px solid #f1f5f9', marginTop: 'auto' }}>
+                <div
+                    className="nav-link logout-link"
+                    onClick={onLogout}
+                    style={{ color: '#ef4444', cursor: 'pointer' }}
+                    title={collapsed ? "Logout" : ""}
+                >
+                    <span className="nav-icon"><LogOut size={iconSize} /></span>
+                    <span className="nav-label" style={{ fontWeight: 600 }}>Logout</span>
+                </div>
+            </div>
         </aside>
     );
 }

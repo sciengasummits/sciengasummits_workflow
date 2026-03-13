@@ -133,7 +133,7 @@ export default function Login({ onLogin }) {
                         <Shield size={32} className="login-logo-icon" />
                     </div>
                     <h1 className="login-brand-title" style={{ fontSize: '1.15rem', letterSpacing: '1px' }}>CONFERENCE MANAGEMENT</h1>
-                    <p className="login-brand-subtitle">LUITEX &amp; FOOD AGRI SUMMIT 2026</p>
+                    <p className="login-brand-subtitle">SCIENGASUMMITS 2026</p>
                 </div>
 
                 <div className={`login-card ${success ? 'login-card-success' : ''}`}>
@@ -265,7 +265,7 @@ export default function Login({ onLogin }) {
                 </div>
 
                 <p className="login-footer-text">
-                    © 2026 LIUTEX SUMMIT. All rights reserved.
+                    © 2026 SCIENGASUMMITS. All rights reserved.
                 </p>
             </div>
         </div>
