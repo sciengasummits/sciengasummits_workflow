@@ -147,7 +147,8 @@ export async function uploadImage(file) {
             }
             throw new Error('Session expired. Please log in again.');
         }
-        throw new Error('Upload failed');
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || 'Upload failed');
     }
     return res.json();
 }

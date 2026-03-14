@@ -1,69 +1,53 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import dbConnect from '@/lib/mongodb';
+import Media from '@/models/Media';
 import { requireAuth } from '@/lib/auth';
 
-// Maximum file size: 25MB
-const MAX_FILE_SIZE = 25 * 1024 * 1024;
-// Allowed image extensions
-const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-// Allowed MIME types
-const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
-
 export async function POST(request) {
-    // ── Admin only: require authentication ──
     const auth = requireAuth(request);
     if (auth.error) return auth.error;
 
     try {
+        await dbConnect();
         const formData = await request.formData();
         const file = formData.get('image');
+        
         if (!file) {
-            return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+            return NextResponse.json({ error: 'No file received in form data' }, { status: 400 });
         }
 
-        // ── File size validation ──
-        if (file.size > MAX_FILE_SIZE) {
-            return NextResponse.json({ error: 'File too large. Maximum size is 25MB.' }, { status: 413 });
-        }
-
-        // ── Extension validation ──
-        const ext = path.extname(file.name).toLowerCase();
-        if (!ALLOWED_EXTENSIONS.includes(ext)) {
-            return NextResponse.json(
-                { error: `Invalid file type "${ext}". Only images are allowed: ${ALLOWED_EXTENSIONS.join(', ')}` },
-                { status: 400 }
-            );
-        }
-
-        // ── MIME type validation ──
-        if (file.type && !ALLOWED_MIMES.some(mime => file.type.includes(mime.split('/')[1]))) {
-            return NextResponse.json(
-                { error: `Invalid MIME type "${file.type}". Only image files are allowed.` },
-                { status: 400 }
-            );
-        }
-
-        // ── Sanitize filename (prevent path traversal) ──
-        const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        // Basic validation
+        const fileName = file.name || 'uploaded_image';
+        const fileType = file.type || 'image/jpeg';
 
         const bytes = await file.arrayBuffer();
+        if (bytes.byteLength === 0) {
+            return NextResponse.json({ error: 'File is empty' }, { status: 400 });
+        }
+
         const buffer = Buffer.from(bytes);
+        const base64 = `data:${fileType};base64,${buffer.toString('base64')}`;
 
-        const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-        await mkdir(uploadsDir, { recursive: true });
-
-        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const filename = unique + ext;
-        const filepath = path.join(uploadsDir, filename);
-
-        await writeFile(filepath, buffer);
+        const media = new Media({
+            filename: fileName,
+            mimetype: fileType,
+            data: base64,
+            conference: formData.get('conference') || 'liutex'
+        });
+        
+        await media.save();
 
         const host = request.headers.get('host') || 'localhost:3000';
         const protocol = request.headers.get('x-forwarded-proto') || 'http';
-        const url = `${protocol}://${host}/uploads/${filename}`;
-        return NextResponse.json({ url, filename });
+        const url = `${protocol}://${host}/api/media/${media._id}`;
+        
+        return NextResponse.json({ 
+            url, 
+            id: media._id, 
+            message: 'Image saved to MongoDB' 
+        });
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        console.error('SERVER UPLOAD ERROR:', err);
+        return NextResponse.json({ error: `Server error during upload: ${err.message}` }, { status: 500 });
     }
 }
