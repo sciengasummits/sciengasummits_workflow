@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Razorpay instantiated inside the handler to prevent build-time crashes
 
 export async function POST(request) {
     try {
         const body = await request.json();
         const { amount, registrationId, description } = body;
+
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key',
+            key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_secret',
+        });
 
         if (!amount || amount <= 0) {
             return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });

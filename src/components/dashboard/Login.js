@@ -7,14 +7,14 @@ const API_BASE = '';
 
 export default function Login({ onLogin }) {
     const [username, setUsername] = useState('');
-    const [otp, setOtp] = useState(['', '', '', '']);
+    const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [showOtpStep, setShowOtpStep] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
     const [otpSentMessage, setOtpSentMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
-    const otpRefs = [useRef(), useRef(), useRef(), useRef()];
+    const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
 
     useEffect(() => {
         if (showOtpStep && otpRefs[0].current) {
@@ -59,7 +59,7 @@ export default function Login({ onLogin }) {
         newOtp[index] = value.slice(-1);
         setOtp(newOtp);
         setError('');
-        if (value && index < 3) {
+        if (value && index < 5) {
             otpRefs[index + 1].current.focus();
         }
     }
@@ -72,11 +72,11 @@ export default function Login({ onLogin }) {
 
     function handleOtpPaste(e) {
         e.preventDefault();
-        const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4);
-        const newOtp = ['', '', '', ''];
+        const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+        const newOtp = ['', '', '', '', '', ''];
         for (let i = 0; i < pasted.length; i++) newOtp[i] = pasted[i];
         setOtp(newOtp);
-        const focusIdx = Math.min(pasted.length, 3);
+        const focusIdx = Math.min(pasted.length, 5);
         otpRefs[focusIdx].current.focus();
     }
 
@@ -84,8 +84,8 @@ export default function Login({ onLogin }) {
         e.preventDefault();
         setError('');
         const enteredOtp = otp.join('');
-        if (enteredOtp.length < 4) {
-            setError('Please enter the complete 4-digit OTP.');
+        if (enteredOtp.length < 6) {
+            setError('Please enter the complete 6-digit OTP.');
             return;
         }
         setLoading(true);
@@ -98,11 +98,16 @@ export default function Login({ onLogin }) {
             const data = await res.json();
             if (data.success) {
                 setSuccess(true);
-                setTimeout(() => onLogin({ username: data.username, conferenceId: data.conferenceId, displayName: data.displayName }), 800);
+                setTimeout(() => onLogin({ 
+                    username: data.username, 
+                    conferenceId: data.conferenceId, 
+                    displayName: data.displayName,
+                    token: data.token // Pass JWT token to parent
+                }), 800);
             } else {
                 setLoading(false);
                 setError(data.message || 'Invalid OTP. Please try again.');
-                setOtp(['', '', '', '']);
+                setOtp(['', '', '', '', '', '']);
                 otpRefs[0].current.focus();
             }
         } catch {
@@ -113,7 +118,7 @@ export default function Login({ onLogin }) {
 
     function handleBack() {
         setShowOtpStep(false);
-        setOtp(['', '', '', '']);
+        setOtp(['', '', '', '', '', '']);
         setError('');
         setOtpSent(false);
         setOtpSentMessage('');
@@ -148,7 +153,7 @@ export default function Login({ onLogin }) {
                                 <h2 className="login-card-title">Sign In</h2>
                                 <p className="login-card-desc">
                                     {showOtpStep
-                                        ? 'Enter the 4-digit OTP to continue'
+                                        ? 'Enter the 6-digit OTP to continue'
                                         : 'Enter your username to get started'}
                                 </p>
                             </div>

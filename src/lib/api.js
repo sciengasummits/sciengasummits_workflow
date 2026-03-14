@@ -1,6 +1,38 @@
 // Central API service for all dashboard <-> backend communication
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
+// ── Auth token management ────────────────────────────────────
+let _authToken = (typeof window !== 'undefined' && localStorage.getItem('authToken')) || null;
+
+export function setAuthToken(token) {
+    _authToken = token;
+    if (typeof window !== 'undefined') {
+        if (token) {
+            localStorage.setItem('authToken', token);
+        } else {
+            localStorage.removeItem('authToken');
+        }
+    }
+}
+
+export function getAuthToken() {
+    if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('authToken');
+        if (stored) _authToken = stored;
+    }
+    return _authToken;
+}
+
+export function clearAuth() {
+    _authToken = null;
+    _conference = 'liutex';
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('activeConference');
+        localStorage.removeItem('session');
+    }
+}
+
 // ── Active conference (set at login, used in all requests) ──────────────────
 let _conference = (typeof window !== 'undefined' && localStorage.getItem('activeConference')) || 'liutex';
 
@@ -28,9 +60,15 @@ function withConf(endpoint) {
 }
 
 async function request(method, endpoint, body = null) {
+    const headers = { 'Content-Type': 'application/json' };
+    // ── Attach JWT token for authenticated requests ──
+    const token = getAuthToken();
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
     const opts = {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         cache: 'no-store',
     };
     if (body) opts.body = JSON.stringify(body);
@@ -40,8 +78,16 @@ async function request(method, endpoint, body = null) {
     });
     if (!res.ok) {
         if (res.status === 404) return null; // Gracefully handle missing content
+        // ── Handle session expiry ──
+        if (res.status === 401) {
+            clearAuth();
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('session-expired'));
+            }
+            throw new Error('Session expired. Please log in again.');
+        }
         const err = await res.json().catch(() => ({ error: res.statusText }));
-        throw new Error(err.error || 'Request failed');
+        throw new Error(err.error || err.message || 'Request failed');
     }
     return res.json();
 }
@@ -86,9 +132,23 @@ export const updateRegistrationStatus = (id, data) => request('PATCH', `/registr
 export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('image', file);
-    // Point directly to the central backend for persistence and absolute URLs
-    const res = await fetch(`http://localhost:5000/api/upload`, { method: 'POST', body: formData });
-    if (!res.ok) throw new Error('Upload failed');
+    // Include auth token in upload requests
+    const headers = {};
+    const token = getAuthToken();
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    const res = await fetch(`/api/upload`, { method: 'POST', body: formData, headers });
+    if (!res.ok) {
+        if (res.status === 401) {
+            clearAuth();
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('session-expired'));
+            }
+            throw new Error('Session expired. Please log in again.');
+        }
+        throw new Error('Upload failed');
+    }
     return res.json();
 }
 

@@ -77,10 +77,10 @@ export default function HeroChairs({ conf }) {
         }
     };
 
-    const ChairCard = ({ role, label }) => {
+    const renderChairCard = (role, label) => {
         const data = chairs[role] || { name: '', title: label, designation: '', affiliation: '', image: '' };
         return (
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px', marginBottom: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+            <div key={role} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px', marginBottom: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <User size={20} color="var(--accent)" /> {label}
                 </h3>
@@ -149,9 +149,9 @@ export default function HeroChairs({ conf }) {
             </div>
 
             <div style={{ marginTop: '24px' }}>
-                <ChairCard role="chair" label="Conference Chair Person" />
-                <ChairCard role="viceChair" label="Conference Co-chair Person 1" />
-                <ChairCard role="coChair" label="Conference Co-chair Person 2" />
+                {renderChairCard("chair", "Conference Chair Person")}
+                {renderChairCard("viceChair", "Conference Co-chair Person 1")}
+                {renderChairCard("coChair", "Conference Co-chair Person 2")}
             </div>
 
             <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '12px', padding: '16px 20px', marginTop: '30px' }}>

@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Registration from '@/models/Registration';
+import { requireAuth } from '@/lib/auth';
 
+// GET — Admin reads all registrations (requires auth - contains personal data)
 export async function GET(request) {
+    // ── Admin only: require authentication ──
+    const auth = requireAuth(request);
+    if (auth.error) return auth.error;
+
     try {
         await dbConnect();
         const { searchParams } = new URL(request.url);
@@ -14,11 +20,18 @@ export async function GET(request) {
     }
 }
 
+// POST — Public registration submission (no auth required - from website)
 export async function POST(request) {
     try {
         await dbConnect();
         const body = await request.json();
-        const reg = new Registration(body);
+        // Sanitize: only allow known registration fields
+        const allowed = ['conference', 'name', 'email', 'phone', 'affiliation', 'country', 'category', 'packageType', 'amount', 'currency', 'coupon', 'discountPercentage', 'finalAmount', 'status', 'paymentMethod'];
+        const sanitized = {};
+        for (const key of allowed) {
+            if (body[key] !== undefined) sanitized[key] = body[key];
+        }
+        const reg = new Registration(sanitized);
         await reg.save();
         return NextResponse.json(reg, { status: 201 });
     } catch (err) {

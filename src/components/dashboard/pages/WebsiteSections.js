@@ -95,11 +95,13 @@ export default function WebsiteSections({ section, conf }) {
     useEffect(() => {
         if (!section || loading) return;
         const ref = sectionRefs[section];
-        if (ref && ref.current) {
+        if (ref) {
             setTimeout(() => {
-                ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                setHighlighted(section);
-                setTimeout(() => setHighlighted(null), 2200);
+                if (ref.current) {
+                    ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    setHighlighted(section);
+                    setTimeout(() => setHighlighted(null), 2200);
+                }
             }, 150);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -281,7 +283,7 @@ export default function WebsiteSections({ section, conf }) {
                                     const fd = new FormData();
                                     fd.append('image', file);
                                     try {
-                                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
                                         const res = await fetch(`${apiUrl}/upload`, { method: 'POST', body: fd });
                                         const data = await res.json();
                                         if (data.url) setHero(h => ({ ...h, bgImage: data.url }));

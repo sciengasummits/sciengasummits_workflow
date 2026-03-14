@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Speaker from '@/models/Speaker';
+import { requireAuth } from '@/lib/auth';
 
+// ── Admin endpoint: returns ALL speakers (including hidden ones) ──
 export async function GET(request) {
+    // ── Admin only: require authentication ──
+    const auth = requireAuth(request);
+    if (auth.error) return auth.error;
+
     try {
         await dbConnect();
         const { searchParams } = new URL(request.url);

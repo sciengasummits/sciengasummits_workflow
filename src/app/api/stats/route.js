@@ -4,8 +4,13 @@ import Abstract from '@/models/Abstract';
 import Registration from '@/models/Registration';
 import Speaker from '@/models/Speaker';
 import SiteContent from '@/models/SiteContent';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET(request) {
+    // ── Admin only: require authentication ──
+    const auth = requireAuth(request);
+    if (auth.error) return auth.error;
+
     try {
         await dbConnect();
         const { searchParams } = new URL(request.url);

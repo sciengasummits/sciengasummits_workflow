@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import SiteContent from '@/models/SiteContent';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET(request, { params }) {
     try {
@@ -17,15 +18,24 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
+    // ── Admin only: require authentication ──
+    const auth = requireAuth(request);
+    if (auth.error) return auth.error;
+
     try {
         await dbConnect();
         const { key } = await params;
         const body = await request.json();
         const { conference: conf = 'liutex', ...bodyData } = body;
+
+        // ── Input sanitization: only allow known data fields ──
         const patch = {};
         for (const [field, value] of Object.entries(bodyData)) {
+            // Block MongoDB operators in field names
+            if (field.startsWith('$')) continue;
             patch[`data.${field}`] = value;
         }
+
         const result = await SiteContent.findOneAndUpdate(
             { conference: conf, key },
             { $set: { ...patch, conference: conf } },

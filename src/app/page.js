@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Login from '@/components/dashboard/Login';
 import { Info } from 'lucide-react';
-import { setConference } from '@/lib/api';
+import { setConference, setAuthToken, clearAuth } from '@/lib/api';
 import Sidebar from '@/components/dashboard/Sidebar';
 import Topbar from '@/components/dashboard/Topbar';
 import StatsGrid from '@/components/dashboard/StatsGrid';
@@ -228,9 +228,22 @@ export default function Home() {
       }
     }
 
+    // Listen for nav events
     const handler = (e) => setActiveNav(e.detail);
     window.addEventListener('nav-to', handler);
-    return () => window.removeEventListener('nav-to', handler);
+
+    // Listen for server-side session expiry
+    const sessionExpiredHandler = () => {
+      clearAuth();
+      setSession(null);
+      setActiveNav('dashboard');
+    };
+    window.addEventListener('session-expired', sessionExpiredHandler);
+
+    return () => {
+      window.removeEventListener('nav-to', handler);
+      window.removeEventListener('session-expired', sessionExpiredHandler);
+    };
   }, []);
 
   // Update "last active" timestamp on navigation to prevent premature logout
@@ -249,8 +262,7 @@ export default function Home() {
   }, [conf]);
 
   const handleLogout = () => {
-    localStorage.removeItem('session');
-    localStorage.removeItem('activeConference');
+    clearAuth();
     setSession(null);
     setActiveNav('dashboard');
   };
@@ -265,6 +277,10 @@ export default function Home() {
           };
           localStorage.setItem('session', JSON.stringify(sessionWithTime));
           setConference(info.conferenceId);
+          // Store JWT token for server-side authentication
+          if (info.token) {
+            setAuthToken(info.token);
+          }
           setSession(sessionWithTime);
           setActiveNav('dashboard');
         }}

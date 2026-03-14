@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import OTP from '@/models/OTP';
 import { CONFERENCE_ACCOUNTS } from '@/lib/conferences';
+import { generateToken, verifyOTPHash, isLoginRateLimited, resetLoginAttempts } from '@/lib/auth';
 
 export async function POST(request) {
     try {
@@ -12,28 +13,58 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: 'Username and OTP are required.' }, { status: 400 });
         }
 
-        const account = CONFERENCE_ACCOUNTS.find(acc => acc.username.toLowerCase() === username.toLowerCase());
-        if (!account) {
-            return NextResponse.json({ success: false, message: 'Username not found.' }, { status: 401 });
+        // ── Rate limiting: max 10 login attempts per 15 minutes ──
+        const rateLimitKey = username.toLowerCase();
+        if (isLoginRateLimited(rateLimitKey)) {
+            return NextResponse.json(
+                { success: false, message: 'Too many login attempts. Please wait 15 minutes before trying again.' },
+                { status: 429 }
+            );
         }
 
-        if (otp === '____') {
+        const account = CONFERENCE_ACCOUNTS.find(acc => acc.username.toLowerCase() === username.toLowerCase());
+        if (!account) {
+            return NextResponse.json({ success: false, message: 'Invalid credentials.' }, { status: 401 });
+        }
+
+        // Reject placeholder OTP
+        if (otp === '______' || otp === '____') {
             return NextResponse.json({ success: false, message: 'Invalid OTP.' }, { status: 401 });
         }
 
-        const otpRecord = await OTP.findOne({
+        // ── Find all non-used, non-expired OTPs for this user ──
+        const otpRecords = await OTP.find({
             username: account.username,
-            otp,
             used: false,
             expiresAt: { $gt: new Date() }
         });
 
-        if (!otpRecord) {
-            return NextResponse.json({ success: false, message: 'Invalid or expired OTP.' }, { status: 401 });
+        // ── Verify OTP hash against stored records ──
+        let matchedRecord = null;
+        for (const record of otpRecords) {
+            if (verifyOTPHash(otp, record.otp)) {
+                matchedRecord = record;
+                break;
+            }
         }
 
-        otpRecord.used = true;
-        await otpRecord.save();
+        if (!matchedRecord) {
+            return NextResponse.json({ success: false, message: 'Invalid or expired OTP. Please try again.' }, { status: 401 });
+        }
+
+        // Mark OTP as used
+        matchedRecord.used = true;
+        await matchedRecord.save();
+
+        // Reset rate limit on successful login
+        resetLoginAttempts(rateLimitKey);
+
+        // ── Generate JWT token for authenticated session ──
+        const token = generateToken({
+            username: account.username,
+            conferenceId: account.conferenceId,
+            displayName: account.displayName,
+        });
 
         return NextResponse.json({
             success: true,
@@ -41,6 +72,7 @@ export async function POST(request) {
             username: account.username,
             conferenceId: account.conferenceId,
             displayName: account.displayName,
+            token, // JWT token for authenticating subsequent API requests
         });
     } catch (error) {
         console.error('Login error:', error);
