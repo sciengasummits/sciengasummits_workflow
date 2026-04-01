@@ -38,18 +38,8 @@ export async function POST(request) {
         
         await media.save();
 
-        // ✅ Use NEXT_PUBLIC_WORKFLOW_URL env var if set (production), otherwise
-        //    derive from request headers. Avoids saving "localhost:3000" URLs in DB.
-        const envBase = process.env.NEXT_PUBLIC_WORKFLOW_URL;
-        let base;
-        if (envBase) {
-            base = envBase.replace(/\/$/, ''); // strip trailing slash
-        } else {
-            const host = request.headers.get('host') || 'localhost:3000';
-            const protocol = request.headers.get('x-forwarded-proto') || 'http';
-            base = `${protocol}://${host}`;
-        }
-        const url = `${base}/api/media/${media._id}`;
+        // Return relative path — works on any domain without extra env vars
+        const url = `/api/media/${media._id}`;
         
         return NextResponse.json({ 
             url, 

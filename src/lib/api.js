@@ -1,5 +1,5 @@
 // Central API service for all dashboard <-> backend communication
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // ── Auth token management ────────────────────────────────────
 let _authToken = (typeof window !== 'undefined' && localStorage.getItem('authToken')) || null;
