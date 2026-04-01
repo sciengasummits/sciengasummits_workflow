@@ -140,20 +140,39 @@ export const updateAbstractStatus = (id, data) => request('PATCH', `/abstracts/$
 export const getRegistrations = () => request('GET', withConf('/registrations'));
 export const updateRegistrationStatus = (id, data) => request('PATCH', `/registrations/${id}`, data);
 
-// ── Image upload
-// Uploads directly to the backend /api/upload (saves file to disk, returns /uploads/<filename> URL)
-// so that the stored URL is a proper backend URL accessible from the LIUTEX frontend.
+// ── Image upload (stores in MongoDB via /api/upload)
 export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('image', file);
 
-    const backendBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api').replace(/\/api$/, '');
-    const res = await fetch(`${backendBase}/api/upload`, { method: 'POST', body: formData });
+    const token = getAuthToken();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE_URL}/upload`, { method: 'POST', body: formData, headers });
     if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.error || errorData.message || 'Upload failed');
     }
-    return res.json(); // { url, filename, originalName }
+    return res.json(); // { url, id, message }
+}
+
+// ── File upload (stores PDFs/docs in MongoDB via /api/upload-file)
+export async function uploadFile(file, conference) {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (conference) formData.append('conference', conference);
+
+    const token = getAuthToken();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE_URL}/upload-file`, { method: 'POST', body: formData, headers });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || 'File upload failed');
+    }
+    return res.json(); // { url, id, filename, originalName, message }
 }
 
 // ── Discounts

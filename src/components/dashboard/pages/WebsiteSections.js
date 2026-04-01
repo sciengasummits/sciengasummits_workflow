@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Save, CheckCircle, AlertCircle, Plus, X, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
-import { getContent, updateContent, getConference, uploadImage } from '@/lib/api';
+import { getContent, updateContent, getConference, uploadImage, uploadFile } from '@/lib/api';
 import { CONFERENCE_CONFIG } from '@/lib/conferences';
 
 /* ── Collapsible Section Wrapper ── */
@@ -277,15 +277,11 @@ export default function WebsiteSections({ section, conf }) {
                                 onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (!file) return;
-                                    const fd = new FormData();
-                                    fd.append('file', file);
                                     try {
-                                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050';
-                                        const res = await fetch(`${apiUrl}/api/upload-file`, { method: 'POST', body: fd });
-                                        const data = await res.json();
+                                        const data = await uploadFile(file);
                                         if (data.url) setHero(h => ({ ...h, announcementUrl: data.url }));
-                                        else if (data.error) alert(`Upload failed: ${data.error}`);
-                                    } catch { alert('Upload failed. Is the backend running?'); }
+                                        else alert('Upload failed: no URL returned');
+                                    } catch (err) { alert(`Upload failed: ${err.message}`); }
                                 }}
                             />
                             📄 {hero.announcementUrl ? 'Change PDF' : 'Upload PDF'}
@@ -312,15 +308,11 @@ export default function WebsiteSections({ section, conf }) {
                                 onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (!file) return;
-                                    const fd = new FormData();
-                                    fd.append('file', file);
                                     try {
-                                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050';
-                                        const res = await fetch(`${apiUrl}/api/upload-file`, { method: 'POST', body: fd });
-                                        const data = await res.json();
+                                        const data = await uploadFile(file);
                                         if (data.url) setHero(h => ({ ...h, brochureUrl: data.url }));
-                                        else if (data.error) alert(`Upload failed: ${data.error}`);
-                                    } catch { alert('Upload failed. Is the backend running?'); }
+                                        else alert('Upload failed: no URL returned');
+                                    } catch (err) { alert(`Upload failed: ${err.message}`); }
                                 }}
                             />
                             📄 {hero.brochureUrl ? 'Change Brochure PDF' : 'Upload Brochure PDF'}
@@ -357,15 +349,11 @@ export default function WebsiteSections({ section, conf }) {
                                 onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (!file) return;
-                                    const fd = new FormData();
-                                    fd.append('image', file);
                                     try {
-                                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
-                                        const res = await fetch(`${apiUrl}/upload`, { method: 'POST', body: fd });
-                                        const data = await res.json();
+                                        const data = await uploadImage(file);
                                         if (data.url) setHero(h => ({ ...h, bgImage: data.url }));
-                                        else if (data.error) alert(`Upload failed: ${data.error}`);
-                                    } catch { alert('Upload failed. Is the backend running?'); }
+                                        else alert('Upload failed: no URL returned');
+                                    } catch (err) { alert(`Upload failed: ${err.message}`); }
                                 }}
                             />
                             📷 {hero.bgImage ? 'Change Background Image' : 'Upload Background Image'}

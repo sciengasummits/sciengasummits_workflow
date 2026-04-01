@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { Upload, FileText, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Upload, FileText, CheckCircle, AlertCircle, X, Loader } from 'lucide-react';
+import { uploadFile, updateContent, getContent, getConference } from '@/lib/api';
 
 const PDF_FIELDS = [
     { key: 'brochure', label: 'Conference Brochure' },
@@ -10,9 +11,9 @@ const PDF_FIELDS = [
     { key: 'abstract', label: 'Abstract Book' },
 ];
 
-const MAX_MB = 4;
+const MAX_MB = 10;
 
-function UploadRow({ label, file, onFile, onClear }) {
+function UploadRow({ label, file, onFile, onClear, existingUrl }) {
     const inputRef = useRef(null);
 
     const handleChange = (e) => {
@@ -44,6 +45,13 @@ function UploadRow({ label, file, onFile, onClear }) {
                             <X size={13} />
                         </button>
                     </div>
+                ) : existingUrl ? (
+                    <div className="up-file-chip" style={{ background: '#ecfdf5' }}>
+                        <CheckCircle size={14} style={{ color: '#10b981' }} />
+                        <a href={existingUrl} target="_blank" rel="noopener noreferrer" className="up-chip-name" style={{ color: '#059669', textDecoration: 'underline' }}>
+                            Stored in MongoDB
+                        </a>
+                    </div>
                 ) : (
                     <span className="up-no-file">No file chosen</span>
                 )}
@@ -70,16 +78,60 @@ export default function UploadPdfs() {
     const [files, setFiles] = useState({
         brochure: null, program: null, sponsorship: null, abstract: null,
     });
+    const [existingUrls, setExistingUrls] = useState({});
+    const [uploading, setUploading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Load existing PDF URLs from content
+    useEffect(() => {
+        (async () => {
+            try {
+                const data = await getContent('pdfs');
+                if (data) setExistingUrls(data);
+            } catch { /* ignore */ }
+        })();
+    }, []);
 
     const setFile = (key, f) => setFiles(prev => ({ ...prev, [key]: f }));
     const clearFile = (key) => setFiles(prev => ({ ...prev, [key]: null }));
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const hasFile = Object.values(files).some(Boolean);
         if (!hasFile) { alert('Please choose at least one file to upload.'); return; }
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+
+        setUploading(true);
+        setError(null);
+
+        try {
+            const conference = getConference();
+            const newUrls = { ...existingUrls };
+
+            // Upload each selected file to MongoDB
+            for (const { key } of PDF_FIELDS) {
+                const file = files[key];
+                if (!file) continue;
+
+                const result = await uploadFile(file, conference);
+                if (result.url) {
+                    newUrls[key] = result.url;
+                    newUrls[`${key}_name`] = file.name;
+                    newUrls[`${key}_id`] = result.id;
+                }
+            }
+
+            // Save the PDF URL map to site content so pages can reference them
+            await updateContent('pdfs', newUrls);
+            setExistingUrls(newUrls);
+            setFiles({ brochure: null, program: null, sponsorship: null, abstract: null });
+            setSubmitted(true);
+            setTimeout(() => setSubmitted(false), 3000);
+        } catch (err) {
+            setError(err.message || 'Upload failed');
+            setTimeout(() => setError(null), 5000);
+        } finally {
+            setUploading(false);
+        }
     };
 
     return (
@@ -90,14 +142,21 @@ export default function UploadPdfs() {
                     <h1 className="up-title">Upload Your PDFS</h1>
                     <p className="up-note">
                         <AlertCircle size={14} className="up-note-icon" />
-                        <span><strong>Note:</strong> Ensure the uploaded file is below {MAX_MB}MB</span>
+                        <span><strong>Note:</strong> Files are stored in MongoDB (max {MAX_MB}MB per file)</span>
                     </p>
                 </div>
-                {submitted && (
-                    <div className="up-save-badge">
-                        <CheckCircle size={15} /> Files uploaded
-                    </div>
-                )}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {submitted && (
+                        <div className="up-save-badge">
+                            <CheckCircle size={15} /> Files uploaded to MongoDB
+                        </div>
+                    )}
+                    {error && (
+                        <div className="up-save-badge" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}>
+                            <AlertCircle size={15} /> {error}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Card */}
@@ -107,6 +166,7 @@ export default function UploadPdfs() {
                         key={key}
                         label={label}
                         file={files[key]}
+                        existingUrl={existingUrls[key]}
                         onFile={(f) => setFile(key, f)}
                         onClear={() => clearFile(key)}
                     />
@@ -114,12 +174,19 @@ export default function UploadPdfs() {
 
                 {/* Submit */}
                 <div className="up-footer">
-                    <button className="up-submit-btn" onClick={handleSubmit}>
-                        <Upload size={15} /> Submit
+                    <button className="up-submit-btn" onClick={handleSubmit} disabled={uploading}>
+                        {uploading ? (
+                            <>
+                                <Loader size={15} style={{ animation: 'spin 1s linear infinite' }} /> Uploading to MongoDB...
+                            </>
+                        ) : (
+                            <>
+                                <Upload size={15} /> Upload & Save
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
         </div>
     );
 }
-

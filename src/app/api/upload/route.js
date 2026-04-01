@@ -32,6 +32,7 @@ export async function POST(request) {
             filename: fileName,
             mimetype: fileType,
             data: base64,
+            size: bytes.byteLength,
             conference: formData.get('conference') || 'liutex'
         });
         
