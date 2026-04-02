@@ -13,7 +13,7 @@ export default function KeynoteSpeakers() {
             title="Keynote Speakers"
             addLabel="Add Keynote Speaker"
             accentColor="#0ea5e9"
-            dbCategory="Keynote"
+            dbCategory="Keynote Speaker"
             initialSpeakers={SEED}
         />
     );

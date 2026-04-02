@@ -13,7 +13,7 @@ export default function PlenarySpeakers() {
             title="Plenary Speakers"
             addLabel="Add Plenary Speaker"
             accentColor="#8b5cf6"
-            dbCategory="Plenary"
+            dbCategory="Plenary Speaker"
             initialSpeakers={SEED}
         />
     );

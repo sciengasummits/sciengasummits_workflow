@@ -39,17 +39,15 @@ function SpeakerAvatar({ speaker, index, size = 48 }) {
     );
 }
 
-/* â”€â”€â”€ Category config â”€â”€â”€ */
+/* ─── Category config ─── */
 const CATEGORIES = [
     { key: 'All', label: 'All Speakers', db: null, color: '#6366f1' },
-    { key: 'Committee', label: 'Committee', db: 'Committee', color: '#6366f1' },
-    { key: 'Keynote', label: 'Speakers', db: 'Keynote', color: '#0ea5e9' },
-    { key: 'Poster Presenter', label: 'Poster Presenters', db: 'Poster Presenter', color: '#10b981' },
-    { key: 'Student', label: 'Students', db: 'Student', color: '#f59e0b' },
-    { key: 'Delegate', label: 'Delegates', db: 'Delegate', color: '#ec4899' },
+    { key: 'Plenary Speaker', label: 'Plenary Speaker', db: 'Plenary Speaker', color: '#8b5cf6' },
+    { key: 'Keynote Speaker', label: 'Keynote Speaker', db: 'Keynote Speaker', color: '#0ea5e9' },
+    { key: 'Invited Speaker', label: 'Invited Speaker', db: 'Invited Speaker', color: '#10b981' },
 ];
 
-const EMPTY_FORM = { name: '', title: '', affiliation: '', country: '', bio: '', image: null, category: 'Committee', visible: true };
+const EMPTY_FORM = { name: '', title: '', affiliation: '', country: '', bio: '', image: null, category: 'Plenary Speaker', visible: true };
 const PAGE_SIZE_OPTS = [5, 10, 25, 50];
 
 export default function AllSpeakers() {
@@ -152,7 +150,7 @@ export default function AllSpeakers() {
 
     /* â”€â”€â”€ Modal helpers â”€â”€â”€ */
     const openAdd = () => {
-        const defaultCat = activeTab === 'All' ? 'Committee' : activeTab;
+        const defaultCat = activeTab === 'All' ? 'Plenary Speaker' : activeTab;
         setForm({ ...EMPTY_FORM, category: defaultCat });
         setImagePreview(null);
         setModal({ mode: 'add' });

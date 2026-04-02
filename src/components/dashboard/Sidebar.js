@@ -92,13 +92,10 @@ const NAV_ITEMS = [
     {
         id: 'speakers', label: 'Speakers', icon: <Mic size={iconSize} />,
         children: [
-            { id: 'committee-speakers', label: 'Committee Speakers', icon: <Users size={childIconSize} /> },
-            { id: 'speakers-list', label: 'Speakers', icon: <Mic size={childIconSize} /> },
-            { id: 'keynote-speakers', label: 'Keynote Speakers', icon: <BookOpen size={childIconSize} /> },
-            { id: 'plenary-speakers', label: 'Plenary Speakers', icon: <GalleryHorizontalEnd size={childIconSize} /> },
-            { id: 'posters-speakers', label: 'Posters Speakers', icon: <Presentation size={childIconSize} /> },
-            { id: 'students-speakers', label: 'Students Speakers', icon: <GraduationCap size={childIconSize} /> },
-            { id: 'delegates-speakers', label: 'Delegates Speakers', icon: <Briefcase size={childIconSize} /> },
+            { id: 'speakers-list', label: 'All Speakers', icon: <Mic size={childIconSize} /> },
+            { id: 'plenary-speakers', label: 'Plenary Speaker', icon: <Mic size={childIconSize} /> },
+            { id: 'keynote-speakers', label: 'Keynote Speaker', icon: <Mic size={childIconSize} /> },
+            { id: 'invited', label: 'Invited Speaker', icon: <Mic size={childIconSize} /> },
         ]
     },
     { id: 'uploadpdf', label: 'Upload PDFs', icon: <Upload size={iconSize} /> },
