@@ -42,9 +42,14 @@ function SpeakerAvatar({ speaker, index, size = 48 }) {
 /* ─── Category config ─── */
 const CATEGORIES = [
     { key: 'All', label: 'All Speakers', db: null, color: '#6366f1' },
-    { key: 'Plenary Speaker', label: 'Plenary Speaker', db: 'Plenary Speaker', color: '#8b5cf6' },
-    { key: 'Keynote Speaker', label: 'Keynote Speaker', db: 'Keynote Speaker', color: '#0ea5e9' },
-    { key: 'Invited Speaker', label: 'Invited Speaker', db: 'Invited Speaker', color: '#10b981' },
+    { key: 'Committee', label: 'Committee', db: 'Committee', color: '#8b5cf6' },
+    { key: 'Featured', label: 'Featured', db: 'Featured', color: '#ec4899' },
+    { key: 'Poster Presenter', label: 'Poster Presenter', db: 'Poster Presenter', color: '#0ea5e9' },
+    { key: 'Student', label: 'Student', db: 'Student', color: '#f59e0b' },
+    { key: 'Delegate', label: 'Delegate', db: 'Delegate', color: '#10b981' },
+    { key: 'Plenary Speaker', label: 'Plenary Speaker', db: 'Plenary Speaker', color: '#f43f5e' },
+    { key: 'Keynote Speaker', label: 'Keynote Speaker', db: 'Keynote Speaker', color: '#8a2be2' },
+    { key: 'Invited Speaker', label: 'Invited Speaker', db: 'Invited Speaker', color: '#20b2aa' },
 ];
 
 const EMPTY_FORM = { name: '', title: '', affiliation: '', country: '', bio: '', image: null, category: 'Plenary Speaker', visible: true };

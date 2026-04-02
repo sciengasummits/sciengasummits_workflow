@@ -7,7 +7,7 @@ const SpeakerSchema = new mongoose.Schema({
     affiliation: String,
     category: {
         type: String,
-        enum: ['Committee', 'Plenary', 'Keynote', 'Invited', 'Featured', 'Poster Presenter', 'Student', 'Delegate', 'Plenary Speaker', 'Keynote Speaker', 'Invited Speaker'],
+        enum: ['Committee', 'Featured', 'Poster Presenter', 'Student', 'Delegate', 'Plenary Speaker', 'Keynote Speaker', 'Invited Speaker'],
         default: 'Delegate'
     },
     image: String,
