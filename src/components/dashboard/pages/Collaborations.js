@@ -78,7 +78,7 @@ export default function Collaborations() {
                 logo: addBuf.photoUrl, 
                 type: 'collaboration' 
             });
-            setRows(prev => [...prev, { ...created, id: created._id, photoUrl: created.logo }]);
+            setRows(prev => [...(prev || []), { ...created, id: created._id, photoUrl: created.logo }]);
             setShowAdd(false);
             flashSaved();
         } catch (err) {
@@ -99,7 +99,7 @@ export default function Collaborations() {
                 logo: editBuf.photoUrl,
                 type: 'collaboration'
             });
-            setRows(prev => prev.map(r => r.id === editingId ? { ...updated, id: updated._id, photoUrl: updated.logo } : r));
+            setRows(prev => (prev || []).map(r => r.id === editingId ? { ...updated, id: updated._id, photoUrl: updated.logo } : r));
             setEditingId(null);
             flashSaved();
         } catch (err) {
@@ -113,7 +113,7 @@ export default function Collaborations() {
         if (!confirm('Are you sure you want to delete this collaboration?')) return;
         try {
             await deleteSponsor(id);
-            setRows(prev => prev.filter(r => r.id !== id));
+            setRows(prev => (prev || []).filter(r => r.id !== id));
             flashSaved();
         } catch (err) {
             alert('Delete failed');

@@ -50,15 +50,15 @@ export default function Tracks() {
     const listRef = useRef(null);
 
     const updateTrack = (idx, value) => {
-        setTracks(prev => prev.map((t, i) => (i === idx ? value : t)));
+        setTracks(prev => (prev || []).map((t, i) => (i === idx ? value : t)));
     };
 
     const deleteTrack = (idx) => {
-        setTracks(prev => prev.filter((_, i) => i !== idx));
+        setTracks(prev => (prev || []).filter((_, i) => i !== idx));
     };
 
     const addTrack = () => {
-        setTracks(prev => [...prev, '']);
+        setTracks(prev => [...(prev || []), '']);
         // Scroll to bottom after state updates
         setTimeout(() => {
             if (listRef.current) {
@@ -96,7 +96,7 @@ export default function Tracks() {
 
                 {/* Track List */}
                 <div className="tk-list" ref={listRef}>
-                    {tracks.map((track, idx) => (
+                    {(tracks || []).map((track, idx) => (
                         <div key={idx} className={`tk-row${idx % 2 !== 0 ? ' tk-row-even' : ''}`}>
                             <span className="tk-row-label">Track {idx + 1}:</span>
                             <input

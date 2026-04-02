@@ -51,15 +51,15 @@ export default function WorkReports() {
 
     const filtered = useMemo(() => {
         const q = search.toLowerCase();
-        if (!q) return data;
-        return data.filter(r =>
-            Object.values(r).some(v => String(v).toLowerCase().includes(q))
+        if (!q) return data || [];
+        return (data || []).filter(r =>
+            r && Object.values(r).some(v => String(v).toLowerCase().includes(q))
         );
     }, [data, search]);
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
     const safePage = Math.min(page, totalPages);
-    const sliced = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+    const sliced = (filtered || []).slice((safePage - 1) * pageSize, safePage * pageSize);
 
     const pageNums = useMemo(() => {
         const arr = [];
@@ -150,7 +150,7 @@ export default function WorkReports() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {sliced.map((row, idx) => (
+                                {(sliced || []).map((row, idx) => (
                                     <tr key={row.id} className="wr-tr">
                                         <td className="wr-td wr-center">{(safePage - 1) * pageSize + idx + 1}</td>
                                         <td className="wr-td">{row.date}</td>

@@ -81,13 +81,13 @@ export default function OrganizingCommittee({ conf }) {
     const closeModal = () => setModal(null);
 
     const handleSave = () => {
-        if (!form.name.trim()) return;
+        if (!form?.name?.trim()) return;
         let updated;
         if (modal.mode === 'add') {
-            const newId = members.length > 0 ? Math.max(...members.map(m => m.id)) + 1 : 1;
-            updated = [...members, { id: newId, ...form }];
+            const newId = (members || []).length > 0 ? Math.max(...members.map(m => m.id)) + 1 : 1;
+            updated = [...(members || []), { id: newId, ...form }];
         } else {
-            updated = members.map(m => m.id === modal.id ? { ...m, ...form } : m);
+            updated = (members || []).map(m => m && m.id === modal.id ? { ...m, ...form } : m);
         }
         setMembers(updated);
         save(updated);
@@ -144,7 +144,7 @@ export default function OrganizingCommittee({ conf }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {members.map((m, i) => (
+                            {(members || []).filter(m => !!m).map((m, i) => (
                                 <tr
                                     key={m.id}
                                     className={`oc-tr${i % 2 === 0 ? ' oc-tr-even' : ' oc-tr-odd'}`}

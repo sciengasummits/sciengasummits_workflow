@@ -135,18 +135,18 @@ export default function FAQManager() {
         const id = `cat_${Date.now()}`;
         setData(prev => ({
             ...prev,
-            categories: [...prev.categories, { id, category: 'New Category', items: [] }],
+            categories: [...(prev.categories || []), { id, category: 'New Category', items: [] }],
         }));
         setOpenCats(prev => ({ ...prev, [id]: true }));
     };
 
     const removeCategory = (cIdx) => {
-        setData(prev => ({ ...prev, categories: prev.categories.filter((_, i) => i !== cIdx) }));
+        setData(prev => ({ ...prev, categories: (prev.categories || []).filter((_, i) => i !== cIdx) }));
     };
 
     const updateCategoryName = (cIdx, val) => {
         setData(prev => {
-            const cats = [...prev.categories];
+            const cats = [...(prev.categories || [])];
             cats[cIdx] = { ...cats[cIdx], category: val };
             return { ...prev, categories: cats };
         });
@@ -155,10 +155,10 @@ export default function FAQManager() {
     /* ── FAQ Item helpers ── */
     const addItem = (cIdx) => {
         setData(prev => {
-            const cats = [...prev.categories];
+            const cats = [...(prev.categories || [])];
             cats[cIdx] = {
                 ...cats[cIdx],
-                items: [...cats[cIdx].items, { question: '', answer: '' }],
+                items: [...(cats[cIdx].items || []), { question: '', answer: '' }],
             };
             return { ...prev, categories: cats };
         });
@@ -166,16 +166,16 @@ export default function FAQManager() {
 
     const removeItem = (cIdx, iIdx) => {
         setData(prev => {
-            const cats = [...prev.categories];
-            cats[cIdx] = { ...cats[cIdx], items: cats[cIdx].items.filter((_, i) => i !== iIdx) };
+            const cats = [...(prev.categories || [])];
+            cats[cIdx] = { ...cats[cIdx], items: (cats[cIdx].items || []).filter((_, i) => i !== iIdx) };
             return { ...prev, categories: cats };
         });
     };
 
     const updateItem = (cIdx, iIdx, field, val) => {
         setData(prev => {
-            const cats = [...prev.categories];
-            const items = [...cats[cIdx].items];
+            const cats = [...(prev.categories || [])];
+            const items = [...(cats[cIdx].items || [])];
             items[iIdx] = { ...items[iIdx], [field]: val };
             cats[cIdx] = { ...cats[cIdx], items };
             return { ...prev, categories: cats };

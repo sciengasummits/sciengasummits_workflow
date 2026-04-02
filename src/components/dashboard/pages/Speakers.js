@@ -83,11 +83,13 @@ export default function AllSpeakers() {
     useEffect(() => { loadAll(); }, [loadAll]);
 
     /* â”€â”€â”€ Filtered view â”€â”€â”€ */
-    const tabFiltered = activeTab === 'All' ? all : all.filter(s => s.category === activeTab);
+    const tabFiltered = activeTab === 'All' ? (all || []) : (all || []).filter(s => s && s.category === activeTab);
     const searched = tabFiltered.filter(s =>
-        (s.name || '').toLowerCase().includes(search.toLowerCase()) ||
-        (s.affiliation || '').toLowerCase().includes(search.toLowerCase()) ||
-        (s.country || '').toLowerCase().includes(search.toLowerCase())
+        s && (
+            (s.name || '').toLowerCase().includes(search.toLowerCase()) ||
+            (s.affiliation || '').toLowerCase().includes(search.toLowerCase()) ||
+            (s.country || '').toLowerCase().includes(search.toLowerCase())
+        )
     );
     const totalPages = Math.max(1, Math.ceil(searched.length / pageSize));
     const safePage = Math.min(page, totalPages);
@@ -165,9 +167,9 @@ export default function AllSpeakers() {
     const makeAllVisible = async () => {
         setDbStatus('saving');
         try {
-            const hidden = all.filter(s => s.visible === false || s.visible === undefined);
+            const hidden = (all || []).filter(s => s && (s.visible === false || s.visible === undefined));
             for (const s of hidden) {
-                if (s._id) await updateSpeaker(s._id, { ...s, visible: true });
+                if (s && s._id) await updateSpeaker(s._id, { ...s, visible: true });
             }
             await loadAll();
             setDbStatus('saved');
@@ -186,10 +188,10 @@ export default function AllSpeakers() {
         try {
             if (modal.mode === 'add') {
                 const created = await createSpeaker(form);
-                setAll(prev => [...prev, created]);
+                setAll(prev => [...(prev || []), created]);
             } else {
                 const updated = await updateSpeaker(modal.id, form);
-                setAll(prev => prev.map(s => (s._id || s.id) === modal.id ? updated : s));
+                setAll(prev => (prev || []).map(s => s && (s._id || s.id) === modal.id ? updated : s));
             }
             closeModal();
         } catch (err) { alert('Error: ' + err.message); }
@@ -201,7 +203,7 @@ export default function AllSpeakers() {
     const handleDelete = async () => {
         try {
             await deleteSpeaker(deleteId);
-            setAll(prev => prev.filter(s => (s._id || s.id) !== deleteId));
+            setAll(prev => (prev || []).filter(s => s && (s._id || s.id) !== deleteId));
         } catch (err) { alert('Error: ' + err.message); }
         finally { setDeleteId(null); }
     };
@@ -210,12 +212,13 @@ export default function AllSpeakers() {
     const saveAllToDb = async () => {
         setDbStatus('saving');
         try {
-            for (let i = 0; i < all.length; i++) {
+            for (let i = 0; i < (all || []).length; i++) {
                 const s = all[i];
+                if (!s) continue;
                 if (s._id) await updateSpeaker(s._id, { ...s, order: i });
                 else {
                     const created = await createSpeaker({ ...s, order: i });
-                    setAll(prev => prev.map((sp, idx) => idx === i ? created : sp));
+                    setAll(prev => (prev || []).map((sp, idx) => idx === i ? created : sp));
                 }
             }
             setDbStatus('saved');

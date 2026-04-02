@@ -88,7 +88,7 @@ export default function MediaPartners() {
                 logo: addBuf.photoUrl, 
                 type: 'media_partner' 
             });
-            setRows(prev => [...prev, { ...created, id: created._id, photoUrl: created.logo }]);
+            setRows(prev => [...(prev || []), { ...created, id: created._id, photoUrl: created.logo }]);
             setShowAdd(false);
             flashSaved();
         } catch (err) {
@@ -109,7 +109,7 @@ export default function MediaPartners() {
                 logo: editBuf.photoUrl,
                 type: 'media_partner'
             });
-            setRows(prev => prev.map(r => r.id === editingId ? { ...updated, id: updated._id, photoUrl: updated.logo } : r));
+            setRows(prev => (prev || []).map(r => r.id === editingId ? { ...updated, id: updated._id, photoUrl: updated.logo } : r));
             setEditingId(null);
             flashSaved();
         } catch (err) {
@@ -122,7 +122,7 @@ export default function MediaPartners() {
     const handleDelete = async () => {
         try {
             await deleteSponsor(deleteId);
-            setRows(prev => prev.filter(r => r.id !== deleteId));
+            setRows(prev => (prev || []).filter(r => r.id !== deleteId));
             flashSaved();
         } catch (err) {
             alert('Delete failed');
@@ -134,9 +134,11 @@ export default function MediaPartners() {
     /* ── search filter ── */
     const filteredRows = useMemo(() => {
         const lower = searchTerm.toLowerCase();
-        return rows.filter(r =>
-            (r.name || '').toLowerCase().includes(lower) ||
-            (r.link || '').toLowerCase().includes(lower)
+        return (rows || []).filter(r =>
+            r && (
+                (r.name || '').toLowerCase().includes(lower) ||
+                (r.link || '').toLowerCase().includes(lower)
+            )
         );
     }, [rows, searchTerm]);
 

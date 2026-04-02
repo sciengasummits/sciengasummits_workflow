@@ -103,13 +103,13 @@ export default function DailyUpdate() {
     };
 
     /* â”€â”€ Delete â”€â”€ */
-    const deleteRow = (id) => setRows(prev => prev.filter(r => r.id !== id));
+    const deleteRow = (id) => setRows(prev => (prev || []).filter(r => r.id !== id));
 
     /* â”€â”€ Add â”€â”€ */
     const openAdd = () => { setAddBuf({ ...BLANK_ROW }); setShowAdd(true); };
     const closeAdd = () => setShowAdd(false);
     const saveAdd = () => {
-        setRows(prev => [...prev, { id: nextId, ...addBuf }]);
+        setRows(prev => [...(prev || []), { id: nextId, ...addBuf }]);
         setNextId(n => n + 1);
         setShowAdd(false);
         flashSaved();

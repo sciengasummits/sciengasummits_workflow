@@ -100,11 +100,11 @@ export default function HeroChairs({ conf }) {
     };
 
     const addChair = () => {
-        setChairs(prev => [...prev, { id: Date.now(), title: 'Conference Chair Person', name: '', designation: '', affiliation: '', country: '', image: '' }]);
+        setChairs(prev => [...(prev || []), { id: Date.now(), title: 'Conference Chair Person', name: '', designation: '', affiliation: '', country: '', image: '' }]);
     };
 
     const removeChair = (index) => {
-        setChairs(prev => prev.filter((_, i) => i !== index));
+        setChairs(prev => (prev || []).filter((_, i) => i !== index));
     };
 
     const updateChair = (index, field, value) => {

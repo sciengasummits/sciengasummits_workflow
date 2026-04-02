@@ -36,9 +36,9 @@ export default function Sessions() {
         }
     };
 
-    const update = (i, val) => setSessions(prev => prev.map((s, idx) => idx === i ? val : s));
-    const remove = (i) => setSessions(prev => prev.filter((_, idx) => idx !== i));
-    const add = () => setSessions(prev => [...prev, '']);
+    const update = (i, val) => setSessions(prev => (prev || []).map((s, idx) => idx === i ? val : s));
+    const remove = (i) => setSessions(prev => (prev || []).filter((_, idx) => idx !== i));
+    const add = () => setSessions(prev => [...(prev || []), '']);
 
     if (loading) return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
@@ -99,7 +99,7 @@ export default function Sessions() {
                             No sessions yet. Click <strong>Add Session</strong> to get started.
                         </div>
                     )}
-                    {sessions.map((session, i) => (
+                    {(sessions || []).map((session, i) => (
                         <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                             <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', width: '28px', textAlign: 'right', flexShrink: 0 }}>{i + 1}.</span>
                             <input

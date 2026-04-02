@@ -63,17 +63,17 @@ export default function PreviousGlimpses() {
 
     /* â”€â”€ save (add or edit) â”€â”€ */
     const handleSave = () => {
-        if (!form.name.trim()) return;
+        if (!form.name?.trim()) return;
         if (editId !== null) {
-            setRows(p => p.map(r => r.id === editId ? { ...r, name: form.name, file: form.file, photoUrl: form.photoUrl } : r));
+            setRows(p => (p || []).map(r => r && r.id === editId ? { ...r, name: form.name, file: form.file, photoUrl: form.photoUrl } : r));
         } else {
-            setRows(p => [...p, { id: uid(), name: form.name, file: form.file, photoUrl: form.photoUrl }]);
+            setRows(p => [...(p || []), { id: uid(), name: form.name, file: form.file, photoUrl: form.photoUrl }]);
         }
         closeModal();
     };
 
     /* â”€â”€ delete â”€â”€ */
-    const deleteRow = (id) => setRows(p => p.filter(r => r.id !== id));
+    const deleteRow = (id) => setRows(p => (p || []).filter(r => r && r.id !== id));
 
     /* â”€â”€ drag-to-reorder â”€â”€ */
     const onDragStart = (idx) => setDragIdx(idx);
@@ -155,7 +155,7 @@ export default function PreviousGlimpses() {
                                     </tr>
                                 )}
 
-                                {rows.map((row, idx) => (
+                                {(rows || []).filter(r => !!r).map((row, idx) => (
                                     <tr
                                         key={row.id}
                                         className={`ac2-tr pg2-draggable-tr${dragIdx === idx ? ' pg-dragging' : ''}${overIdx === idx && dragIdx !== idx ? ' pg-drag-over' : ''}`}

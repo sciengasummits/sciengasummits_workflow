@@ -53,7 +53,8 @@ export default function ViewRegistrations() {
     };
 
     /* â”€â”€â”€ Filter & sort â”€â”€â”€ */
-    const filtered = rows.filter(r => {
+    const filtered = (rows || []).filter(r => {
+        if (!r) return false;
         const q = search.toLowerCase();
         const displayStatus = (r.status === 'success' || r.status === 'Paid') ? 'Paid' : 'Pending';
         return (
@@ -82,7 +83,7 @@ export default function ViewRegistrations() {
     const handleStatusChange = async (id, newStatus) => {
         try {
             const updated = await updateRegistrationStatus(id, { status: newStatus });
-            setRows(prev => prev.map(r => (r._id || r.id) === id ? updated : r));
+            setRows(prev => (prev || []).map(r => r && (r._id || r.id) === id ? updated : r));
         } catch { /* silent */ }
         setEditId(null);
     };

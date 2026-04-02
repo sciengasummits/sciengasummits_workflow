@@ -188,14 +188,14 @@ export default function Accommodation() {
 
     /* Image rows */
     const handleFileChange = (id, e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (!file) return;
-        setRows(p => p.map(r => r.id === id ? { ...r, file, previewUrl: URL.createObjectURL(file) } : r));
+        setRows(p => (p || []).map(r => r && r.id === id ? { ...r, file, previewUrl: URL.createObjectURL(file) } : r));
         e.target.value = '';
     };
     const handleTitleChange = (id, val) =>
-        setRows(p => p.map(r => r.id === id ? { ...r, title: val } : r));
-    const deleteRow = (id) => setRows(p => p.filter(r => r.id !== id));
+        setRows(p => (p || []).map(r => r && r.id === id ? { ...r, title: val } : r));
+    const deleteRow = (id) => setRows(p => (p || []).filter(r => r && r.id !== id));
     const addRow = () => setRows(p => [...p, makeRow()]);
 
     const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2800); };
@@ -346,7 +346,7 @@ export default function Accommodation() {
                             </tr>
                         </thead>
                         <tbody>
-                            {rows.map((row, idx) => (
+                            {(rows || []).filter(r => !!r).map((row, idx) => (
                                 <tr key={row.id} className="ac2-tr">
                                     <td className="ac2-td ac2-td-sno">
                                         <span className="ac2-sno-chip">{idx + 1}</span>

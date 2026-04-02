@@ -65,10 +65,12 @@ export default function ViewAbstracts() {
     };
 
     /* â”€â”€â”€ Filter + sort â”€â”€â”€ */
-    const filtered = rows.filter(r => {
+    const filtered = (rows || []).filter(r => {
+        if (!r) return false;
         const q = search.toLowerCase();
         return Object.values(r).some(v => String(v).toLowerCase().includes(q));
     }).sort((a, b) => {
+        if (!a || !b) return 0;
         let va = a[sortField] ?? '', vb = b[sortField] ?? '';
         if (sortField === 'createdAt') { va = new Date(va); vb = new Date(vb); }
         if (va < vb) return sortDir === 'asc' ? -1 : 1;

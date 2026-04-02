@@ -41,18 +41,18 @@ export default function GeneratePaymentLink() {
     const handleSave = () => {
         if (!form.usd || !form.inr) return;
         if (editId !== null) {
-            setRows(prev => prev.map(r => r.id === editId ? { ...r, ...form } : r));
+            setRows(prev => (prev || []).map(r => r.id === editId ? { ...r, ...form } : r));
             showToast('Payment link updated!');
         } else {
             const generatedLink = `https://sciengasummits.com/pay?amt=${form.inr}&cur=INR&ref=REG-${Date.now()}`;
-            setRows(prev => [...prev, { id: uid(), ...form, link: form.link || generatedLink }]);
+            setRows(prev => [...(prev || []), { id: uid(), ...form, link: form.link || generatedLink }]);
             showToast('Payment link added!');
         }
         closeModal();
     };
 
     const handleDelete = (id) => {
-        setRows(prev => prev.filter(r => r.id !== id));
+        setRows(prev => (prev || []).filter(r => r.id !== id));
         showToast('Entry deleted.');
     };
 

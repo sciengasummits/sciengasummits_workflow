@@ -41,8 +41,8 @@ export default function Universities() {
     useEffect(() => { loadAll(); }, [loadAll]);
 
     /* ── Filtered view ── */
-    const searched = all.filter(s =>
-        (s.name || '').toLowerCase().includes(search.toLowerCase())
+    const searched = (all || []).filter(s =>
+        s && (s.name || '').toLowerCase().includes(search.toLowerCase())
     );
     const totalPages = Math.max(1, Math.ceil(searched.length / pageSize));
     const safePage = Math.min(page, totalPages);
@@ -115,9 +115,9 @@ export default function Universities() {
     const makeAllVisible = async () => {
         setDbStatus('saving');
         try {
-            const hidden = all.filter(s => s.visible === false || s.visible === undefined);
+            const hidden = (all || []).filter(s => s && (s.visible === false || s.visible === undefined));
             for (const s of hidden) {
-                if (s._id) await updateUniversity(s._id, { ...s, visible: true });
+                if (s && s._id) await updateUniversity(s._id, { ...s, visible: true });
             }
             await loadAll();
             setDbStatus('saved');
@@ -136,10 +136,10 @@ export default function Universities() {
         try {
             if (modal.mode === 'add') {
                 const created = await createUniversity(form);
-                setAll(prev => [...prev, created]);
+                setAll(prev => [...(prev || []), created]);
             } else {
                 const updated = await updateUniversity(modal.id, form);
-                setAll(prev => prev.map(s => (s._id || s.id) === modal.id ? updated : s));
+                setAll(prev => (prev || []).map(s => s && (s._id || s.id) === modal.id ? updated : s));
             }
             closeModal();
         } catch (err) { alert('Error: ' + err.message); }
@@ -151,7 +151,7 @@ export default function Universities() {
     const handleDelete = async () => {
         try {
             await deleteUniversity(deleteId);
-            setAll(prev => prev.filter(s => (s._id || s.id) !== deleteId));
+            setAll(prev => (prev || []).filter(s => s && (s._id || s.id) !== deleteId));
         } catch (err) { alert('Error: ' + err.message); }
         finally { setDeleteId(null); }
     };
@@ -160,12 +160,13 @@ export default function Universities() {
     const saveAllToDb = async () => {
         setDbStatus('saving');
         try {
-            for (let i = 0; i < all.length; i++) {
+            for (let i = 0; i < (all || []).length; i++) {
                 const s = all[i];
+                if (!s) continue;
                 if (s._id) await updateUniversity(s._id, { ...s, order: i });
                 else {
                     const created = await createUniversity({ ...s, order: i });
-                    setAll(prev => prev.map((sp, idx) => idx === i ? created : sp));
+                    setAll(prev => (prev || []).map((sp, idx) => idx === i ? created : sp));
                 }
             }
             setDbStatus('saved');

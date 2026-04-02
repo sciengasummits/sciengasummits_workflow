@@ -93,7 +93,7 @@ export default function Invoices() {
     const openAdd = () => { setAddBuf({ ...BLANK_INVOICE }); setShowAdd(true); };
     const closeAdd = () => setShowAdd(false);
     const saveAdd = () => {
-        setData(prev => [...prev, { id: nextId, ...addBuf, price: Number(addBuf.price) || 0 }]);
+        setData(prev => [...(prev || []), { id: nextId, ...addBuf, price: Number(addBuf.price) || 0 }]);
         setNextId(n => n + 1);
         setShowAdd(false);
     };
@@ -101,7 +101,7 @@ export default function Invoices() {
     const startEdit = (row) => { setEditId(row.id); setEditBuf({ ...row }); };
     const cancelEdit = () => setEditId(null);
     const saveEdit = () => {
-        setData(prev => prev.map(r => r.id === editId ? { ...editBuf, price: Number(editBuf.price) || 0 } : r));
+        setData(prev => (prev || []).map(r => r.id === editId ? { ...editBuf, price: Number(editBuf.price) || 0 } : r));
         setEditId(null);
     };
 

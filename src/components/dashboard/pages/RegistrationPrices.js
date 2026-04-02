@@ -84,7 +84,7 @@ export default function RegistrationPrices() {
     /* ── Category helpers ── */
     const updateCategory = (idx, field, val) => {
         setData(prev => {
-            const cats = [...prev.categories];
+            const cats = [...(prev.categories || [])];
             cats[idx] = { ...cats[idx], [field]: field === 'label' || field === 'id' ? val : Number(val) };
             return { ...prev, categories: cats };
         });
@@ -104,7 +104,7 @@ export default function RegistrationPrices() {
     /* ── Sponsorship helpers ── */
     const updateSponsorship = (idx, field, val) => {
         setData(prev => {
-            const sp = [...prev.sponsorships];
+            const sp = [...(prev.sponsorships || [])];
             sp[idx] = { ...sp[idx], [field]: field === 'price' ? Number(val) : val };
             return { ...prev, sponsorships: sp };
         });
@@ -124,7 +124,7 @@ export default function RegistrationPrices() {
     /* ── Accommodation helpers ── */
     const updateAccommodation = (idx, field, val) => {
         setData(prev => {
-            const acc = [...prev.accommodation];
+            const acc = [...(prev.accommodation || [])];
             acc[idx] = { ...acc[idx], [field]: Number(val) };
             return { ...prev, accommodation: acc };
         });

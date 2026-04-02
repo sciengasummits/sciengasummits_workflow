@@ -110,10 +110,12 @@ export default function InvitedSpeakers() {
     };
 
     /* â”€â”€â”€ Filtering & Pagination â”€â”€â”€ */
-    const filtered = speakers.filter(s =>
-        s.name.toLowerCase().includes(search.toLowerCase()) ||
-        s.affiliation.toLowerCase().includes(search.toLowerCase()) ||
-        s.country.toLowerCase().includes(search.toLowerCase())
+    const filtered = (speakers || []).filter(s =>
+        s && (
+            (s.name || '').toLowerCase().includes(search.toLowerCase()) ||
+            (s.affiliation || '').toLowerCase().includes(search.toLowerCase()) ||
+            (s.country || '').toLowerCase().includes(search.toLowerCase())
+        )
     );
     const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
     const safePage = Math.min(page, totalPages);
@@ -150,12 +152,12 @@ export default function InvitedSpeakers() {
     }, []);
 
     const handleSave = () => {
-        if (!form.name.trim()) return;
+        if (!form.name?.trim()) return;
         if (modal.mode === 'add') {
-            setSpeakers(prev => [...prev, { id: nextId, ...form }]);
+            setSpeakers(prev => [...(prev || []), { id: nextId, ...form }]);
             setNextId(n => n + 1);
         } else {
-            setSpeakers(prev => prev.map(s => s.id === modal.id ? { ...s, ...form } : s));
+            setSpeakers(prev => (prev || []).map(s => s && s.id === modal.id ? { ...s, ...form } : s));
         }
         closeModal();
     };

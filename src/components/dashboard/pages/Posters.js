@@ -135,16 +135,16 @@ export default function Posters() {
     const handleSave = () => {
         if (!form.name.trim()) return;
         if (modal.mode === 'add') {
-            setSpeakers(prev => [...prev, { id: nextId, ...form }]);
+            setSpeakers(prev => [...(prev || []), { id: nextId, ...form }]);
             setNextId(n => n + 1);
         } else {
-            setSpeakers(prev => prev.map(s => s.id === modal.id ? { ...s, ...form } : s));
+            setSpeakers(prev => (prev || []).map(s => s.id === modal.id ? { ...s, ...form } : s));
         }
         closeModal();
     };
 
     const confirmDelete = (id) => setDeleteId(id);
-    const handleDelete = () => { setSpeakers(prev => prev.filter(s => s.id !== deleteId)); setDeleteId(null); };
+    const handleDelete = () => { setSpeakers(prev => (prev || []).filter(s => s.id !== deleteId)); setDeleteId(null); };
 
     const start = filtered.length ? (safePage - 1) * pageSize + 1 : 0;
     const end = Math.min(safePage * pageSize, filtered.length);

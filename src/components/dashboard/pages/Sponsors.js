@@ -70,7 +70,7 @@ export default function Sponsors() {
     const saveAdd = async () => {
         try {
             const created = await createSponsor({ name: addBuf.name, link: addBuf.link, description: addBuf.description, logo: addBuf.photoUrl, type: 'sponsor' });
-            setRows(prev => [...prev, { ...created, id: created._id, photoUrl: created.logo }]);
+            setRows(prev => [...(prev || []), { ...created, id: created._id, photoUrl: created.logo }]);
             setShowAdd(false);
             flashSaved();
         } catch { flashSaved(false); }
@@ -82,7 +82,7 @@ export default function Sponsors() {
     const saveEdit = async () => {
         try {
             const updated = await updateSponsor(editBuf.id, { name: editBuf.name, link: editBuf.link, description: editBuf.description, logo: editBuf.photoUrl });
-            setRows(prev => prev.map(r => r.id === editingId ? { ...updated, id: updated._id, photoUrl: updated.logo } : r));
+            setRows(prev => (prev || []).map(r => r.id === editingId ? { ...updated, id: updated._id, photoUrl: updated.logo } : r));
             setEditingId(null);
             flashSaved();
         } catch { flashSaved(false); }
@@ -90,7 +90,7 @@ export default function Sponsors() {
 
     /* â”€â”€ delete â”€â”€ */
     const deleteRow = async (id) => {
-        try { await deleteSponsor(id); setRows(prev => prev.filter(r => r.id !== id)); }
+        try { await deleteSponsor(id); setRows(prev => (prev || []).filter(r => r.id !== id)); }
         catch { alert('Delete failed'); }
     };
 

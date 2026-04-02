@@ -100,15 +100,15 @@ export default function Positives() {
         if (!form.email.trim()) { alert('Please enter an Email.'); return; }
 
         if (editId !== null) {
-            setData(prev => prev.map(r => r.id === editId ? { ...r, ...form } : r));
+            setData(prev => (prev || []).map(r => r.id === editId ? { ...r, ...form } : r));
         } else {
-            setData(prev => [...prev, { id: Date.now(), ...form }]);
+            setData(prev => [...(prev || []), { id: Date.now(), ...form }]);
         }
         closeModal();
     };
 
     const handleDelete = (id) => {
-        setData(prev => prev.filter(r => r.id !== id));
+        setData(prev => (prev || []).filter(r => r.id !== id));
         setDeleteId(null);
     };
 

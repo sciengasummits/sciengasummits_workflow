@@ -74,11 +74,11 @@ export default function ImportantDates({ conf }) {
     };
 
     const addDate = () => {
-        setImportantDates(prev => [...prev, { month: 'JAN', day: '01', year: '2026', event: 'New Event', icon: 'Calendar', sub: '' }]);
+        setImportantDates(prev => [...(prev || []), { month: 'JAN', day: '01', year: '2026', event: 'New Event', icon: 'Calendar', sub: '' }]);
     };
 
     const removeDate = (idx) => {
-        setImportantDates(prev => prev.filter((_, i) => i !== idx));
+        setImportantDates(prev => (prev || []).filter((_, i) => i !== idx));
     };
 
     const handleSave = async () => {

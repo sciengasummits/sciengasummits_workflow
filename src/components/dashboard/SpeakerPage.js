@@ -188,10 +188,10 @@ export default function SpeakerPage({
         try {
             if (modal.mode === 'add') {
                 const created = await createSpeaker(payload);
-                setSpeakers(prev => [...prev, created]);
+                setSpeakers(prev => [...(prev || []), created]);
             } else {
                 const updated = await updateSpeaker(modal.id, payload);
-                setSpeakers(prev => prev.map(s => (s._id || s.id) === modal.id ? updated : s));
+                setSpeakers(prev => (prev || []).map(s => (s._id || s.id) === modal.id ? updated : s));
             }
             closeModal();
         } catch (err) {
@@ -206,7 +206,7 @@ export default function SpeakerPage({
     const handleDelete = async () => {
         try {
             await deleteSpeaker(deleteId);
-            setSpeakers(prev => prev.filter(s => (s._id || s.id) !== deleteId));
+            setSpeakers(prev => (prev || []).filter(s => (s._id || s.id) !== deleteId));
         } catch (err) {
             alert('Error deleting speaker: ' + err.message);
         } finally {

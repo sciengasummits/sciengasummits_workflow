@@ -153,7 +153,7 @@ export default function WebsiteSections({ section, conf }) {
     // Array helpers
     const updateItem = (setter, arr, idx, field, val) => {
         setter(prev => {
-            const newArr = [...(prev[arr])];
+            const newArr = [...(prev[arr] || [])];
             newArr[idx] = { ...newArr[idx], [field]: val };
             return { ...prev, [arr]: newArr };
         });
@@ -164,7 +164,7 @@ export default function WebsiteSections({ section, conf }) {
     };
 
     const removeItem = (setter, arr, idx) => {
-        setter(prev => ({ ...prev, [arr]: prev[arr].filter((_, i) => i !== idx) }));
+        setter(prev => ({ ...prev, [arr]: (prev[arr] || []).filter((_, i) => i !== idx) }));
     };
 
     const updateListItem = (setter, field, idx, val) => {
