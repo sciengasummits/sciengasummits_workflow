@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { getUniversities, createUniversity, updateUniversity, deleteUniversity, uploadImage } from '@/lib/api';
 
-const EMPTY_FORM = { name: '', image: null, visible: true };
+const EMPTY_FORM = { name: '', link: '', image: null, visible: true };
 const PAGE_SIZE_OPTS = [5, 10, 25, 50];
 
 export default function Universities() {
@@ -107,7 +107,7 @@ export default function Universities() {
         setModal({ mode: 'add' });
     };
     const openEdit = (s) => {
-        setForm({ name: s.name || '', image: s.image || null, visible: s.visible !== false });
+        setForm({ name: s.name || '', link: s.link || '', image: s.image || null, visible: s.visible !== false });
         setImagePreview(s.image || null);
         setModal({ mode: 'edit', id: s._id || s.id });
     };
@@ -260,9 +260,10 @@ export default function Universities() {
                                 <thead>
                                     <tr>
                                         <th className="sp-th sp-th-sno">Sno</th>
-                                        <th className="sp-th sp-th-photo">Logo</th>
-                                        <th className="sp-th sp-th-name">University Name</th>
-                                        <th className="sp-th sp-th-action">Edit</th>
+                                                <th className="sp-th sp-th-photo">Logo</th>
+                                                <th className="sp-th sp-th-name">University Name</th>
+                                                <th className="sp-th sp-th-action">Link</th>
+                                                <th className="sp-th sp-th-action">Edit</th>
                                         <th className="sp-th sp-th-action">Delete</th>
                                     </tr>
                                 </thead>
@@ -290,6 +291,9 @@ export default function Universities() {
                                                     )}
                                                 </td>
                                                 <td className="sp-td sp-td-name"><span className="sp-name-link">{s.name}</span></td>
+                                                <td className="sp-td sp-td-action">
+                                                    {s.link ? <a href={s.link} target="_blank" rel="noreferrer" style={{ color: accentColor }}><Database size={14}/></a> : '—'}
+                                                </td>
                                                 <td className="sp-td sp-td-action"><button className="sp-icon-btn edit" onClick={() => openEdit(s)} title="Edit"><Pencil size={15} /></button></td>
                                                 <td className="sp-td sp-td-action"><button className="sp-icon-btn delete" onClick={() => confirmDelete(uid)} title="Delete"><Trash2 size={15} /></button></td>
                                             </tr>
@@ -340,7 +344,10 @@ export default function Universities() {
                             </div>
 
                             <label className="sp-label">University Name <span className="sp-req">*</span></label>
-                            <input className="sp-input" placeholder="e.g. Stanford University" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+                            <input className="sp-input" placeholder="e.g. Stanford University" value={form.name || ''} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+
+                            <label className="sp-label" style={{ marginTop: '12px' }}>Website Link</label>
+                            <input className="sp-input" placeholder="https://..." value={form.link || ''} onChange={e => setForm(f => ({ ...f, link: e.target.value }))} />
 
                             <label className="sp-label" style={{ marginTop: '8px' }}>Visibility</label>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', background: form.visible ? '#dcfce7' : '#fef2f2', border: `1px solid ${form.visible ? '#86efac' : '#fca5a5'}`, borderRadius: '8px' }}>

@@ -149,15 +149,15 @@ export default function Sponsors() {
                                         <tr key={row.id} className="sp-tr sp-tr-editing">
                                             <td className="sp-td sp-sno">{idx + 1}</td>
                                             <td className="sp-td">
-                                                <input className="sp-cell-input" value={editBuf.name}
+                                                <input className="sp-cell-input" value={editBuf.name || ''}
                                                     onChange={e => setEditBuf(p => ({ ...p, name: e.target.value }))} placeholder="Sponsor name" />
                                             </td>
                                             <td className="sp-td">
-                                                <input className="sp-cell-input" value={editBuf.link}
+                                                <input className="sp-cell-input" value={editBuf.link || ''}
                                                     onChange={e => setEditBuf(p => ({ ...p, link: e.target.value }))} placeholder="https://..." />
                                             </td>
                                             <td className="sp-td">
-                                                <input className="sp-cell-input" value={editBuf.description}
+                                                <input className="sp-cell-input" value={editBuf.description || ''}
                                                     onChange={e => setEditBuf(p => ({ ...p, description: e.target.value }))} placeholder="Description" />
                                             </td>
                                             <td className="sp-td" style={{ textAlign: 'center' }}>
@@ -241,19 +241,19 @@ export default function Sponsors() {
                             <div className="sp-modal-field">
                                 <label className="sp-modal-label">Name</label>
                                 <input className="sp-modal-input" type="text" placeholder="Sponsor name"
-                                    value={addBuf.name} onChange={e => setAddBuf(p => ({ ...p, name: e.target.value }))} />
+                                    value={addBuf.name || ''} onChange={e => setAddBuf(p => ({ ...p, name: e.target.value }))} />
                             </div>
 
                             <div className="sp-modal-field">
                                 <label className="sp-modal-label">Link</label>
                                 <input className="sp-modal-input" type="url" placeholder="https://example.com"
-                                    value={addBuf.link} onChange={e => setAddBuf(p => ({ ...p, link: e.target.value }))} />
+                                    value={addBuf.link || ''} onChange={e => setAddBuf(p => ({ ...p, link: e.target.value }))} />
                             </div>
 
                             <div className="sp-modal-field">
                                 <label className="sp-modal-label">Description</label>
                                 <textarea className="sp-modal-input sp-modal-textarea" rows={3} placeholder="Brief description..."
-                                    value={addBuf.description} onChange={e => setAddBuf(p => ({ ...p, description: e.target.value }))} />
+                                    value={addBuf.description || ''} onChange={e => setAddBuf(p => ({ ...p, description: e.target.value }))} />
                             </div>
 
                             <div className="sp-modal-field">

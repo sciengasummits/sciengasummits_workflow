@@ -185,12 +185,12 @@ export default function Collaborations() {
                                         <td className="mp-td mp-sno">{idx + 1}</td>
                                         <td className="mp-td">
                                             {editingId === row.id 
-                                                ? <input className="mp-cell-input" value={editBuf.name} onChange={e => setEditBuf(p => ({ ...p, name: e.target.value }))} />
+                                                ? <input className="mp-cell-input" value={editBuf.name || ''} onChange={e => setEditBuf(p => ({ ...p, name: e.target.value }))} />
                                                 : <span className="mp-name">{row.name}</span>}
                                         </td>
                                         <td className="mp-td">
                                             {editingId === row.id
-                                                ? <input className="mp-cell-input" value={editBuf.link} onChange={e => setEditBuf(p => ({ ...p, link: e.target.value }))} />
+                                                ? <input className="mp-cell-input" value={editBuf.link || ''} onChange={e => setEditBuf(p => ({ ...p, link: e.target.value }))} />
                                                 : <a href={row.link} target="_blank" rel="noreferrer" className="mp-link-anchor text-truncate"><LinkIcon size={12}/> {row.link || '—'}</a>}
                                         </td>
                                         <td className="mp-td" style={{ textAlign: 'center' }}>
@@ -237,11 +237,11 @@ export default function Collaborations() {
                         <div className="mp-modal-body">
                             <div className="mp-modal-field">
                                 <label className="mp-modal-label">Name</label>
-                                <input className="mp-modal-input" placeholder="Institution Name" value={addBuf.name} onChange={e => setAddBuf(p => ({ ...p, name: e.target.value }))} />
+                                <input className="mp-modal-input" placeholder="Institution Name" value={addBuf.name || ''} onChange={e => setAddBuf(p => ({ ...p, name: e.target.value }))} />
                             </div>
                             <div className="mp-modal-field">
                                 <label className="mp-modal-label">Website Link</label>
-                                <input className="mp-modal-input" placeholder="https://..." value={addBuf.link} onChange={e => setAddBuf(p => ({ ...p, link: e.target.value }))} />
+                                <input className="mp-modal-input" placeholder="https://..." value={addBuf.link || ''} onChange={e => setAddBuf(p => ({ ...p, link: e.target.value }))} />
                             </div>
                             <div className="mp-modal-field">
                                 <label className="mp-modal-label">Logo</label>

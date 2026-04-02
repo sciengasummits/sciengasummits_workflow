@@ -26,7 +26,7 @@ export async function POST(request) {
     try {
         await dbConnect();
         const body = await request.json();
-        const allowed = ['name', 'logo', 'website', 'type', 'order', 'visible', 'conference', 'description'];
+        const allowed = ['name', 'logo', 'link', 'type', 'order', 'visible', 'conference', 'description'];
         const sanitized = {};
         for (const key of allowed) {
             if (body[key] !== undefined) sanitized[key] = body[key];

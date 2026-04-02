@@ -11,7 +11,7 @@ export async function PUT(request, { params }) {
         await dbConnect();
         const { id } = await params;
         const body = await request.json();
-        const allowed = ['name', 'image', 'order', 'visible', 'conference'];
+        const allowed = ['name', 'link', 'image', 'order', 'visible', 'conference'];
         const sanitized = {};
         for (const key of allowed) {
             if (body[key] !== undefined) sanitized[key] = body[key];
