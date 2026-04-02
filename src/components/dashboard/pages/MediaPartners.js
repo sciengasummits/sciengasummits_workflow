@@ -121,7 +121,9 @@ export default function MediaPartners() {
     /* ── delete ── */
     const handleDelete = async () => {
         try {
-            await deleteSponsor(deleteId);
+            if (String(deleteId).length === 24) {
+                await deleteSponsor(deleteId);
+            }
             setRows(prev => (prev || []).filter(r => r.id !== deleteId));
             flashSaved();
         } catch (err) {

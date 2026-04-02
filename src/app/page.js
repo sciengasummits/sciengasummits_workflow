@@ -286,9 +286,9 @@ export default function Home() {
     return (
       <Login
         onLogin={(info) => {
-          const sessionWithTime = { 
-            ...info, 
-            timestamp: Date.now() 
+          const sessionWithTime = {
+            ...info,
+            timestamp: Date.now()
           };
           localStorage.setItem('session', JSON.stringify(sessionWithTime));
           setConference(info.conferenceId);

@@ -205,7 +205,10 @@ export default function SpeakerPage({
     const confirmDelete = (id) => setDeleteId(id);
     const handleDelete = async () => {
         try {
-            await deleteSpeaker(deleteId);
+            // Only attempt to delete from DB if it's a valid MongoDB ObjectId (24 chars)
+            if (String(deleteId).length === 24) {
+                await deleteSpeaker(deleteId);
+            }
             setSpeakers(prev => (prev || []).filter(s => (s._id || s.id) !== deleteId));
         } catch (err) {
             alert('Error deleting speaker: ' + err.message);

@@ -90,7 +90,12 @@ export default function Sponsors() {
 
     /* â”€â”€ delete â”€â”€ */
     const deleteRow = async (id) => {
-        try { await deleteSponsor(id); setRows(prev => (prev || []).filter(r => r.id !== id)); }
+        try { 
+            if (String(id).length === 24) {
+                await deleteSponsor(id); 
+            }
+            setRows(prev => (prev || []).filter(r => r.id !== id)); 
+        }
         catch { alert('Delete failed'); }
     };
 

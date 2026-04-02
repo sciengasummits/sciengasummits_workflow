@@ -150,7 +150,9 @@ export default function Universities() {
     const confirmDelete = id => setDeleteId(id);
     const handleDelete = async () => {
         try {
-            await deleteUniversity(deleteId);
+            if (String(deleteId).length === 24) {
+                await deleteUniversity(deleteId);
+            }
             setAll(prev => (prev || []).filter(s => s && (s._id || s.id) !== deleteId));
         } catch (err) { alert('Error: ' + err.message); }
         finally { setDeleteId(null); }

@@ -112,7 +112,9 @@ export default function Collaborations() {
     const deleteRow = async (id) => {
         if (!confirm('Are you sure you want to delete this collaboration?')) return;
         try {
-            await deleteSponsor(id);
+            if (String(id).length === 24) {
+                await deleteSponsor(id);
+            }
             setRows(prev => (prev || []).filter(r => r.id !== id));
             flashSaved();
         } catch (err) {
