@@ -21,6 +21,7 @@ const inp = {
 };
 
 const DEFAULT_DATA = {
+    registrationStartDate: '2026-08-01',
     earlyBirdEndDate: '2026-09-25',
     standardEndDate: '2026-10-30',
     onspotEndDate: '2026-12-14',
@@ -196,21 +197,28 @@ export default function RegistrationPrices() {
             {/* ── Phase Dates ── */}
             <div style={sectionCard}>
                 <h2 style={{ ...sectionTitle, borderLeftColor: '#f59e0b' }}>📅 Registration Phase Dates</h2>
-                <FR label="Early Bird End Date">
+                <FR label="Registration Start Date">
+                    <input
+                        style={inp} type="date"
+                        value={data.registrationStartDate || ''}
+                        onChange={e => setData(prev => ({ ...prev, registrationStartDate: e.target.value }))}
+                    />
+                </FR>
+                <FR label="Early Bird Date">
                     <input
                         style={inp} type="date"
                         value={data.earlyBirdEndDate || ''}
                         onChange={e => setData(prev => ({ ...prev, earlyBirdEndDate: e.target.value }))}
                     />
                 </FR>
-                <FR label="Standard End Date">
+                <FR label="Standard Date">
                     <input
                         style={inp} type="date"
                         value={data.standardEndDate || ''}
                         onChange={e => setData(prev => ({ ...prev, standardEndDate: e.target.value }))}
                     />
                 </FR>
-                <FR label="On-Spot End Date">
+                <FR label="On-Spot Date">
                     <input
                         style={inp} type="date"
                         value={data.onspotEndDate || ''}

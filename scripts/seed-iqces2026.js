@@ -232,6 +232,7 @@ const seedData = [
     {
         key: 'registration-prices',
         data: {
+            registrationStartDate: '2026-01-01',
             earlyBirdEndDate: '2026-02-15',
             standardEndDate:  '2026-04-20',
             onspotEndDate:    '2026-06-24',
