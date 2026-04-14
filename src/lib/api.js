@@ -1,5 +1,6 @@
 // Central API service for all dashboard <-> backend communication
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+// Uses relative /api path (same-server Next.js routes) unless overridden by env var
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // ── Auth token management ────────────────────────────────────
 let _authToken = (typeof window !== 'undefined' && localStorage.getItem('authToken')) || null;
