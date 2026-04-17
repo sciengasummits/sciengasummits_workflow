@@ -18,7 +18,6 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
-    // ── Admin only: require authentication ──
     const auth = requireAuth(request);
     if (auth.error) return auth.error;
 
@@ -26,19 +25,24 @@ export async function PUT(request, { params }) {
         await dbConnect();
         const { key } = await params;
         const body = await request.json();
-        const { conference: conf = 'liutex', ...bodyData } = body;
+        const { conference: conf = 'fluid', _items, ...bodyData } = body;
 
-        // ── Input sanitization: only allow known data fields ──
-        const patch = {};
-        for (const [field, value] of Object.entries(bodyData)) {
-            // Block MongoDB operators in field names
+        let updateOp;
+        if (_items !== undefined) {
+          // Overwrite the whole data block if _items is provided (modern format)
+          updateOp = { $set: { data: _items, conference: conf } };
+        } else {
+          const patch = {};
+          for (const [field, value] of Object.entries(bodyData)) {
             if (field.startsWith('$')) continue;
             patch[`data.${field}`] = value;
+          }
+          updateOp = { $set: { ...patch, conference: conf } };
         }
 
         const result = await SiteContent.findOneAndUpdate(
             { conference: conf, key },
-            { $set: { ...patch, conference: conf } },
+            updateOp,
             { upsert: true, new: true }
         );
         return NextResponse.json({ success: true, data: result.data });
