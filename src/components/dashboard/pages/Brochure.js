@@ -5,12 +5,12 @@ import {
     Save, CheckCircle, AlertCircle, RefreshCw,
     Upload, FileText, Info, Link, Loader
 } from 'lucide-react';
-import { getContent, updateContent } from '@/lib/api';
+import { getContent, updateContent, uploadFile, getConference } from '@/lib/api';
 
 const DEFAULT_DATA = {
     pdfUrl: '',
-    title: 'International Conference on Liutex Theory and Applications in Vortex Identification and Vortex Dynamics',
-    description: 'Download the official conference brochure to get comprehensive information about the International Conference on Liutex Theory and Applications in Vortex Identification and Vortex Dynamics. It serves as your complete guide to the event, featuring detailed schedules, speaker profiles, and venue information.',
+    title: 'Quantum Computing & Engineering Summit 2027 (IQCE-2027)',
+    description: 'Download the official conference brochure to get comprehensive information about the Quantum Computing & Engineering Summit. It serves as your complete guide to the event, featuring detailed schedules, speaker profiles, and venue information.',
     note: '* PDF will be available soon. Format: PDF',
     features: [
         'Complete 3-Day Program Schedule',
@@ -48,23 +48,17 @@ export default function BrochureDashboard() {
             e.target.value = '';
             return;
         }
-        const maxSize = 20 * 1024 * 1024; // 20MB
+        const maxSize = 10 * 1024 * 1024; // 10MB limit based on route.js
         if (file.size > maxSize) {
-            alert('File size exceeds 20MB limit.');
+            alert('File size exceeds 10MB limit.');
             e.target.value = '';
             return;
         }
         setUploading(true);
         try {
-            const backendBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api').replace(/\/api$/, '');
-            const formData = new FormData();
-            formData.append('file', file); // use 'file' field for the pdf endpoint
-            const res = await fetch(`${backendBase}/api/upload-pdf`, { method: 'POST', body: formData });
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.error || 'Upload failed');
-            }
-            const result = await res.json();
+            const conf = getConference();
+            const result = await uploadFile(file, conf);
+            
             setData(prev => ({
                 ...prev,
                 pdfUrl: result.url,

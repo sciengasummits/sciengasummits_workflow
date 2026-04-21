@@ -149,10 +149,10 @@ export default function Sidebar({ collapsed, activeNav, onNavClick, conf, onLogo
     return (
         <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
             <div className="sidebar-logo">
-                <div className="logo-icon">{conf ? conf.logoText : 'LV'}<br />{conf ? conf.logoSub : 'Summit'}</div>
+                <div className="logo-icon">{conf ? conf.logoText : 'QUANTUM'}<br />{conf ? conf.logoSub : 'SUMMIT'}</div>
                 <div className="logo-text">
-                    <span className="brand" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>{conf ? conf.brandTop : 'LIUTEX'}</span>
-                    <span className="sub">{conf ? conf.brandSub : 'VORTEX SUMMIT'}</span>
+                    <span className="brand" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>{conf ? conf.brandTop : 'QUANTUM'}</span>
+                    <span className="sub">{conf ? conf.brandSub : 'ENGINEERING SUMMIT'}</span>
                 </div>
             </div>
 

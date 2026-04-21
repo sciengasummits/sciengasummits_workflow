@@ -40,9 +40,9 @@ export class RealEmailSender {
                 user: process.env.POWERENG_SMTP_USER || this._defaultUser,
                 pass: (process.env.POWERENG_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
-            iqces2026: {
-                user: process.env.IQCES_SMTP_USER || this._defaultUser,
-                pass: (process.env.IQCES_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            iqce2027: {
+                user: process.env.IQCE2027_SMTP_USER || process.env.IQCES_SMTP_USER || this._defaultUser,
+                pass: (process.env.IQCE2027_SMTP_PASS || process.env.IQCES_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
         };
 

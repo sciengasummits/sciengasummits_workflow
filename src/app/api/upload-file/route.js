@@ -15,6 +15,13 @@ export async function POST(request) {
         if (bytes.byteLength === 0) {
             return NextResponse.json({ error: 'File is empty' }, { status: 400 });
         }
+
+        // Validate PDF signature
+        const header = Buffer.from(bytes.slice(0, 4)).toString();
+        if (file.type === 'application/pdf' && header !== '%PDF') {
+            return NextResponse.json({ error: 'The uploaded file is not a valid PDF. It appears to be an HTML page or corrupted.' }, { status: 400 });
+        }
+
         if (bytes.byteLength > 10 * 1024 * 1024) {
             return NextResponse.json({ error: 'File too large. Maximum size is 10MB.' }, { status: 400 });
         }

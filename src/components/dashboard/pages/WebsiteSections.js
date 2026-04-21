@@ -55,12 +55,13 @@ export default function WebsiteSections({ section, conf }) {
         subtitle: 'INTERNATIONAL CONFERENCE ON',
         title: confSpecs.displayName,
         description: `International Conference on ${confSpecs.shortName}. where global experts unite to shape the future of science.`,
-        conferenceDate: 'December 14-16, 2026',
-        venue: 'Outram, Singapore',
-        countdownTarget: '2026-12-14T09:00:00',
+        conferenceDate: 'March 15-17, 2027',
+        venue: 'Munich, Germany',
+        countdownTarget: '2027-03-15T09:00:00',
         showRegister: true, showAbstract: true, showBrochure: true, showAnnouncement: false,
         announcementUrl: '/pdfs/announcement.pdf',
         brochureUrl: '/pdfs/brochure.pdf',
+        abstractTemplateUrl: '/pdfs/abstract-template.doc',
     });
 
     const [about, setAbout] = useState({
@@ -78,6 +79,18 @@ export default function WebsiteSections({ section, conf }) {
     });
 
     const [pricing, setPricing] = useState({ title: 'REGISTRATION PRICING', packages: [] });
+    const [brochure, setBrochure] = useState({
+        title: `International Conference on ${confSpecs.displayName}`,
+        description: `Download the official conference brochure to get comprehensive information about the ${confSpecs.displayName}. It serves as your complete guide to the event.`,
+        note: '* PDF will be available soon. Format: PDF',
+        features: [
+            'Complete 3-Day Program Schedule',
+            'Keynote Speaker Biographies & Topics',
+            'Workshop & Breakout Session Details',
+            'Venue Maps & Accommodation Guide',
+            'Sponsorship & Exhibition Opportunities',
+        ]
+    });
     const [marquee, setMarquee] = useState({ title: 'Supporting Universities & Institutions', items: [] });
     const [partners, setPartners] = useState({ title: 'Promoting & Media Partners', items: [] });
     const [status, setStatus] = useState(null);
@@ -90,6 +103,7 @@ export default function WebsiteSections({ section, conf }) {
     const sectionRefs = {
         hero: useRef(null),
         about: useRef(null),
+        brochure: useRef(null),
         stats: useRef(null),
         pricing: useRef(null),
         marquee: useRef(null),
@@ -115,16 +129,23 @@ export default function WebsiteSections({ section, conf }) {
     useEffect(() => {
         async function load() {
             try {
-                const [h, a, st, pr, mq, pa] = await Promise.all([
+                const [h, a, st, pr, mq, pa, br] = await Promise.all([
                     getContent('hero'), getContent('about'), getContent('stats'),
                     getContent('pricing'), getContent('marquee'), getContent('partners_logos'),
+                    getContent('brochure')
                 ]);
-                if (h) setHero(prev => ({ ...prev, ...h, announcementUrl: h.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf', brochureUrl: h.brochureUrl || prev.brochureUrl || '/pdfs/brochure.pdf' }));
+                if (h) setHero(prev => ({ 
+                    ...prev, ...h, 
+                    announcementUrl: h.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf', 
+                    brochureUrl: h.brochureUrl || prev.brochureUrl || '/pdfs/brochure.pdf',
+                    abstractTemplateUrl: h.abstractTemplateUrl || prev.abstractTemplateUrl || '/pdfs/abstract-template.doc'
+                }));
                 if (a) setAbout(prev => ({ ...prev, ...a }));
                 if (st) setStats(prev => ({ ...prev, ...st }));
                 if (pr) setPricing(prev => ({ ...prev, ...pr }));
                 if (mq) setMarquee(prev => ({ ...prev, ...mq }));
                 if (pa) setPartners(prev => ({ ...prev, ...pa }));
+                if (br) setBrochure(prev => ({ ...prev, ...br }));
             } catch (e) { console.warn(e.message); }
             setLoading(false);
         }
@@ -137,6 +158,7 @@ export default function WebsiteSections({ section, conf }) {
             await Promise.all([
                 updateContent('hero', hero),
                 updateContent('about', about),
+                updateContent('brochure', brochure),
                 updateContent('stats', stats),
                 updateContent('pricing', pricing),
                 updateContent('marquee', marquee),
@@ -207,8 +229,11 @@ export default function WebsiteSections({ section, conf }) {
             {/* Header */}
             <div className="id-page-header">
                 <div>
-                    <h1 className="id-title">Website Sections Manager</h1>
-                    <p className="id-subtitle">Edit all sections of the {confSpecs.shortName} website. Changes save directly to MongoDB and reflect live on the site.</p>
+                    <h1 className="id-title">Registration Prices</h1>
+                    <p className="id-subtitle">
+                        Manage registration fees, accommodation, and sponsorship pricing for the {confSpecs.shortName}.
+                        Changes are saved to MongoDB and applied live on the registration page.
+                    </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {status === 'saved' && <div className="id-save-badge"><CheckCircle size={15} /> Saved!</div>}
@@ -233,7 +258,7 @@ export default function WebsiteSections({ section, conf }) {
                     <input style={inp} value={hero.subtitle} onChange={e => setHero(h => ({ ...h, subtitle: e.target.value }))} placeholder="ANNUAL INTERNATIONAL CONFERENCE ON" />
                 </FR>
                 <FR label="Main Title">
-                    <textarea style={textarea} value={hero.title} onChange={e => setHero(h => ({ ...h, title: e.target.value }))} placeholder="LIUTEX AND VORTEX&#10;IDENTIFICATION" rows={2} />
+                    <textarea style={textarea} value={hero.title} onChange={e => setHero(h => ({ ...h, title: e.target.value }))} placeholder="QUANTUM COMPUTING AND&#10;ENGINEERING SUMMIT" rows={2} />
                 </FR>
                 <FR label="Description">
                     <textarea style={textarea} value={hero.description} onChange={e => setHero(h => ({ ...h, description: e.target.value }))} rows={3} />
@@ -278,7 +303,8 @@ export default function WebsiteSections({ section, conf }) {
                                     const file = e.target.files?.[0];
                                     if (!file) return;
                                     try {
-                                        const data = await uploadFile(file);
+                                        const conf = getConference();
+                                        const data = await uploadFile(file, conf);
                                         if (data.url) setHero(h => ({ ...h, announcementUrl: data.url }));
                                         else alert('Upload failed: no URL returned');
                                     } catch (err) { alert(`Upload failed: ${err.message}`); }
@@ -309,13 +335,46 @@ export default function WebsiteSections({ section, conf }) {
                                     const file = e.target.files?.[0];
                                     if (!file) return;
                                     try {
-                                        const data = await uploadFile(file);
+                                        const conf = getConference();
+                                        const data = await uploadFile(file, conf);
                                         if (data.url) setHero(h => ({ ...h, brochureUrl: data.url }));
                                         else alert('Upload failed: no URL returned');
                                     } catch (err) { alert(`Upload failed: ${err.message}`); }
                                 }}
                             />
                             📄 {hero.brochureUrl ? 'Change Brochure PDF' : 'Upload Brochure PDF'}
+                        </label>
+                    </div>
+                </FR>
+
+                {/* ── Abstract Template ── */}
+                <FR label="Abstract Template">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <input style={{...inp, flex: 1}} value={hero.abstractTemplateUrl || ''} onChange={e => setHero(h => ({ ...h, abstractTemplateUrl: e.target.value }))} placeholder="/pdfs/abstract-template.doc" />
+                            {hero.abstractTemplateUrl && (
+                                <a href={hero.abstractTemplateUrl.startsWith('http') ? hero.abstractTemplateUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.abstractTemplateUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
+                                    <ExternalLink size={16} />
+                                </a>
+                            )}
+                        </div>
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#f1f5f9', border: '1px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#64748b', width: 'fit-content' }}>
+                            <input
+                                type="file"
+                                accept=".doc,.docx,.pdf"
+                                style={{ display: 'none' }}
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                        const conf = getConference();
+                                        const data = await uploadFile(file, conf);
+                                        if (data.url) setHero(h => ({ ...h, abstractTemplateUrl: data.url }));
+                                        else alert('Upload failed: no URL returned');
+                                    } catch (err) { alert(`Upload failed: ${err.message}`); }
+                                }}
+                            />
+                            📄 {hero.abstractTemplateUrl ? 'Change Template' : 'Upload Template'}
                         </label>
                     </div>
                 </FR>
@@ -397,6 +456,34 @@ export default function WebsiteSections({ section, conf }) {
                         ))}
                         <button onClick={() => addListItem(setAbout, 'keyThemes')} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: 'fit-content', padding: '6px 12px', background: '#f1f5f9', border: '1px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>
                             <Plus size={14} /> Add Theme
+                        </button>
+                    </div>
+                </FR>
+            </Section>
+
+            {/* ── BROCHURE SECTION ── */}
+            <Section title="📄 Brochure Page Content" color="#8b5cf6"
+                sectionRef={sectionRefs.brochure} highlighted={highlighted === 'brochure'}>
+                
+                <FR label="Main Title">
+                    <input style={inp} value={brochure.title} onChange={e => setBrochure(b => ({ ...b, title: e.target.value }))} />
+                </FR>
+                <FR label="Description">
+                    <textarea style={textarea} value={brochure.description} onChange={e => setBrochure(b => ({ ...b, description: e.target.value }))} rows={4} />
+                </FR>
+                <FR label="Footer Note">
+                    <input style={inp} value={brochure.note} onChange={e => setBrochure(b => ({ ...b, note: e.target.value }))} />
+                </FR>
+                <FR label="Brochure Features">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {(brochure.features || []).map((feat, i) => (
+                            <div key={i} style={{ display: 'flex', gap: '8px' }}>
+                                <input style={{ ...inp, flex: 1 }} value={feat} onChange={e => updateListItem(setBrochure, 'features', i, e.target.value)} />
+                                <button onClick={() => removeListItem(setBrochure, 'features', i)} style={{ background: 'none', border: '1px solid #fca5a5', borderRadius: '6px', color: '#ef4444', cursor: 'pointer', padding: '4px 8px' }}><X size={14} /></button>
+                            </div>
+                        ))}
+                        <button onClick={() => addListItem(setBrochure, 'features')} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: 'fit-content', padding: '6px 12px', background: '#f1f5f9', border: '1px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>
+                            <Plus size={14} /> Add Feature
                         </button>
                     </div>
                 </FR>

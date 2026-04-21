@@ -37,10 +37,10 @@ export const CONFERENCE_ACCOUNTS = [
         displayName: 'POWER ENERGY & ELECTRICAL ENGINEERING 2026',
     },
     {
-        username: 'IQCES2026',
-        email: process.env.IQCES_EMAIL || 'quantumengineering@sciengasummits.com',
-        conferenceId: 'iqces2026',
-        displayName: 'QUANTUM COMPUTING & ENGINEERING 2026',
+        username: 'IQCE2027',
+        email: process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL || 'quantumenginee@sciengasummits.com',
+        conferenceId: 'iqce2027',
+        displayName: 'QUANTUM COMPUTING & ENGINEERING SUMMIT 2027',
     },
 ];
 
@@ -124,16 +124,16 @@ export const CONFERENCE_CONFIG = {
         accentColor: '#d97706',
         accentGlow: 'rgba(217,119,6,0.35)',
     },
-    iqces2026: {
-        conferenceId: 'iqces2026',
-        displayName: 'QUANTUM COMPUTING & ENGINEERING 2026',
-        shortName: 'IQCES 2026',
+    iqce2027: {
+        conferenceId: 'iqce2027',
+        displayName: 'QUANTUM COMPUTING & ENGINEERING SUMMIT 2027',
+        shortName: 'IQCE 2027',
         logoText: 'QC',
         logoSub: 'Summit',
         brandTop: 'QUANTUM COMPUTING',
-        brandSub: '& ENGINEERING 2026',
-        footerText: '© Copyright 2026 QUANTUM COMPUTING & ENGINEERING SUMMIT.',
-        email: 'quantumengineering@sciengasummits.com',
+        brandSub: '& ENGINEERING 2027',
+        footerText: '© Copyright 2027 QUANTUM COMPUTING & ENGINEERING SUMMIT.',
+        email: 'quantumenginee@sciengasummits.com',
         accentColor: '#1e3a8a',
         accentGlow: 'rgba(30,58,138,0.35)',
     },

@@ -48,10 +48,12 @@ const DEFAULT_DATA = {
     processingFeePercent: 5,
 };
 
-export default function RegistrationPrices() {
+export default function RegistrationPrices({ conf }) {
     const [data, setData] = useState(DEFAULT_DATA);
     const [status, setStatus] = useState(null); // null | 'saving' | 'saved' | 'error'
     const [loading, setLoading] = useState(true);
+
+    const confName = conf?.shortName || 'LIUTEX SUMMIT';
 
     useEffect(() => {
         async function load() {
