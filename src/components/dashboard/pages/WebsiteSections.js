@@ -229,10 +229,10 @@ export default function WebsiteSections({ section, conf }) {
             {/* Header */}
             <div className="id-page-header">
                 <div>
-                    <h1 className="id-title">Registration Prices</h1>
+                    <h1 className="id-title">Home Page Sections</h1>
                     <p className="id-subtitle">
-                        Manage registration fees, accommodation, and sponsorship pricing for the {confSpecs.shortName}.
-                        Changes are saved to MongoDB and applied live on the registration page.
+                        Manage the Hero, About, Brochure, Stats, and Pricing sections for the {confSpecs.shortName} home page.
+                        Changes are saved to MongoDB and applied live on the website.
                     </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
