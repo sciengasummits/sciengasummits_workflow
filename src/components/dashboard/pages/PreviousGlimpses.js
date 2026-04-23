@@ -17,10 +17,39 @@ export default function PreviousGlimpses() {
     const [form, setForm] = useState({ ...BLANK });
     const [dragIdx, setDragIdx] = useState(null);
     const [overIdx, setOverIdx] = useState(null);
+    const [loading, setLoading] = useState(true);
     const fileRef = useRef(null);
 
+    useEffect(() => {
+        async function load() {
+            setLoading(true);
+            try {
+                const data = await getContent('previousGlimpses');
+                if (data?.images) {
+                    setRows(data.images.map((img, i) => ({ id: i + 1, name: img.name, photoUrl: img.url })));
+                }
+            } catch (e) {
+                console.warn('[PreviousGlimpses] Load failed:', e.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
+    }, []);
+
+    /* save to DB helper */
+    const saveToDB = async (updatedRows) => {
+        try {
+            await updateContent('previousGlimpses', {
+                images: updatedRows.map(r => ({ name: r.name, url: r.photoUrl }))
+            });
+        } catch (e) {
+            console.error('Failed to sync with database:', e);
+        }
+    };
+
     /* â”€â”€ file pick â”€â”€ */
-    const pickFile = (e) => {
+    const pickFile = async (e) => {
         const f = e.target.files[0];
         if (!f) return;
 
@@ -40,7 +69,13 @@ export default function PreviousGlimpses() {
             return;
         }
 
-        setForm(p => ({ ...p, file: f, photoUrl: URL.createObjectURL(f) }));
+        try {
+            const { uploadImage } = await import('@/lib/api');
+            const { url } = await uploadImage(f);
+            setForm(p => ({ ...p, file: f, photoUrl: url }));
+        } catch (err) {
+            setForm(p => ({ ...p, file: f, photoUrl: URL.createObjectURL(f) }));
+        }
         e.target.value = '';
     };
 
@@ -62,23 +97,30 @@ export default function PreviousGlimpses() {
     const closeModal = () => { setShowModal(false); setEditId(null); setForm({ ...BLANK }); };
 
     /* â”€â”€ save (add or edit) â”€â”€ */
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!form.name?.trim()) return;
+        let nextRows;
         if (editId !== null) {
-            setRows(p => (p || []).map(r => r && r.id === editId ? { ...r, name: form.name, file: form.file, photoUrl: form.photoUrl } : r));
+            nextRows = (rows || []).map(r => r && r.id === editId ? { ...r, name: form.name, file: form.file, photoUrl: form.photoUrl } : r);
         } else {
-            setRows(p => [...(p || []), { id: uid(), name: form.name, file: form.file, photoUrl: form.photoUrl }]);
+            nextRows = [...(rows || []), { id: Date.now(), name: form.name, file: form.file, photoUrl: form.photoUrl }];
         }
+        setRows(nextRows);
+        await saveToDB(nextRows);
         closeModal();
     };
 
     /* â”€â”€ delete â”€â”€ */
-    const deleteRow = (id) => setRows(p => (p || []).filter(r => r && r.id !== id));
+    const deleteRow = async (id) => {
+        const nextRows = (rows || []).filter(r => r && r.id !== id);
+        setRows(nextRows);
+        await saveToDB(nextRows);
+    };
 
     /* â”€â”€ drag-to-reorder â”€â”€ */
     const onDragStart = (idx) => setDragIdx(idx);
     const onDragEnter = (idx) => setOverIdx(idx);
-    const onDragEnd = () => {
+    const onDragEnd = async () => {
         if (dragIdx === null || overIdx === null || dragIdx === overIdx) {
             setDragIdx(null); setOverIdx(null); return;
         }
@@ -86,16 +128,26 @@ export default function PreviousGlimpses() {
         const [moved] = next.splice(dragIdx, 1);
         next.splice(overIdx, 0, moved);
         setRows(next);
+        await saveToDB(next);
         setDragIdx(null);
         setOverIdx(null);
     };
 
     const modalOpen = showModal;
 
+    if (loading) return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+            <div style={{ textAlign: 'center', color: '#64748b' }}>
+                <div style={{ width: 40, height: 40, border: '3px solid #e2e8f0', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+                <p>Loading glimpses...</p>
+            </div>
+        </div>
+    );
+
     return (
         <div className="ac2-page">
-
-            {/* Page content â€” blurred when modal is open */}
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            {/* Page content — blurred when modal is open */}
             <div style={modalOpen ? { filter: 'blur(4px)', transition: 'filter 0.2s ease', pointerEvents: 'none', userSelect: 'none' } : { transition: 'filter 0.2s ease' }}>
 
                 {/* â”€â”€ Page Header â”€â”€ */}

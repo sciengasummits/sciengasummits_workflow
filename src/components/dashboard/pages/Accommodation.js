@@ -144,11 +144,35 @@ export default function Accommodation() {
     const savedRangeRef = useRef(null);
     const [currentColor, setCurrentColor] = useState('#000000');
     const [saved, setSaved] = useState(false);
-    const [rows, setRows] = useState([
-        { id: 1, file: null, previewUrl: '', title: '' },
-        { id: 2, file: null, previewUrl: '', title: '' },
-        { id: 3, file: null, previewUrl: '', title: '' },
-    ]);
+    const [loading, setLoading] = useState(true);
+    const [rows, setRows] = useState([]);
+
+    useEffect(() => {
+        async function load() {
+            setLoading(true);
+            try {
+                const content = await getContent('accommodationContent');
+                if (content?.html && editorRef.current) {
+                    editorRef.current.innerHTML = content.html;
+                }
+                const gallery = await getContent('accommodation');
+                if (gallery?.images) {
+                    setRows(gallery.images.map((img, i) => ({ id: i + 1, previewUrl: img.url, title: img.title, file: null })));
+                } else {
+                    setRows([
+                        { id: 1, file: null, previewUrl: '', title: '' },
+                        { id: 2, file: null, previewUrl: '', title: '' },
+                        { id: 3, file: null, previewUrl: '', title: '' },
+                    ]);
+                }
+            } catch (e) {
+                console.warn('[Accommodation] Load failed:', e.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
+    }, []);
 
     /* Detect colour under cursor */
     const detectColor = useCallback(() => {
@@ -187,22 +211,58 @@ export default function Accommodation() {
     };
 
     /* Image rows */
-    const handleFileChange = (id, e) => {
+    const handleFileChange = async (id, e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        setRows(p => (p || []).map(r => r && r.id === id ? { ...r, file, previewUrl: URL.createObjectURL(file) } : r));
+        
+        try {
+            const { uploadImage } = await import('@/lib/api');
+            const { url } = await uploadImage(file);
+            setRows(p => (p || []).map(r => r && r.id === id ? { ...r, file, previewUrl: url } : r));
+        } catch (err) {
+            setRows(p => (p || []).map(r => r && r.id === id ? { ...r, file, previewUrl: URL.createObjectURL(file) } : r));
+        }
         e.target.value = '';
     };
+
     const handleTitleChange = (id, val) =>
         setRows(p => (p || []).map(r => r && r.id === id ? { ...r, title: val } : r));
     const deleteRow = (id) => setRows(p => (p || []).filter(r => r && r.id !== id));
-    const addRow = () => setRows(p => [...p, makeRow()]);
+    const addRow = () => setRows(p => [...p, { id: Date.now(), file: null, previewUrl: '', title: '' }]);
 
     const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2800); };
-    const handleSubmit = () => {
-        console.log('Submitting accommodation');
-        flash();
+    const handleSubmit = async () => {
+        try {
+            const html = editorRef.current?.innerHTML;
+            await updateContent('accommodationContent', { html });
+            
+            const images = rows.filter(r => r.previewUrl).map(r => ({
+                url: r.previewUrl,
+                title: r.title
+            }));
+            await updateContent('accommodation', { images });
+            
+            // Also update 'venue' images for the hero background if needed
+            if (images.length > 0) {
+                const existingVenue = await getContent('venue').catch(() => ({}));
+                await updateContent('venue', { ...existingVenue, images: images.map(i => i.url) });
+            }
+            
+            flash();
+        } catch (e) {
+            console.error('Save failed', e);
+            alert('Failed to save changes');
+        }
     };
+
+    if (loading) return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+            <div style={{ textAlign: 'center', color: '#64748b' }}>
+                <div style={{ width: 40, height: 40, border: '3px solid #e2e8f0', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+                <p>Loading accommodation...</p>
+            </div>
+        </div>
+    );
 
     return (
         <div className="ac2-page">

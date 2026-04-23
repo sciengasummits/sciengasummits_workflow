@@ -186,7 +186,7 @@ export default function AboutConference() {
 
     /* Load saved content from backend on mount */
     useEffect(() => {
-        getContent('aboutContent').then(data => {
+        getContent('about').then(data => {
             if (data?.html && editorRef.current) {
                 editorRef.current.innerHTML = data.html;
             }
@@ -244,7 +244,8 @@ export default function AboutConference() {
         const content = editorRef.current?.innerHTML;
         setSaveStatus('saving');
         try {
-            await updateContent('aboutContent', { html: content });
+            const existing = await getContent('about').catch(() => ({}));
+            await updateContent('about', { ...existing, html: content });
             setSaveStatus('saved');
             setTimeout(() => setSaveStatus(null), 3000);
         } catch {
