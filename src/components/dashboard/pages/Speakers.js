@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import {
@@ -100,15 +100,30 @@ export default function AllSpeakers() {
     const activeCatColor = CATEGORIES.find(c => c.key === activeTab)?.color || '#6366f1';
 
     /* â”€â”€â”€ Drag-to-sort (within current view) â”€â”€â”€ */
-    const onDragStart = (id) => { dragIdx.current = id; };
-    const onDragEnter = (id) => { overIdx.current = id; };
+    const [dragOverId, setDragOverId] = useState(null);
+    const [draggingId, setDraggingId] = useState(null);
+    const onDragStart = (id, e) => {
+        dragIdx.current = id;
+        setDraggingId(id);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+    const onDragOver = (id, e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        overIdx.current = id;
+        setDragOverId(id);
+    };
+    const onDragLeave = () => { setDragOverId(null); };
     const onDragEnd = () => {
         const fromId = dragIdx.current, toId = overIdx.current;
+        setDragOverId(null);
+        setDraggingId(null);
         if (!fromId || !toId || fromId === toId) { dragIdx.current = overIdx.current = null; return; }
         setAll(prev => {
             const arr = [...prev];
             const from = arr.findIndex(s => (s._id || s.id) === fromId);
             const to = arr.findIndex(s => (s._id || s.id) === toId);
+            if (from === -1 || to === -1) return prev;
             const [moved] = arr.splice(from, 1);
             arr.splice(to, 0, moved);
             return arr;
@@ -368,10 +383,12 @@ export default function AllSpeakers() {
                                             <tr key={uid || i}
                                                 className={`sp-tr${rowIdx % 2 !== 0 ? ' sp-tr-even' : ''}`}
                                                 draggable
-                                                onDragStart={() => onDragStart(uid)}
-                                                onDragEnter={() => onDragEnter(uid)}
+                                                onDragStart={(e) => onDragStart(uid, e)}
+                                                onDragOver={(e) => onDragOver(uid, e)}
+                                                onDragLeave={onDragLeave}
                                                 onDragEnd={onDragEnd}
-                                                onDragOver={e => e.preventDefault()}
+                                                onDrop={(e) => e.preventDefault()}
+                                                style={{ opacity: draggingId === uid ? 0.5 : 1, background: dragOverId === uid ? '#e0e7ff' : undefined, transition: 'background 0.15s, opacity 0.15s' }}
                                             >
                                                 <td className="sp-td sp-td-sno">
                                                     <span className="sp-drag-handle"><GripVertical size={14} /></span>
