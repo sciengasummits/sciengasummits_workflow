@@ -48,6 +48,10 @@ export class RealEmailSender {
                 user: process.env.ICOGWH_SMTP_USER || this._defaultUser,
                 pass: (process.env.ICOGWH_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            icemmae2027: {
+                user: process.env.ICEMMAE_SMTP_USER || this._defaultUser,
+                pass: (process.env.ICEMMAE_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account

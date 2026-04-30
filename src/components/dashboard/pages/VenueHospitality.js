@@ -186,7 +186,7 @@ export default function VenueHospitality() {
     const handleSubmit = async () => {
         try {
             await updateContent('venueContent', { html: editorRef.current?.innerHTML, mapLink });
-            await updateContent('venue', { name: 'Outram, Singapore', address: 'Singapore', description: editorRef.current?.innerHTML?.replace(/<[^>]*>/g, ' ').slice(0, 200), mapLink });
+            await updateContent('venue', { name: 'Outram,  Munich, Germany', address: ' Munich, Germany', description: editorRef.current?.innerHTML?.replace(/<[^>]*>/g, ' ').slice(0, 200), mapLink });
             flash();
         } catch (e) { console.error('Save failed', e); }
     };

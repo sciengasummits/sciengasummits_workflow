@@ -134,9 +134,9 @@ export default function WebsiteSections({ section, conf }) {
                     getContent('pricing'), getContent('marquee'), getContent('partners_logos'),
                     getContent('brochure')
                 ]);
-                if (h) setHero(prev => ({ 
-                    ...prev, ...h, 
-                    announcementUrl: h.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf', 
+                if (h) setHero(prev => ({
+                    ...prev, ...h,
+                    announcementUrl: h.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf',
                     brochureUrl: h.brochureUrl || prev.brochureUrl || '/pdfs/brochure.pdf',
                     abstractTemplateUrl: h.abstractTemplateUrl || prev.abstractTemplateUrl || '/pdfs/abstract-template.doc'
                 }));
@@ -267,7 +267,7 @@ export default function WebsiteSections({ section, conf }) {
                     <input style={inp} value={hero.conferenceDate} onChange={e => setHero(h => ({ ...h, conferenceDate: e.target.value }))} placeholder="December 14-16, 2026" />
                 </FR>
                 <FR label="Venue">
-                    <input style={inp} value={hero.venue} onChange={e => setHero(h => ({ ...h, venue: e.target.value }))} placeholder="Outram, Singapore" />
+                    <input style={inp} value={hero.venue} onChange={e => setHero(h => ({ ...h, venue: e.target.value }))} placeholder="Outram,  Munich, Germany" />
                 </FR>
                 <FR label="Countdown Target">
                     <input style={inp} type="datetime-local" value={hero.countdownTarget?.slice(0, 16) || ''} onChange={e => setHero(h => ({ ...h, countdownTarget: e.target.value }))} />
@@ -282,12 +282,12 @@ export default function WebsiteSections({ section, conf }) {
                         ))}
                     </div>
                 </FR>
-                
+
                 {/* ── Conference Announcement PDF ── */}
                 <FR label="Announcement PDF">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <input style={{...inp, flex: 1}} value={hero.announcementUrl || ''} onChange={e => setHero(h => ({ ...h, announcementUrl: e.target.value }))} placeholder="/pdfs/announcement.pdf" />
+                            <input style={{ ...inp, flex: 1 }} value={hero.announcementUrl || ''} onChange={e => setHero(h => ({ ...h, announcementUrl: e.target.value }))} placeholder="/pdfs/announcement.pdf" />
                             {hero.announcementUrl && (
                                 <a href={hero.announcementUrl.startsWith('http') ? hero.announcementUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.announcementUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
@@ -319,7 +319,7 @@ export default function WebsiteSections({ section, conf }) {
                 <FR label="Brochure PDF">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <input style={{...inp, flex: 1}} value={hero.brochureUrl || ''} onChange={e => setHero(h => ({ ...h, brochureUrl: e.target.value }))} placeholder="/pdfs/brochure.pdf" />
+                            <input style={{ ...inp, flex: 1 }} value={hero.brochureUrl || ''} onChange={e => setHero(h => ({ ...h, brochureUrl: e.target.value }))} placeholder="/pdfs/brochure.pdf" />
                             {hero.brochureUrl && (
                                 <a href={hero.brochureUrl.startsWith('http') ? hero.brochureUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.brochureUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
@@ -351,7 +351,7 @@ export default function WebsiteSections({ section, conf }) {
                 <FR label="Abstract Template">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <input style={{...inp, flex: 1}} value={hero.abstractTemplateUrl || ''} onChange={e => setHero(h => ({ ...h, abstractTemplateUrl: e.target.value }))} placeholder="/pdfs/abstract-template.doc" />
+                            <input style={{ ...inp, flex: 1 }} value={hero.abstractTemplateUrl || ''} onChange={e => setHero(h => ({ ...h, abstractTemplateUrl: e.target.value }))} placeholder="/pdfs/abstract-template.doc" />
                             {hero.abstractTemplateUrl && (
                                 <a href={hero.abstractTemplateUrl.startsWith('http') ? hero.abstractTemplateUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.abstractTemplateUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
@@ -464,7 +464,7 @@ export default function WebsiteSections({ section, conf }) {
             {/* ── BROCHURE SECTION ── */}
             <Section title="📄 Brochure Page Content" color="#8b5cf6"
                 sectionRef={sectionRefs.brochure} highlighted={highlighted === 'brochure'}>
-                
+
                 <FR label="Main Title">
                     <input style={inp} value={brochure.title} onChange={e => setBrochure(b => ({ ...b, title: e.target.value }))} />
                 </FR>

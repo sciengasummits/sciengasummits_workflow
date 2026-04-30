@@ -145,6 +145,19 @@ const CONFERENCE_CONFIG = {
     accentColor: '#e11d48',
     accentGlow: 'rgba(225,29,72,0.35)',
   },
+  icemmae2027: {
+    conferenceId: 'icemmae2027',
+    displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027',
+    shortName: 'ICEMMAE 2027',
+    logoText: 'ME',
+    logoSub: 'Summit',
+    brandTop: 'ICEMMAE',
+    brandSub: 'SUMMIT 2027',
+    footerText: '© Copyright 2027 ICEMMAE SUMMIT.',
+    email: 'icmmae@sciengasummits.com',
+    accentColor: '#0369a1',
+    accentGlow: 'rgba(3,105,161,0.35)',
+  },
 };
 
 /* ── Simple page router ── */

@@ -28,7 +28,7 @@ export default function ImportantDates({ conf }) {
         { month: 'JUN', day: '15', year: '2026', event: 'Abstract Submission Opens', icon: 'CalendarDays' },
         { month: 'SEP', day: '25', year: '2026', event: 'Early Bird Deadline', icon: 'CheckCircle' },
         { month: 'OCT', day: '30', year: '2026', event: 'Submission Deadline', icon: 'Clock' },
-        { month: 'DEC', day: '14', year: '2026', event: 'Conference Date', icon: 'Star', sub: 'December 14-16, 2026, Singapore' },
+        { month: 'DEC', day: '14', year: '2026', event: 'Conference Date', icon: 'Star', sub: 'December 14-16, 2026,  Munich, Germany' },
     ]);
     const [status, setStatus] = useState(null); // 'saving' | 'saved' | 'error'
     const [loading, setLoading] = useState(true);
@@ -219,7 +219,7 @@ export default function ImportantDates({ conf }) {
                                         { key: 'day', label: 'Day', placeholder: '14' },
                                         { key: 'year', label: 'Year', placeholder: '2026' },
                                         { key: 'event', label: 'Event Label', placeholder: 'Conference Date' },
-                                        { key: 'sub', label: 'Sub-text (optional)', placeholder: 'Dec 14-16, Singapore' },
+                                        { key: 'sub', label: 'Sub-text (optional)', placeholder: 'Dec 14-16,  Munich, Germany' },
                                     ].map(({ key, label, placeholder }) => (
                                         <div key={key}>
                                             <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>

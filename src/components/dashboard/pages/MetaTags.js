@@ -4,16 +4,16 @@ import { useState, useEffect } from 'react';
 import { Save, RotateCcw, CheckCircle, AlertCircle, Tag, Loader } from 'lucide-react';
 import { getContent, updateContent } from '@/lib/api';
 
-const LIUTEX_KEYWORDS = 'LIUTEX2026, Liutex Theory, Vortex Identification, Vortex Dynamics, CFD Conference 2026, Computational Fluid Dynamics, Fluid Mechanics Conference 2026, Turbulence Conference, Singapore Conference December 2026, Abstract submission fluid mechanics';
+const LIUTEX_KEYWORDS = 'LIUTEX2026, Liutex Theory, Vortex Identification, Vortex Dynamics, CFD Conference 2026, Computational Fluid Dynamics, Fluid Mechanics Conference 2026, Turbulence Conference,  Munich, Germany Conference December 2026, Abstract submission fluid mechanics';
 
 const DEFAULTS = {
     home: {
-        title: 'LIUTEX2026 | International Conference on Liutex Theory & Vortex Dynamics – Singapore Dec 14–16',
-        description: 'LIUTEX2026 – International Conference on Liutex Theory and Applications in Vortex Identification and Vortex Dynamics. December 14–16, 2026, Outram, Singapore. Submit abstracts, register now.',
+        title: 'LIUTEX2026 | International Conference on Liutex Theory & Vortex Dynamics –  Munich, Germany Dec 14–16',
+        description: 'LIUTEX2026 – International Conference on Liutex Theory and Applications in Vortex Identification and Vortex Dynamics. December 14–16, 2026, Outram,  Munich, Germany. Submit abstracts, register now.',
         keywords: LIUTEX_KEYWORDS,
     },
     contact: {
-        title: 'Contact Us | LIUTEX2026 | Singapore',
+        title: 'Contact Us | LIUTEX2026 |  Munich, Germany',
         description: 'Get in touch with the LIUTEX2026 organizing committee for questions on registration, abstract submission, visa, or the conference schedule.',
         keywords: LIUTEX_KEYWORDS,
     },
@@ -24,12 +24,12 @@ const DEFAULTS = {
     },
     speakers: {
         title: 'Speakers | LIUTEX2026 | Keynote & Invited Speakers',
-        description: 'Meet the world-class keynote and invited speakers at LIUTEX2026 – International Conference on Liutex Theory & Vortex Dynamics, Singapore, December 2026.',
+        description: 'Meet the world-class keynote and invited speakers at LIUTEX2026 – International Conference on Liutex Theory & Vortex Dynamics,  Munich, Germany, December 2026.',
         keywords: LIUTEX_KEYWORDS,
     },
     venue: {
-        title: 'Venue | LIUTEX2026 | Outram, Singapore',
-        description: 'LIUTEX2026 will be held in Outram, Singapore, December 14–16, 2026. Learn about the venue, accommodation, and travel information.',
+        title: 'Venue | LIUTEX2026 | Outram,  Munich, Germany',
+        description: 'LIUTEX2026 will be held in Outram,  Munich, Germany, December 14–16, 2026. Learn about the venue, accommodation, and travel information.',
         keywords: LIUTEX_KEYWORDS,
     },
     abstract: {
