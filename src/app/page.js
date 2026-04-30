@@ -132,6 +132,19 @@ const CONFERENCE_CONFIG = {
     accentColor: '#1e3a8a',
     accentGlow: 'rgba(30,58,138,0.35)',
   },
+  icogwh: {
+    conferenceId: 'icogwh',
+    displayName: 'OBSTETRICS, GYNECOLOGY AND WOMEN HEALTH 2027',
+    shortName: 'ICOGWH 2027',
+    logoText: 'IC',
+    logoSub: 'Summit',
+    brandTop: 'ICOGWH',
+    brandSub: 'SUMMIT 2027',
+    footerText: '© Copyright 2027 ICOGWH SUMMIT.',
+    email: 'obstetrics@sciengasummits.com',
+    accentColor: '#e11d48',
+    accentGlow: 'rgba(225,29,72,0.35)',
+  },
 };
 
 /* ── Simple page router ── */
