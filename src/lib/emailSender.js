@@ -48,7 +48,7 @@ export class RealEmailSender {
                 user: process.env.ICOGWH_SMTP_USER || this._defaultUser,
                 pass: (process.env.ICOGWH_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
-            icemmae2027: {
+            icmmae2027: {
                 user: process.env.ICEMMAE_SMTP_USER || this._defaultUser,
                 pass: (process.env.ICEMMAE_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
@@ -488,31 +488,235 @@ export class RealEmailSender {
     }
 
     /**
-     * Send an "Abstract Submitted" notification to the admin.
+     * Resolve the admin email for a given conference.
+     * Checks env vars in priority order, then falls back to the SMTP user.
+     */
+    _getAdminEmail(conferenceId) {
+        const envMap = {
+            liutex:      process.env.LIUTEX_EMAIL,
+            foodagri:    process.env.FOODAGRI_EMAIL,
+            fluid:       process.env.FLUID_EMAIL,
+            renewable:   process.env.RENEWABLE_EMAIL,
+            cyber:       process.env.CYBER_EMAIL,
+            powereng:    process.env.POWERENG_EMAIL,
+            iqce2027:    process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL,
+            icogwh:      process.env.ICOGWH_EMAIL,
+            icmmae2027: process.env.ICEMMAE_EMAIL,
+        };
+        return envMap[conferenceId]
+            || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
+            || this._defaultUser;
+    }
+
+    /**
+     * Send an "Abstract Submitted" notification to the admin (full details).
      */
     async sendAbstractToAdmin(abstractData, conferenceId = 'liutex') {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
-        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const subject = `📝 New Abstract Submitted by ${abstractData.name || 'Unknown'} - ${conferenceId.toUpperCase()}`;
-        const html = `
-            <div style="font-family: Arial, sans-serif; padding: 20px;">
-                <h3>New Abstract Submission</h3>
-                <p>A new abstract has been submitted to the system.</p>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Name:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.name || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.email || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Affiliation:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.affiliation || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Title:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.title || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Category:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.category || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Topic:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.topic || 'N/A'}</td></tr>
-                </table>
-            </div>`;
+        const subject = `📝 New Abstract Submitted by ${abstractData.name || 'Unknown'} – ${conferenceId.toUpperCase()}`;
+        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
+<div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
+    <h1 style="margin:0;color:#fff;font-size:20px;">📄 New Abstract Submission</h1>
+    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
+  </div>
+  <div style="padding:28px 32px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${[
+        ['Name',        abstractData.name],
+        ['Email',       abstractData.email],
+        ['Phone',       abstractData.phone],
+        ['Country',     abstractData.country],
+        ['Affiliation', abstractData.affiliation],
+        ['Category',    abstractData.category],
+        ['Topic',       abstractData.topic],
+        ['Title',       abstractData.title],
+        ['Co-Authors',  abstractData.coAuthors],
+      ].map(([label, val], i) => `
+      <tr style="background:${i%2===0?'#f8faff':'#fff'}">
+        <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;width:38%;">${label}</td>
+        <td style="padding:8px 12px;color:#111827;font-size:14px;">${val || '—'}</td>
+      </tr>`).join('')}
+    </table>
+    ${abstractData.abstractText ? `
+    <h3 style="color:#1e3a8a;font-size:14px;margin:20px 0 8px;">Abstract Text</h3>
+    <div style="background:#f8faff;border-left:4px solid #2563eb;padding:14px 16px;border-radius:4px;font-size:13px;color:#374151;line-height:1.6;">
+      ${abstractData.abstractText.replace(/\n/g,'<br/>')}
+    </div>` : ''}
+  </div>
+  <div style="background:#f8faff;border-top:1px solid #e5e7eb;padding:16px 32px;text-align:center;">
+    <p style="margin:0;color:#9ca3af;font-size:12px;">Automated notification from the ${conferenceId.toUpperCase()} submission system.</p>
+  </div>
+</div></body></html>`;
+
         try {
-            await transporter.sendMail({ from: `"System" <${fromUser}>`, to: adminEmail, subject, html });
+            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()} System" <${fromUser}>`, to: adminEmail, subject, html });
+            console.log(`✅ Abstract admin email sent to ${adminEmail}`);
             return { success: true };
-        } catch (err) { return { success: false, error: err.message }; }
+        } catch (err) {
+            console.error(`❌ Abstract admin email error:`, err.message);
+            return { success: false, error: err.message };
+        }
+    }
+
+    /**
+     * Send a submission confirmation to the abstract author.
+     */
+    async sendAbstractConfirmationToUser(abstractData, conferenceId = 'liutex') {
+        const transporter = this._transporters[conferenceId] || this._defaultTransporter;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
+
+        const subject = `✅ Abstract Received – ${conferenceId.toUpperCase()}`;
+        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
+<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
+    <h1 style="margin:0;color:#fff;font-size:20px;">✅ Abstract Received</h1>
+    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
+  </div>
+  <div style="padding:28px 32px;">
+    <p style="color:#374151;">Dear <strong>${abstractData.name || 'Author'}</strong>,</p>
+    <p style="color:#374151;">Thank you for submitting your abstract. We have successfully received it and will review it shortly.</p>
+    <div style="background:#f8faff;border:1px solid #dbeafe;border-radius:8px;padding:16px 20px;margin:20px 0;">
+      <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Submitted Title:</p>
+      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${abstractData.title || '—'}</p>
+    </div>
+    <p style="color:#374151;">You will be notified once your abstract has been reviewed.</p>
+    <p style="color:#374151;">Best Regards,<br/><strong>${conferenceId.toUpperCase()} Organizing Committee</strong></p>
+  </div>
+</div></body></html>`;
+
+        try {
+            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()}" <${fromUser}>`, to: abstractData.email, subject, html });
+            return { success: true };
+        } catch (err) {
+            console.error(`❌ Abstract user confirmation error:`, err.message);
+            return { success: false, error: err.message };
+        }
+    }
+
+    /**
+     * Send a registration + payment notification to the conference admin.
+     * Works for ALL conferences (not just liutex).
+     */
+    async sendRegistrationToAdmin(reg, conferenceId = 'liutex') {
+        const adminEmail = this._getAdminEmail(conferenceId);
+        const transporter = this._transporters[conferenceId] || this._defaultTransporter;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
+
+        const name        = reg.name || 'N/A';
+        const email       = reg.email || 'N/A';
+        const phone       = reg.phone || 'N/A';
+        const country     = reg.country || 'N/A';
+        const affiliation = reg.affiliation || 'N/A';
+        const address     = reg.address || 'N/A';
+        const category    = reg.category || 'N/A';
+        const coupon      = reg.coupon || '—';
+        const amount      = reg.finalAmount || reg.amount || 0;
+        const currency    = reg.currency || 'USD';
+        const payMethod   = reg.paymentMethod || '—';
+        const paymentId   = reg.razorpayPaymentId || '—';
+        const orderId     = reg.razorpayOrderId || '—';
+        const status      = reg.status || 'Pending';
+        const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+        const subject = `🎉 New Registration: ${name} – ${amount} ${currency} – ${conferenceId.toUpperCase()}`;
+        const rows = [
+            ['Full Name',    name],
+            ['Email',        email],
+            ['Phone',        phone],
+            ['Country',      country],
+            ['Affiliation',  affiliation],
+            ['Address',      address],
+            ['Category',     category],
+            ['Coupon',       coupon],
+            ['Amount Paid',  `${amount} ${currency}`],
+            ['Payment Method', payMethod],
+            ['Payment Status', status],
+            ['Razorpay Payment ID', paymentId],
+            ['Razorpay Order ID',   orderId],
+            ['Submitted At', submittedAt + ' IST'],
+        ];
+
+        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
+<div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
+    <h1 style="margin:0;color:#fff;font-size:20px;">🎉 New Registration Confirmed</h1>
+    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()} · Payment: ${status}</p>
+  </div>
+  <div style="background:#ecfdf5;border-bottom:2px solid #6ee7b7;padding:14px 32px;">
+    <p style="margin:0;color:#065f46;font-weight:600;">💳 Amount Paid: ${amount} ${currency}</p>
+  </div>
+  <div style="padding:24px 32px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${rows.map(([label, val], i) => `
+      <tr style="background:${i%2===0?'#f8faff':'#fff'}">
+        <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;width:40%;">${label}</td>
+        <td style="padding:8px 12px;color:#111827;font-size:14px;">${val}</td>
+      </tr>`).join('')}
+    </table>
+    ${reg.description ? `
+    <h3 style="color:#1e3a8a;font-size:14px;margin:20px 0 8px;">Package Breakdown</h3>
+    <div style="background:#f8faff;border-left:4px solid #2563eb;padding:14px;border-radius:4px;font-size:13px;color:#374151;">
+      ${reg.description.replace(/\n/g,'<br/>')}
+    </div>` : ''}
+  </div>
+  <div style="background:#f8faff;border-top:1px solid #e5e7eb;padding:14px 32px;text-align:center;">
+    <p style="margin:0;color:#9ca3af;font-size:12px;">Automated notification · ${conferenceId.toUpperCase()} Registration System</p>
+  </div>
+</div></body></html>`;
+
+        try {
+            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()} System" <${fromUser}>`, to: adminEmail, subject, html });
+            console.log(`✅ Registration admin email sent to ${adminEmail}`);
+            return { success: true };
+        } catch (err) {
+            console.error(`❌ Registration admin email error:`, err.message);
+            return { success: false, error: err.message };
+        }
+    }
+
+    /**
+     * Send a registration confirmation to the registrant.
+     */
+    async sendRegistrationConfirmationToUser(reg, conferenceId = 'liutex') {
+        const transporter = this._transporters[conferenceId] || this._defaultTransporter;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
+
+        const amount   = reg.finalAmount || reg.amount || 0;
+        const currency = reg.currency || 'USD';
+        const subject  = `✅ Registration Confirmed – ${conferenceId.toUpperCase()}`;
+        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
+<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
+    <h1 style="margin:0;color:#fff;font-size:20px;">✅ Registration Confirmed</h1>
+    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
+  </div>
+  <div style="padding:28px 32px;">
+    <p style="color:#374151;">Dear <strong>${reg.name || 'Participant'}</strong>,</p>
+    <p style="color:#374151;">Your registration for <strong>${conferenceId.toUpperCase()}</strong> has been successfully received.</p>
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:16px 20px;margin:20px 0;">
+      <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Category: <strong>${reg.category || '—'}</strong></p>
+      <p style="margin:0;font-size:16px;font-weight:700;color:#065f46;">Amount Paid: ${amount} ${currency}</p>
+    </div>
+    <p style="color:#374151;">Our team will be in touch with further details. Thank you for registering!</p>
+    <p style="color:#374151;">Best Regards,<br/><strong>${conferenceId.toUpperCase()} Organizing Committee</strong></p>
+  </div>
+</div></body></html>`;
+
+        try {
+            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()}" <${fromUser}>`, to: reg.email, subject, html });
+            return { success: true };
+        } catch (err) {
+            console.error(`❌ Registration user confirmation error:`, err.message);
+            return { success: false, error: err.message };
+        }
     }
 }
 

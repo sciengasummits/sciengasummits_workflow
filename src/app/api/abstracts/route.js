@@ -37,11 +37,20 @@ export async function POST(request) {
         const abs = new Abstract(sanitized);
         await abs.save();
 
-        // Notify admin via email
+        const conferenceId = sanitized.conference || 'liutex';
+
+        // Notify admin via email (full details)
         try {
-            await realEmailSender.sendAbstractToAdmin(sanitized, sanitized.conference);
+            await realEmailSender.sendAbstractToAdmin(sanitized, conferenceId);
         } catch (emailErr) {
-            console.error('[AbstractSubmission] Failed to send email to admin:', emailErr);
+            console.error('[AbstractSubmission] Failed to send admin email:', emailErr);
+        }
+
+        // Send confirmation email to user
+        try {
+            await realEmailSender.sendAbstractConfirmationToUser(sanitized, conferenceId);
+        } catch (emailErr) {
+            console.error('[AbstractSubmission] Failed to send user confirmation email:', emailErr);
         }
 
         return NextResponse.json(abs, { status: 201 });

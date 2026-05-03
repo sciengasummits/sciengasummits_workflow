@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Registration from '@/models/Registration';
 import { requireAuth } from '@/lib/auth';
+import { RealEmailSender } from '@/lib/emailSender';
+
+const realEmailSender = new RealEmailSender();
 
 // GET — Admin reads all registrations (requires auth - contains personal data)
 export async function GET(request) {
@@ -46,6 +49,23 @@ export async function POST(request) {
         }
         const reg = new Registration(sanitized);
         await reg.save();
+
+        const conferenceId = sanitized.conference || 'liutex';
+
+        // Notify admin with full registration + payment details
+        try {
+            await realEmailSender.sendRegistrationToAdmin(sanitized, conferenceId);
+        } catch (emailErr) {
+            console.error('[Registration] Failed to send admin email:', emailErr);
+        }
+
+        // Send confirmation to registrant
+        try {
+            await realEmailSender.sendRegistrationConfirmationToUser(sanitized, conferenceId);
+        } catch (emailErr) {
+            console.error('[Registration] Failed to send user confirmation email:', emailErr);
+        }
+
         return NextResponse.json(reg, { status: 201 });
     } catch (err) {
         return NextResponse.json({ error: err.message }, { status: 500 });
