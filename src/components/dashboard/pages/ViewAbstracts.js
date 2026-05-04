@@ -53,7 +53,7 @@ const CONFERENCE_SITE_URLS = {
 function resolveFileUrl(fileUrl, conferenceId) {
     if (!fileUrl) return '';
     if (fileUrl.startsWith('http')) return fileUrl; 
-    const id = conferenceId || 'liutex';
+    const id = (conferenceId || '').toLowerCase() || 'liutex';
     const base = (CONFERENCE_SITE_URLS[id] || CONFERENCE_SITE_URLS.liutex).replace(/\/$/, '');
     return `${base}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
 }

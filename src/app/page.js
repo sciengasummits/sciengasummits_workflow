@@ -241,7 +241,7 @@ export default function Home() {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [session, setSession] = useState(null);
 
-  const conf = session ? (CONFERENCE_CONFIG[session.conferenceId] || CONFERENCE_CONFIG.liutex) : null;
+  const conf = session ? (CONFERENCE_CONFIG[session.conferenceId?.toLowerCase()] || CONFERENCE_CONFIG.liutex) : null;
 
   useEffect(() => {
     // 1. Session Restoration with Expiry Check (1 Hour TTL)
