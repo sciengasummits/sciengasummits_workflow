@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+﻿import nodemailer from 'nodemailer';
 
 /**
  * Per-conference email sender.
@@ -14,7 +14,7 @@ export class RealEmailSender {
         this._defaultUser = process.env.SMTP_USER || 'liutex@sciengasummits.com';
         this._defaultPass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
 
-        // Per-conference credential map  { conferenceId → { user, pass } }
+        // Per-conference credential map  { conferenceId â†’ { user, pass } }
         this._accounts = {
             liutex: {
                 user: process.env.LIUTEX_SMTP_USER || this._defaultUser,
@@ -48,7 +48,7 @@ export class RealEmailSender {
                 user: process.env.ICOGWH_SMTP_USER || this._defaultUser,
                 pass: (process.env.ICOGWH_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
-            icmmae2027: {
+            icemmae2027: {
                 user: process.env.ICEMMAE_SMTP_USER || this._defaultUser,
                 pass: (process.env.ICEMMAE_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
@@ -59,7 +59,7 @@ export class RealEmailSender {
         for (const [confId, creds] of Object.entries(this._accounts)) {
             // If the password is a placeholder or empty, fall back to liutex at send time
             if (!creds.pass || creds.pass.startsWith('REPLACE_WITH')) {
-                console.warn(`⚠️  No valid SMTP password for "${confId}" — will fall back to liutex sender`);
+                console.warn(`âš ï¸  No valid SMTP password for "${confId}" â€” will fall back to liutex sender`);
                 continue;
             }
 
@@ -102,7 +102,7 @@ export class RealEmailSender {
             : this.user;
 
         try {
-            console.log(`📧 Attempting Gmail send → from: ${fromUser}  to: ${to}`);
+            console.log(`ðŸ“§ Attempting Gmail send â†’ from: ${fromUser}  to: ${to}`);
 
             const info = await transporter.sendMail({
                 from: `"Conference Management System" <${fromUser}>`,
@@ -112,11 +112,11 @@ export class RealEmailSender {
                 text: `Your OTP is: ${otp}. It is valid for 10 minutes.`,
             });
 
-            console.log(`✅ Email sent! Message ID: ${info.messageId}`);
-            console.log(`📧 OTP delivered: ${otp}`);
+            console.log(`âœ… Email sent! Message ID: ${info.messageId}`);
+            console.log(`ðŸ“§ OTP delivered: ${otp}`);
             return { success: true, messageId: info.messageId };
         } catch (error) {
-            console.error(`❌ Nodemailer Gmail error:`, error.message);
+            console.error(`âŒ Nodemailer Gmail error:`, error.message);
             return { success: false, error: error.message };
         }
     }
@@ -137,7 +137,7 @@ export class RealEmailSender {
             ? this._accounts[conferenceId].user
             : this.user;
 
-        // ── Derive display values ──────────────────────────────────
+        // â”€â”€ Derive display values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const registrantName  = reg.name  || 'N/A';
         const registrantEmail = reg.email || 'N/A';
         const phone           = reg.phone || 'N/A';
@@ -145,11 +145,11 @@ export class RealEmailSender {
         const affiliation     = reg.affiliation || reg.company || 'N/A';
         const address         = reg.address || 'N/A';
         const category        = reg.category || reg.registrationCategory || 'N/A';
-        const sponsorship     = reg.sponsorship || '—';
-        const accommodation   = reg.accommodation || '—';
+        const sponsorship     = reg.sponsorship || 'â€”';
+        const accommodation   = reg.accommodation || 'â€”';
         const accompanying    = reg.accompanyingPerson ? 'Yes' : 'No';
         const totalAmount     = reg.totalAmount || reg.amount || 0;
-        const coupon          = reg.coupon || '—';
+        const coupon          = reg.coupon || 'â€”';
         const paymentId       = paymentIds.razorpay_payment_id || reg.paymentId || reg.razorpayPaymentId || 'N/A';
         const orderId         = paymentIds.razorpay_order_id  || reg.orderId  || reg.razorpayOrderId  || 'N/A';
         const registrationId  = reg._id ? String(reg._id) : 'N/A';
@@ -160,16 +160,16 @@ export class RealEmailSender {
         const descriptionRows = (reg.description || '')
             .split('\n')
             .filter(Boolean)
-            .map(line => `<tr><td colspan="2" style="padding:4px 12px;color:#374151;font-size:13px;">• ${line}</td></tr>`)
+            .map(line => `<tr><td colspan="2" style="padding:4px 12px;color:#374151;font-size:13px;">â€¢ ${line}</td></tr>`)
             .join('');
 
-        // ── HTML template ──────────────────────────────────────────
+        // â”€â”€ HTML template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>New Registration – LIUTEX Summit 2026</title>
+  <title>New Registration â€“ LIUTEX Summit 2026</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
@@ -180,10 +180,10 @@ export class RealEmailSender {
         <tr>
           <td style="background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);padding:32px 36px;text-align:center;">
             <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.5px;">
-              ✅ New Registration Confirmed
+              âœ… New Registration Confirmed
             </h1>
             <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">
-              LIUTEX Vortex Summit 2026 · Payment Successful
+              LIUTEX Vortex Summit 2026 Â· Payment Successful
             </p>
           </td>
         </tr>
@@ -192,7 +192,7 @@ export class RealEmailSender {
         <tr>
           <td style="background:#ecfdf5;border-bottom:2px solid #6ee7b7;padding:16px 36px;text-align:center;">
             <p style="margin:0;color:#065f46;font-size:15px;font-weight:600;">
-              🎉 Payment verified &amp; registration is now <strong>PAID</strong>
+              ðŸŽ‰ Payment verified &amp; registration is now <strong>PAID</strong>
             </p>
           </td>
         </tr>
@@ -203,7 +203,7 @@ export class RealEmailSender {
 
             <!-- Registrant Details -->
             <h2 style="margin:0 0 14px;font-size:15px;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid #dbeafe;padding-bottom:6px;">
-              👤 Registrant Details
+              ðŸ‘¤ Registrant Details
             </h2>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
               <tr style="background:#f8faff;">
@@ -234,7 +234,7 @@ export class RealEmailSender {
 
             <!-- Registration Details -->
             <h2 style="margin:0 0 14px;font-size:15px;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid #dbeafe;padding-bottom:6px;">
-              📋 Registration Details
+              ðŸ“‹ Registration Details
             </h2>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
               <tr style="background:#f8faff;">
@@ -266,7 +266,7 @@ export class RealEmailSender {
 
             <!-- Payment Summary -->
             <h2 style="margin:0 0 14px;font-size:15px;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid #dbeafe;padding-bottom:6px;">
-              💳 Payment Summary
+              ðŸ’³ Payment Summary
             </h2>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
               <tr style="background:#f0fdf4;">
@@ -275,7 +275,7 @@ export class RealEmailSender {
               </tr>
               <tr>
                 <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;">Payment Status</td>
-                <td style="padding:8px 12px;"><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">✅ PAID</span></td>
+                <td style="padding:8px 12px;"><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">âœ… PAID</span></td>
               </tr>
               <tr style="background:#f8faff;">
                 <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;">Razorpay Payment ID</td>
@@ -303,7 +303,7 @@ export class RealEmailSender {
           <td style="background:#f8faff;border-top:1px solid #e5e7eb;padding:20px 36px;text-align:center;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
               This is an automated notification from the LIUTEX Vortex Summit 2026 registration system.<br/>
-              © 2026 SciEnga Summits · <a href="mailto:liutex@sciengasummits.com" style="color:#2563eb;">liutex@sciengasummits.com</a>
+              Â© 2026 SciEnga Summits Â· <a href="mailto:liutex@sciengasummits.com" style="color:#2563eb;">liutex@sciengasummits.com</a>
             </p>
           </td>
         </tr>
@@ -314,7 +314,7 @@ export class RealEmailSender {
 </body>
 </html>`;
 
-        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · LIUTEX Summit 2026`;
+        const subject = `ðŸŽ‰ New Registration: ${registrantName} Â· $${totalAmount} USD Â· LIUTEX Summit 2026`;
 
         try {
             const info = await transporter.sendMail({
@@ -324,10 +324,10 @@ export class RealEmailSender {
                 html,
                 text: `New Registration Confirmed\n\nName: ${registrantName}\nEmail: ${registrantEmail}\nPhone: ${phone}\nCountry: ${country}\nCategory: ${category}\nTotal Amount: $${totalAmount} USD\nPayment ID: ${paymentId}\nOrder ID: ${orderId}\nRegistration ID: ${registrationId}`,
             });
-            console.log(`✅ Registration confirmation email sent to ${adminEmail} — MsgID: ${info.messageId}`);
+            console.log(`âœ… Registration confirmation email sent to ${adminEmail} â€” MsgID: ${info.messageId}`);
             return { success: true, messageId: info.messageId };
         } catch (err) {
-            console.error(`❌ Failed to send registration confirmation email:`, err.message);
+            console.error(`âŒ Failed to send registration confirmation email:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -342,7 +342,7 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this.user;
             
-        const subject = `📢 Program Schedule Requested by ${name} - ${conferenceId.toUpperCase()}`;
+        const subject = `ðŸ“¢ Program Schedule Requested by ${name} - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; background: #f3f4f6; padding: 20px;">
                 <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px;">
@@ -364,10 +364,10 @@ export class RealEmailSender {
                 subject,
                 html,
             });
-            console.log(`✅ Admin program request email sent — MsgID: ${info.messageId}`);
+            console.log(`âœ… Admin program request email sent â€” MsgID: ${info.messageId}`);
             return { success: true };
         } catch (err) {
-            console.error(`❌ Admin program request email error:`, err.message);
+            console.error(`âŒ Admin program request email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -399,10 +399,10 @@ export class RealEmailSender {
                 subject,
                 html,
             });
-            console.log(`✅ User program request email sent to ${email} — MsgID: ${info.messageId}`);
+            console.log(`âœ… User program request email sent to ${email} â€” MsgID: ${info.messageId}`);
             return { success: true };
         } catch (err) {
-            console.error(`❌ User program request email error:`, err.message);
+            console.error(`âŒ User program request email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -415,7 +415,7 @@ export class RealEmailSender {
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
-        const subject = `🔔 New Subscription Request - ${conferenceId.toUpperCase()}`;
+        const subject = `ðŸ”” New Subscription Request - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h3>New Subscription Request</h3>
@@ -441,7 +441,7 @@ export class RealEmailSender {
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
-        const subject = `📄 Brochure Downloaded by ${name} - ${conferenceId.toUpperCase()}`;
+        const subject = `ðŸ“„ Brochure Downloaded by ${name} - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h3>Brochure Access Request</h3>
@@ -467,7 +467,7 @@ export class RealEmailSender {
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
-        const emailSubject = `✉️ New Contact Message: ${subject} - ${conferenceId.toUpperCase()}`;
+        const emailSubject = `âœ‰ï¸ New Contact Message: ${subject} - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h3>New Contact Us Message</h3>
@@ -501,7 +501,7 @@ export class RealEmailSender {
             powereng:    process.env.POWERENG_EMAIL,
             iqce2027:    process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL,
             icogwh:      process.env.ICOGWH_EMAIL,
-            icmmae2027: process.env.ICEMMAE_EMAIL,
+            icemmae2027: process.env.ICEMMAE_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
@@ -517,11 +517,11 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const subject = `📝 New Abstract Submitted by ${abstractData.name || 'Unknown'} – ${conferenceId.toUpperCase()}`;
+        const subject = `ðŸ“ New Abstract Submitted by ${abstractData.name || 'Unknown'} â€“ ${conferenceId.toUpperCase()}`;
         const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
 <div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
   <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">📄 New Abstract Submission</h1>
+    <h1 style="margin:0;color:#fff;font-size:20px;">ðŸ“„ New Abstract Submission</h1>
     <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
   </div>
   <div style="padding:28px 32px;">
@@ -539,7 +539,7 @@ export class RealEmailSender {
       ].map(([label, val], i) => `
       <tr style="background:${i%2===0?'#f8faff':'#fff'}">
         <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;width:38%;">${label}</td>
-        <td style="padding:8px 12px;color:#111827;font-size:14px;">${val || '—'}</td>
+        <td style="padding:8px 12px;color:#111827;font-size:14px;">${val || 'â€”'}</td>
       </tr>`).join('')}
     </table>
     ${abstractData.abstractText ? `
@@ -555,10 +555,10 @@ export class RealEmailSender {
 
         try {
             await transporter.sendMail({ from: `"${conferenceId.toUpperCase()} System" <${fromUser}>`, to: adminEmail, subject, html });
-            console.log(`✅ Abstract admin email sent to ${adminEmail}`);
+            console.log(`âœ… Abstract admin email sent to ${adminEmail}`);
             return { success: true };
         } catch (err) {
-            console.error(`❌ Abstract admin email error:`, err.message);
+            console.error(`âŒ Abstract admin email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -571,11 +571,11 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const subject = `✅ Abstract Received – ${conferenceId.toUpperCase()}`;
+        const subject = `âœ… Abstract Received â€“ ${conferenceId.toUpperCase()}`;
         const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
 <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
   <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">✅ Abstract Received</h1>
+    <h1 style="margin:0;color:#fff;font-size:20px;">âœ… Abstract Received</h1>
     <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
   </div>
   <div style="padding:28px 32px;">
@@ -583,7 +583,7 @@ export class RealEmailSender {
     <p style="color:#374151;">Thank you for submitting your abstract. We have successfully received it and will review it shortly.</p>
     <div style="background:#f8faff;border:1px solid #dbeafe;border-radius:8px;padding:16px 20px;margin:20px 0;">
       <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Submitted Title:</p>
-      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${abstractData.title || '—'}</p>
+      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${abstractData.title || 'â€”'}</p>
     </div>
     <p style="color:#374151;">You will be notified once your abstract has been reviewed.</p>
     <p style="color:#374151;">Best Regards,<br/><strong>${conferenceId.toUpperCase()} Organizing Committee</strong></p>
@@ -594,7 +594,7 @@ export class RealEmailSender {
             await transporter.sendMail({ from: `"${conferenceId.toUpperCase()}" <${fromUser}>`, to: abstractData.email, subject, html });
             return { success: true };
         } catch (err) {
-            console.error(`❌ Abstract user confirmation error:`, err.message);
+            console.error(`âŒ Abstract user confirmation error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -616,16 +616,16 @@ export class RealEmailSender {
         const affiliation = reg.affiliation || 'N/A';
         const address     = reg.address || 'N/A';
         const category    = reg.category || 'N/A';
-        const coupon      = reg.coupon || '—';
+        const coupon      = reg.coupon || 'â€”';
         const amount      = reg.finalAmount || reg.amount || 0;
         const currency    = reg.currency || 'USD';
-        const payMethod   = reg.paymentMethod || '—';
-        const paymentId   = reg.razorpayPaymentId || '—';
-        const orderId     = reg.razorpayOrderId || '—';
+        const payMethod   = reg.paymentMethod || 'â€”';
+        const paymentId   = reg.razorpayPaymentId || 'â€”';
+        const orderId     = reg.razorpayOrderId || 'â€”';
         const status      = reg.status || 'Pending';
         const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
-        const subject = `🎉 New Registration: ${name} – ${amount} ${currency} – ${conferenceId.toUpperCase()}`;
+        const subject = `ðŸŽ‰ New Registration: ${name} â€“ ${amount} ${currency} â€“ ${conferenceId.toUpperCase()}`;
         const rows = [
             ['Full Name',    name],
             ['Email',        email],
@@ -646,11 +646,11 @@ export class RealEmailSender {
         const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
 <div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
   <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">🎉 New Registration Confirmed</h1>
-    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()} · Payment: ${status}</p>
+    <h1 style="margin:0;color:#fff;font-size:20px;">ðŸŽ‰ New Registration Confirmed</h1>
+    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()} Â· Payment: ${status}</p>
   </div>
   <div style="background:#ecfdf5;border-bottom:2px solid #6ee7b7;padding:14px 32px;">
-    <p style="margin:0;color:#065f46;font-weight:600;">💳 Amount Paid: ${amount} ${currency}</p>
+    <p style="margin:0;color:#065f46;font-weight:600;">ðŸ’³ Amount Paid: ${amount} ${currency}</p>
   </div>
   <div style="padding:24px 32px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
@@ -667,16 +667,16 @@ export class RealEmailSender {
     </div>` : ''}
   </div>
   <div style="background:#f8faff;border-top:1px solid #e5e7eb;padding:14px 32px;text-align:center;">
-    <p style="margin:0;color:#9ca3af;font-size:12px;">Automated notification · ${conferenceId.toUpperCase()} Registration System</p>
+    <p style="margin:0;color:#9ca3af;font-size:12px;">Automated notification Â· ${conferenceId.toUpperCase()} Registration System</p>
   </div>
 </div></body></html>`;
 
         try {
             await transporter.sendMail({ from: `"${conferenceId.toUpperCase()} System" <${fromUser}>`, to: adminEmail, subject, html });
-            console.log(`✅ Registration admin email sent to ${adminEmail}`);
+            console.log(`âœ… Registration admin email sent to ${adminEmail}`);
             return { success: true };
         } catch (err) {
-            console.error(`❌ Registration admin email error:`, err.message);
+            console.error(`âŒ Registration admin email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -691,18 +691,18 @@ export class RealEmailSender {
 
         const amount   = reg.finalAmount || reg.amount || 0;
         const currency = reg.currency || 'USD';
-        const subject  = `✅ Registration Confirmed – ${conferenceId.toUpperCase()}`;
+        const subject  = `âœ… Registration Confirmed â€“ ${conferenceId.toUpperCase()}`;
         const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
 <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
   <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">✅ Registration Confirmed</h1>
+    <h1 style="margin:0;color:#fff;font-size:20px;">âœ… Registration Confirmed</h1>
     <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
   </div>
   <div style="padding:28px 32px;">
     <p style="color:#374151;">Dear <strong>${reg.name || 'Participant'}</strong>,</p>
     <p style="color:#374151;">Your registration for <strong>${conferenceId.toUpperCase()}</strong> has been successfully received.</p>
     <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:16px 20px;margin:20px 0;">
-      <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Category: <strong>${reg.category || '—'}</strong></p>
+      <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Category: <strong>${reg.category || 'â€”'}</strong></p>
       <p style="margin:0;font-size:16px;font-weight:700;color:#065f46;">Amount Paid: ${amount} ${currency}</p>
     </div>
     <p style="color:#374151;">Our team will be in touch with further details. Thank you for registering!</p>
@@ -714,10 +714,11 @@ export class RealEmailSender {
             await transporter.sendMail({ from: `"${conferenceId.toUpperCase()}" <${fromUser}>`, to: reg.email, subject, html });
             return { success: true };
         } catch (err) {
-            console.error(`❌ Registration user confirmation error:`, err.message);
+            console.error(`âŒ Registration user confirmation error:`, err.message);
             return { success: false, error: err.message };
         }
     }
 }
+
 
 

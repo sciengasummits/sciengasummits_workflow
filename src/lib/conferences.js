@@ -49,9 +49,9 @@ export const CONFERENCE_ACCOUNTS = [
         displayName: 'OBSTETRICS, GYNECOLOGY AND WOMEN HEALTH 2027',
     },
     {
-        username: 'ICMMAE2027',
+        username: 'ICEMMAE2027',
         email: process.env.ICEMMAE_EMAIL || 'icmmae@sciengasummits.com',
-        conferenceId: 'icmmae2027',
+        conferenceId: 'icemmae2027',
         displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027',
     },
 ];
@@ -162,15 +162,15 @@ export const CONFERENCE_CONFIG = {
         accentColor: '#e11d48',
         accentGlow: 'rgba(225,29,72,0.35)',
     },
-    icmmae2027: {
-        conferenceId: 'icmmae2027',
+    icemmae2027: {
+        conferenceId: 'icemmae2027',
         displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027',
-        shortName: 'ICMMAE 2027',
+        shortName: 'ICEMMAE 2027',
         logoText: 'ME',
         logoSub: 'Summit',
-        brandTop: 'ICMMAE',
+        brandTop: 'ICEMMAE',
         brandSub: 'SUMMIT 2027',
-        footerText: '© Copyright 2027 ICMMAE SUMMIT.',
+        footerText: '© Copyright 2027 ICEMMAE SUMMIT.',
         email: 'icmmae@sciengasummits.com',
         accentColor: '#0369a1',
         accentGlow: 'rgba(3,105,161,0.35)',

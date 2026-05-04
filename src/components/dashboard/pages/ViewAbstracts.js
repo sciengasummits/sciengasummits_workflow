@@ -5,7 +5,7 @@ import { FileText, Search, ChevronsUpDown, Filter, Download, RefreshCw, ChevronL
 import { getAbstracts, updateAbstractStatus } from '@/lib/api';
 
 function formatDate(dateStr) {
-    if (!dateStr) return '—';
+    if (!dateStr) return 'â€”';
     const d = new Date(dateStr);
     if (isNaN(d)) return dateStr;
     return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -28,7 +28,7 @@ const INTEREST_BADGE = {
 function InterestBadge({ interest }) {
     const v = interest?.toLowerCase() || '';
     const cfg = Object.entries(INTEREST_BADGE).find(([k]) => v.includes(k))?.[1];
-    if (!cfg) return <span style={{ color: '#64748b', fontSize: 12 }}>{interest || '—'}</span>;
+    if (!cfg) return <span style={{ color: '#64748b', fontSize: 12 }}>{interest || 'â€”'}</span>;
     return (
         <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: cfg.bg, color: cfg.color, whiteSpace: 'nowrap' }}>
             {cfg.label}
@@ -36,7 +36,7 @@ function InterestBadge({ interest }) {
     );
 }
 
-// Map conferenceId → the website that serves /uploads/ files
+// Map conferenceId â†’ the website that serves /uploads/ files
 const CONFERENCE_SITE_URLS = {
     liutex:      process.env.NEXT_PUBLIC_LIUTEX_URL      || 'https://liutexsummit2026.sciengasummits.com',
     foodagri:    process.env.NEXT_PUBLIC_FOODAGRI_URL    || 'https://foodagrisummit.sciengasummits.com',
@@ -46,11 +46,10 @@ const CONFERENCE_SITE_URLS = {
     powereng:    process.env.NEXT_PUBLIC_POWERENG_URL    || 'https://powerenergysummit.com',
     iqce2027:    process.env.NEXT_PUBLIC_IQCE2027_URL    || 'https://iqce2027.sciengasummits.com',
     icogwh:      process.env.NEXT_PUBLIC_ICOGWH_URL      || 'https://icogwh2027.sciengasummits.com',
-    icmmae2027:  process.env.NEXT_PUBLIC_ICMMAE_URL      || 'https://icmmae2027.sciengasummits.com',
-    icemmae2027: process.env.NEXT_PUBLIC_ICMMAE_URL      || 'https://icmmae2027.sciengasummits.com',
+    icemmae2027: process.env.NEXT_PUBLIC_ICEMMAE_URL     || 'https://icemmae2027.sciengasummits.com',
 };
 
-/** Turns /uploads/foo.docx → https://website.com/uploads/foo.docx */
+/** Turns /uploads/foo.docx â†’ https://website.com/uploads/foo.docx */
 function resolveFileUrl(fileUrl, conferenceId) {
     if (!fileUrl) return '';
     if (fileUrl.startsWith('http')) return fileUrl; 
@@ -146,7 +145,7 @@ export default function ViewAbstracts({ conf }) {
 
             {error && (
                 <div style={{ padding: '16px 20px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 12, color: '#b91c1c', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 18 }}>⚠️</span>
+                    <span style={{ fontSize: 18 }}>âš ï¸</span>
                     <div><strong>Error:</strong> {error}</div>
                 </div>
             )}
@@ -217,22 +216,22 @@ export default function ViewAbstracts({ conf }) {
                                 return (
                                     <tr key={uid} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' }} className="hover:bg-slate-50">
                                         <td style={{ padding: '16px 20px', fontSize: 13, color: '#64748b' }}>{startIdx + idx}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 500, color: '#1e293b' }}>{row.title || '—'}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 600, color: '#4f46e5' }}>{row.name || '—'}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.country || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 500, color: '#1e293b' }}>{row.title || 'â€”'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 600, color: '#4f46e5' }}>{row.name || 'â€”'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.country || 'â€”'}</td>
                                         <td style={{ padding: '16px 20px', fontSize: 13 }}>
-                                            <a href={`mailto:${row.email}`} style={{ color: '#2563eb', textDecoration: 'none' }}>{row.email || '—'}</a>
+                                            <a href={`mailto:${row.email}`} style={{ color: '#2563eb', textDecoration: 'none' }}>{row.email || 'â€”'}</a>
                                         </td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.phone || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.phone || 'â€”'}</td>
                                         <td style={{ padding: '16px 20px' }}><InterestBadge interest={row.interest} /></td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#7c3aed', fontWeight: 500 }}>{row.organization || '—'}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#0891b2' }}>{row.topic || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#7c3aed', fontWeight: 500 }}>{row.organization || 'â€”'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#0891b2' }}>{row.topic || 'â€”'}</td>
                                         <td style={{ padding: '16px 20px' }}>
                                             {absUrl ? (
                                                 <a href={absUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: '#f1f5f9', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#475569', textDecoration: 'none', border: '1px solid #e2e8f0' }}>
                                                     <Download size={14} /> Doc <ExternalLink size={12} />
                                                 </a>
-                                            ) : <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>}
+                                            ) : <span style={{ color: '#cbd5e1', fontSize: 12 }}>â€”</span>}
                                         </td>
                                         <td style={{ padding: '16px 20px', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>{formatDate(row.createdAt)}</td>
                                         <td style={{ padding: '16px 20px' }}>
@@ -278,3 +277,4 @@ export default function ViewAbstracts({ conf }) {
         </div>
     );
 }
+
