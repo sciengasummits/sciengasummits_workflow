@@ -636,62 +636,25 @@ export class RealEmailSender {
 
         const subject = `🎫 New Registration: ${regData.name || 'Unknown'} — ${confName}`;
         
-        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI',Arial,sans-serif;background:#f9fafb;padding:30px;color:#1f2937;">
-<div style="max-width:650px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.05);border:1px solid #e5e7eb;">
-  <div style="background:linear-gradient(135deg,#047857,#10b981);padding:35px;text-align:center;">
-    <h1 style="margin:0;color:#fff;font-size:24px;letter-spacing:-0.5px;">New Registration Received</h1>
-    <p style="margin:10px 0 0;color:#d1fae5;font-size:15px;font-weight:500;">${confName} Conference</p>
-  </div>
-  
-  <div style="padding:40px;">
-    <p style="margin:0 0 25px;font-size:16px;line-height:1.6;color:#374151;">
-      A new registration has been received for the <strong>${confName}</strong> conference. Please find the participant details below:
-    </p>
-
-    <div style="background:#f8fafc;border-radius:12px;padding:30px;border:1px solid #f1f5f9;margin-bottom:30px;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:14px;width:150px;">Full Name:</td>
-          <td style="padding:10px 0;color:#111827;font-size:15px;font-weight:600;">${regData.name || '—'}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:14px;">Email Address:</td>
-          <td style="padding:10px 0;color:#111827;font-size:15px;"><a href="mailto:${regData.email}" style="color:#059669;text-decoration:none;">${regData.email || '—'}</a></td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:14px;">Phone / Mobile:</td>
-          <td style="padding:10px 0;color:#111827;font-size:15px;">${regData.phone || regData.number || '—'}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:14px;border-top:1px solid #e2e8f0;padding-top:15px;">Registration Category:</td>
-          <td style="padding:10px 0;color:#065f46;font-size:15px;font-weight:700;border-top:1px solid #e2e8f0;padding-top:15px;">${regData.category || '—'}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:14px;">Country:</td>
-          <td style="padding:10px 0;color:#111827;font-size:15px;">${regData.country || '—'}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:14px;">Organization:</td>
-          <td style="padding:10px 0;color:#111827;font-size:15px;">${regData.organization || regData.affiliation || '—'}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:14px;">Registration Date:</td>
-          <td style="padding:10px 0;color:#111827;font-size:15px;">${submittedAt} IST</td>
-        </tr>
-      </table>
-    </div>
-
-    <div style="background:#f0fdf4;padding:20px;border-radius:10px;border:1px solid #d1fae5;text-align:center;">
-      <p style="margin:0;color:#065f46;font-size:14px;">
-        This registration has been recorded in the database and is accessible via the admin dashboard.
-      </p>
-    </div>
-  </div>
-
-  <div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;">
-    <p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2026 SCIENGASUMMITS. All rights reserved.</p>
-  </div>
-</div></body></html>`;
+        const html = `<!DOCTYPE html><html><body style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 20px; color: #000000;">
+<div style="background-color: #eef2f5; padding: 20px; font-family: sans-serif; line-height: 1.8;">
+    <p style="margin:0 0 10px;"><b>Name:</b> ${regData.name || '—'}</p>
+    <p style="margin:0 0 10px;"><b>Registration Date:</b> ${submittedAt}</p>
+    <p style="margin:0 0 10px;"><b>Email:</b> <a href="mailto:${regData.email}" style="color: #0563c1;">${regData.email || '—'}</a></p>
+    <p style="margin:0 0 10px;"><b>Phone:</b> ${regData.phone || regData.number || '—'}</p>
+    <p style="margin:0 0 10px;"><b>Country:</b> ${regData.country || '—'}</p>
+    <p style="margin:0 0 10px;"><b>Company/Affiliation:</b> ${regData.organization || regData.affiliation || '—'}</p>
+    <p style="margin:0 0 10px;"><b>Address:</b> ${regData.address || '—'}</p>
+    <p style="margin:0 0 10px;"><b>Category:</b> ${regData.category || '—'}</p>
+    <p style="margin:0 0 10px;"><b>Conference:</b> ${confName}</p>
+    <p style="margin:0 0 10px;"><b>Registration Counter:</b> ${regData.counter ? '#' + regData.counter : '—'}</p>
+    <p style="margin:0 0 10px;"><b>Payment Description:</b> ${regData.description ? regData.description.replace(/\\n/g, ' ') : '—'}</p>
+</div>
+<div style="margin-top: 20px; font-family: sans-serif;">
+    <p style="margin: 0;">Regards,</p>
+    <p style="margin: 0;">${confName}</p>
+</div>
+</body></html>`;
 
         try {
             await transporter.sendMail({ from: `"${confName} Registration" <${fromUser}>`, to: adminEmail, subject, html });
