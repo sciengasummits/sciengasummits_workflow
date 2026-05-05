@@ -268,36 +268,61 @@ export default function ViewAbstracts({ conf }) {
                                     </tr>
                                     {isExpanded && (
                                         <tr style={{ background: '#f8faff', borderBottom: '1px solid #e2e8f0' }}>
-                                            <td colSpan={13} style={{ padding: '20px 40px' }}>
-                                                <div style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24, marginBottom: 20 }}>
-                                                        {row.affiliation && (
-                                                            <div>
-                                                                <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Affiliation</h4>
-                                                                <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.affiliation}</p>
-                                                            </div>
-                                                        )}
-                                                        {row.address && (
-                                                            <div>
-                                                                <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Address</h4>
-                                                                <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.address}</p>
-                                                            </div>
-                                                        )}
+                                            <td colSpan={13} style={{ padding: '24px 40px' }}>
+                                                <div style={{ background: '#fff', padding: 30, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)' }}>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 30, marginBottom: 30 }}>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Full Name</h4>
+                                                            <p style={{ margin: 0, fontSize: 15, color: '#1e293b', fontWeight: 600 }}>{row.title} {row.name}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Contact Info</h4>
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.email}</p>
+                                                            <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#64748b' }}>{row.phone || 'No phone provided'}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Session / Topic</h4>
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#4f46e5', fontWeight: 600 }}>{row.topic || '—'}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Organization & Country</h4>
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.organization || row.affiliation || '—'}</p>
+                                                            <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#64748b' }}>{row.country || '—'}</p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h4 style={{ margin: '0 0 8px 0', fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Abstract Text</h4>
+                                                    
+                                                    <div style={{ marginBottom: 30 }}>
+                                                        <h4 style={{ margin: '0 0 10px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Postal Address</h4>
+                                                        <p style={{ margin: 0, fontSize: 14, color: '#334155', background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #f1f5f9' }}>{row.address || 'No address provided'}</p>
+                                                    </div>
+
+                                                    <div style={{ marginBottom: 30 }}>
+                                                        <h4 style={{ margin: '0 0 10px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Abstract Text</h4>
                                                         {row.abstractText ? (
-                                                            <div style={{ padding: 16, background: '#f8fafc', borderRadius: 8, fontSize: 14, color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                                                            <div style={{ padding: 20, background: '#f8fafc', borderRadius: 12, fontSize: 14, color: '#334155', lineHeight: 1.7, whiteSpace: 'pre-wrap', border: '1px solid #f1f5f9' }}>
                                                                 {row.abstractText}
                                                             </div>
                                                         ) : (
-                                                            <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', fontStyle: 'italic' }}>No abstract text provided.</p>
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', fontStyle: 'italic' }}>No abstract text body provided.</p>
                                                         )}
                                                     </div>
+
+                                                    {absUrl && (
+                                                        <div style={{ paddingTop: 20, borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                            <div>
+                                                                <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Uploaded File</h4>
+                                                                <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>{row.fileName || 'document'}</p>
+                                                            </div>
+                                                            <a href={absUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 24px', background: '#4f46e5', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', textDecoration: 'none', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)' }}>
+                                                                <Download size={18} /> Download Document
+                                                            </a>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
                                     )}
+
                                     </React.Fragment>
                                 );
                             })}

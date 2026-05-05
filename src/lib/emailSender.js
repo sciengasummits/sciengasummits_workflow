@@ -1,4 +1,4 @@
-﻿import nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 
 /**
  * Per-conference email sender.
@@ -517,51 +517,74 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const subject = `ðŸ“ New Abstract Submitted by ${abstractData.name || 'Unknown'} â€“ ${conferenceId.toUpperCase()}`;
-        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
-<div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
-  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">ðŸ“„ New Abstract Submission</h1>
-    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
+        const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        const confName = conferenceId.toUpperCase();
+
+        const CONFERENCE_URLS = {
+            liutex:      'https://liutexsummit2026.sciengasummits.com',
+            foodagri:    'https://foodagrisummit.sciengasummits.com',
+            fluid:       'https://fluidsummit.sciengasummits.com',
+            renewable:   'https://renewablesummit.sciengasummits.com',
+            cyber:       'https://cyberquantumsummit.com',
+            powereng:    'https://powerenergysummit.com',
+            iqce2027:    'https://iqce2027.sciengasummits.com',
+            icogwh:      'https://icogwh2027.sciengasummits.com',
+            icemmae2027: 'https://icemmae2027.sciengasummits.com',
+        };
+
+        let absoluteFileUrl = abstractData.fileUrl;
+        if (absoluteFileUrl && !absoluteFileUrl.startsWith('http')) {
+            const baseUrl = process.env.NODE_ENV === 'development' 
+                ? (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5050')
+                : (process.env.FRONTEND_URL || CONFERENCE_URLS[conferenceId] || CONFERENCE_URLS.liutex);
+            absoluteFileUrl = `${baseUrl.replace(/\/$/, '')}${absoluteFileUrl.startsWith('/') ? '' : '/'}${absoluteFileUrl}`;
+        }
+
+        const subject = `📄 New Abstract Submitted: ${abstractData.name || 'Unknown'} — ${confName}`;
+        
+        let html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI',Arial,sans-serif;background:#f9fafb;padding:30px;color:#1f2937;">
+<div style="max-width:650px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.05);border:1px solid #e5e7eb;">
+  <div style="background:linear-gradient(135deg,#1e3a8a,#3b82f6);padding:35px;text-align:center;">
+    <h1 style="margin:0;color:#fff;font-size:24px;letter-spacing:-0.5px;">Abstract Submission Confirmation</h1>
+    <p style="margin:10px 0 0;color:#bfdbfe;font-size:15px;font-weight:500;">${confName} Conference</p>
   </div>
-  <div style="padding:28px 32px;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-      ${[
-        ['Name',        abstractData.name],
-        ['Email',       abstractData.email],
-        ['Phone',       abstractData.phone],
-        ['Country',     abstractData.country],
-        ['Affiliation', abstractData.affiliation],
-        ['Category',    abstractData.category],
-        ['Topic',       abstractData.topic],
-        ['Title',       abstractData.title],
-        ['Co-Authors',  abstractData.coAuthors],
-      ].map(([label, val], i) => `
-      <tr style="background:${i%2===0?'#f8faff':'#fff'}">
-        <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;width:38%;">${label}</td>
-        <td style="padding:8px 12px;color:#111827;font-size:14px;">${val || 'â€”'}</td>
-      </tr>`).join('')}
-    </table>
-    ${abstractData.abstractText ? `
-    <h3 style="color:#1e3a8a;font-size:14px;margin:20px 0 8px;">Abstract Text</h3>
-    <div style="background:#f8faff;border-left:4px solid #2563eb;padding:14px 16px;border-radius:4px;font-size:13px;color:#374151;line-height:1.6;">
-      ${abstractData.abstractText.replace(/\n/g,'<br/>')}
-    </div>` : ''}
-  </div>
-  <div style="background:#f8faff;border-top:1px solid #e5e7eb;padding:16px 32px;text-align:center;">
-    <p style="margin:0;color:#9ca3af;font-size:12px;">Automated notification from the ${conferenceId.toUpperCase()} submission system.</p>
-  </div>
-</div></body></html>`;
+  <div style="padding:40px;">
+    <p style="margin:0 0 25px;font-size:16px;line-height:1.6;color:#374151;">An abstract has been received for the <strong>${confName}</strong> conference. Please find the details below:</p>
+    <div style="background:#f8fafc;border-radius:12px;padding:30px;border:1px solid #f1f5f9;margin-bottom:30px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;width:150px;">Name:</td><td style="padding:10px 0;color:#111827;font-size:15px;font-weight:600;">${abstractData.name || '—'}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Abstract Date:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${submittedAt} IST</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Email:</td><td style="padding:10px 0;color:#111827;font-size:15px;"><a href="mailto:${abstractData.email}" style="color:#2563eb;text-decoration:none;">${abstractData.email || '—'}</a></td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Mobile Number:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.phone || '—'}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Organization:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.organization || abstractData.affiliation || '—'}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Country:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.country || '—'}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Address:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.address || '—'}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;border-top:1px solid #e2e8f0;padding-top:15px;">Abstract Title:</td><td style="padding:10px 0;color:#1e3a8a;font-size:15px;font-weight:700;border-top:1px solid #e2e8f0;padding-top:15px;">${abstractData.title || '—'}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Session:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.topic || '—'}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Category:</td><td style="padding:10px 0;color:#111827;font-size:15px;text-transform:capitalize;">${abstractData.interest || abstractData.category || '—'}</td></tr>
+      </table>
+    </div>`;
+
+        if (abstractData.abstractText) {
+            html += `<div style="margin-bottom:30px;"><h3 style="margin:0 0 12px;font-size:14px;color:#64748b;text-transform:uppercase;letter-spacing:1px;">Abstract Body Text</h3><div style="background:#f8fafc;padding:20px;border-radius:10px;border-left:4px solid #3b82f6;font-size:14px;line-height:1.7;color:#374151;white-space:pre-wrap;">${abstractData.abstractText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
+        }
+
+        if (absoluteFileUrl) {
+            html += `<div style="text-align:center;margin-top:40px;padding-top:30px;border-top:1px solid #f1f5f9;"><p style="margin:0 0 15px;font-size:14px;color:#64748b;">Attached document is available for download:</p><a href="${absoluteFileUrl}" style="display:inline-block;padding:14px 30px;background:#2563eb;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(37, 99, 235, 0.2);">Download Abstract File</a><p style="margin:10px 0 0;font-size:12px;color:#94a3b8;">File: ${abstractData.fileName || 'document'}</p></div>`;
+        }
+
+        html += `<div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;"><p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2026 SCIENGASUMMITS. All rights reserved.</p></div></div></body></html>`;
 
         try {
-            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()} System" <${fromUser}>`, to: adminEmail, subject, html });
-            console.log(`âœ… Abstract admin email sent to ${adminEmail}`);
+            await transporter.sendMail({ from: `"${confName} System" <${fromUser}>`, to: adminEmail, subject, html });
+            console.log(`✅ Abstract admin email sent to ${adminEmail}`);
             return { success: true };
         } catch (err) {
-            console.error(`âŒ Abstract admin email error:`, err.message);
+            console.error(`❌ Abstract admin email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
+
 
     /**
      * Send a submission confirmation to the abstract author.
@@ -600,125 +623,149 @@ export class RealEmailSender {
     }
 
     /**
-     * Send a registration + payment notification to the conference admin.
-     * Works for ALL conferences (not just liutex).
+     * Send a professional registration notification to the admin.
      */
-    async sendRegistrationToAdmin(reg, conferenceId = 'liutex') {
+    async sendRegistrationToAdmin(regData, conferenceId = 'liutex') {
         const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const name        = reg.name || 'N/A';
-        const email       = reg.email || 'N/A';
-        const phone       = reg.phone || 'N/A';
-        const country     = reg.country || 'N/A';
-        const affiliation = reg.affiliation || 'N/A';
-        const address     = reg.address || 'N/A';
-        const category    = reg.category || 'N/A';
-        const coupon      = reg.coupon || 'â€”';
-        const amount      = reg.finalAmount || reg.amount || 0;
-        const currency    = reg.currency || 'USD';
-        const payMethod   = reg.paymentMethod || 'â€”';
-        const paymentId   = reg.razorpayPaymentId || 'â€”';
-        const orderId     = reg.razorpayOrderId || 'â€”';
-        const status      = reg.status || 'Pending';
         const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        const confName = conferenceId.toUpperCase();
 
-        const subject = `ðŸŽ‰ New Registration: ${name} â€“ ${amount} ${currency} â€“ ${conferenceId.toUpperCase()}`;
-        const rows = [
-            ['Full Name',    name],
-            ['Email',        email],
-            ['Phone',        phone],
-            ['Country',      country],
-            ['Affiliation',  affiliation],
-            ['Address',      address],
-            ['Category',     category],
-            ['Coupon',       coupon],
-            ['Amount Paid',  `${amount} ${currency}`],
-            ['Payment Method', payMethod],
-            ['Payment Status', status],
-            ['Razorpay Payment ID', paymentId],
-            ['Razorpay Order ID',   orderId],
-            ['Submitted At', submittedAt + ' IST'],
-        ];
+        const subject = `🎫 New Registration: ${regData.name || 'Unknown'} — ${confName}`;
+        
+        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI',Arial,sans-serif;background:#f9fafb;padding:30px;color:#1f2937;">
+<div style="max-width:650px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.05);border:1px solid #e5e7eb;">
+  <div style="background:linear-gradient(135deg,#047857,#10b981);padding:35px;text-align:center;">
+    <h1 style="margin:0;color:#fff;font-size:24px;letter-spacing:-0.5px;">New Registration Received</h1>
+    <p style="margin:10px 0 0;color:#d1fae5;font-size:15px;font-weight:500;">${confName} Conference</p>
+  </div>
+  
+  <div style="padding:40px;">
+    <p style="margin:0 0 25px;font-size:16px;line-height:1.6;color:#374151;">
+      A new registration has been received for the <strong>${confName}</strong> conference. Please find the participant details below:
+    </p>
 
-        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
-<div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
-  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">ðŸŽ‰ New Registration Confirmed</h1>
-    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()} Â· Payment: ${status}</p>
+    <div style="background:#f8fafc;border-radius:12px;padding:30px;border:1px solid #f1f5f9;margin-bottom:30px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:14px;width:150px;">Full Name:</td>
+          <td style="padding:10px 0;color:#111827;font-size:15px;font-weight:600;">${regData.name || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:14px;">Email Address:</td>
+          <td style="padding:10px 0;color:#111827;font-size:15px;"><a href="mailto:${regData.email}" style="color:#059669;text-decoration:none;">${regData.email || '—'}</a></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:14px;">Phone / Mobile:</td>
+          <td style="padding:10px 0;color:#111827;font-size:15px;">${regData.phone || regData.number || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:14px;border-top:1px solid #e2e8f0;padding-top:15px;">Registration Category:</td>
+          <td style="padding:10px 0;color:#065f46;font-size:15px;font-weight:700;border-top:1px solid #e2e8f0;padding-top:15px;">${regData.category || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:14px;">Country:</td>
+          <td style="padding:10px 0;color:#111827;font-size:15px;">${regData.country || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:14px;">Organization:</td>
+          <td style="padding:10px 0;color:#111827;font-size:15px;">${regData.organization || regData.affiliation || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:14px;">Registration Date:</td>
+          <td style="padding:10px 0;color:#111827;font-size:15px;">${submittedAt} IST</td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="background:#f0fdf4;padding:20px;border-radius:10px;border:1px solid #d1fae5;text-align:center;">
+      <p style="margin:0;color:#065f46;font-size:14px;">
+        This registration has been recorded in the database and is accessible via the admin dashboard.
+      </p>
+    </div>
   </div>
-  <div style="background:#ecfdf5;border-bottom:2px solid #6ee7b7;padding:14px 32px;">
-    <p style="margin:0;color:#065f46;font-weight:600;">ðŸ’³ Amount Paid: ${amount} ${currency}</p>
-  </div>
-  <div style="padding:24px 32px;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-      ${rows.map(([label, val], i) => `
-      <tr style="background:${i%2===0?'#f8faff':'#fff'}">
-        <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;width:40%;">${label}</td>
-        <td style="padding:8px 12px;color:#111827;font-size:14px;">${val}</td>
-      </tr>`).join('')}
-    </table>
-    ${reg.description ? `
-    <h3 style="color:#1e3a8a;font-size:14px;margin:20px 0 8px;">Package Breakdown</h3>
-    <div style="background:#f8faff;border-left:4px solid #2563eb;padding:14px;border-radius:4px;font-size:13px;color:#374151;">
-      ${reg.description.replace(/\n/g,'<br/>')}
-    </div>` : ''}
-  </div>
-  <div style="background:#f8faff;border-top:1px solid #e5e7eb;padding:14px 32px;text-align:center;">
-    <p style="margin:0;color:#9ca3af;font-size:12px;">Automated notification Â· ${conferenceId.toUpperCase()} Registration System</p>
+
+  <div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;">
+    <p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2026 SCIENGASUMMITS. All rights reserved.</p>
   </div>
 </div></body></html>`;
 
         try {
-            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()} System" <${fromUser}>`, to: adminEmail, subject, html });
-            console.log(`âœ… Registration admin email sent to ${adminEmail}`);
+            await transporter.sendMail({ from: `"${confName} Registration" <${fromUser}>`, to: adminEmail, subject, html });
+            console.log(`✅ Registration admin email sent to ${adminEmail}`);
             return { success: true };
         } catch (err) {
-            console.error(`âŒ Registration admin email error:`, err.message);
+            console.error(`❌ Registration admin email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
 
     /**
-     * Send a registration confirmation to the registrant.
+     * Send a professional registration confirmation to the participant.
      */
-    async sendRegistrationConfirmationToUser(reg, conferenceId = 'liutex') {
+    async sendRegistrationConfirmationToUser(regData, conferenceId = 'liutex') {
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const amount   = reg.finalAmount || reg.amount || 0;
-        const currency = reg.currency || 'USD';
-        const subject  = `âœ… Registration Confirmed â€“ ${conferenceId.toUpperCase()}`;
-        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
-<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
-  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">âœ… Registration Confirmed</h1>
-    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
+        const confName = conferenceId.toUpperCase();
+        const subject = `✅ Registration Confirmed — ${confName}`;
+        
+        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI',Arial,sans-serif;background:#f3f4f6;padding:30px;color:#1f2937;">
+<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#059669,#10b981);padding:40px;text-align:center;">
+    <div style="background:rgba(255,255,255,0.2);display:inline-block;padding:8px 16px;border-radius:8px;color:#fff;font-size:13px;font-weight:700;margin-bottom:15px;text-transform:uppercase;letter-spacing:1px;">${confName}</div>
+    <h1 style="margin:0;color:#fff;font-size:26px;letter-spacing:-0.5px;">Registration Confirmed</h1>
   </div>
-  <div style="padding:28px 32px;">
-    <p style="color:#374151;">Dear <strong>${reg.name || 'Participant'}</strong>,</p>
-    <p style="color:#374151;">Your registration for <strong>${conferenceId.toUpperCase()}</strong> has been successfully received.</p>
-    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:16px 20px;margin:20px 0;">
-      <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Category: <strong>${reg.category || 'â€”'}</strong></p>
-      <p style="margin:0;font-size:16px;font-weight:700;color:#065f46;">Amount Paid: ${amount} ${currency}</p>
+  
+  <div style="padding:40px;">
+    <p style="margin:0 0 20px;font-size:17px;color:#374151;">Dear <strong>${regData.name}</strong>,</p>
+    <p style="margin:0 0 25px;font-size:15px;line-height:1.7;color:#4b5563;">
+      We are delighted to confirm your registration for the <strong>${confName}</strong>. Your participation has been successfully recorded in our system.
+    </p>
+
+    <div style="background:#f0fdf4;border-radius:12px;padding:25px;border:1px solid #d1fae5;margin-bottom:25px;">
+      <h3 style="margin:0 0 15px;font-size:13px;color:#065f46;text-transform:uppercase;letter-spacing:1px;">Registration Summary</h3>
+      <table width="100%" style="border-collapse:collapse;">
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#065f46;opacity:0.8;">Category:</td>
+          <td style="padding:6px 0;font-size:14px;color:#064e3b;font-weight:700;">${regData.category || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#065f46;opacity:0.8;">Date:</td>
+          <td style="padding:6px 0;font-size:14px;color:#064e3b;font-weight:600;">${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+        </tr>
+      </table>
     </div>
-    <p style="color:#374151;">Our team will be in touch with further details. Thank you for registering!</p>
-    <p style="color:#374151;">Best Regards,<br/><strong>${conferenceId.toUpperCase()} Organizing Committee</strong></p>
+
+    <p style="margin:0 0 25px;font-size:15px;line-height:1.7;color:#4b5563;">
+      You will receive further updates regarding the conference schedule, venue details, and speaker announcements as we get closer to the event dates.
+    </p>
+
+    <div style="border-top:1px solid #e5e7eb;padding-top:25px;margin-top:10px;">
+      <p style="margin:0;font-size:14px;color:#6b7280;">Warm Regards,</p>
+      <p style="margin:5px 0 0;font-size:16px;font-weight:700;color:#065f46;">${confName} Organizing Committee</p>
+    </div>
+  </div>
+  
+  <div style="background:#f9fafb;padding:20px;text-align:center;border-top:1px solid #f3f4f6;">
+    <p style="margin:0;color:#9ca3af;font-size:12px;">This is an automated confirmation of your conference registration.</p>
   </div>
 </div></body></html>`;
 
         try {
-            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()}" <${fromUser}>`, to: reg.email, subject, html });
+            await transporter.sendMail({ from: `"${confName} Registration" <${fromUser}>`, to: regData.email, subject, html });
             return { success: true };
         } catch (err) {
-            console.error(`âŒ Registration user confirmation error:`, err.message);
+            console.error(`❌ Registration user confirmation error:`, err.message);
             return { success: false, error: err.message };
         }
     }
 }
+
 
 
 
