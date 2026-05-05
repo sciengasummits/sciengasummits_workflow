@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, Search, ChevronsUpDown, Filter, Download, RefreshCw, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { FileText, Search, ChevronsUpDown, Filter, Download, RefreshCw, ChevronLeft, ChevronRight, ExternalLink, Eye, EyeOff } from 'lucide-react';
 import { getAbstracts, updateAbstractStatus } from '@/lib/api';
 
 function formatDate(dateStr) {
-    if (!dateStr) return 'â€”';
+    if (!dateStr) return '—';
     const d = new Date(dateStr);
     if (isNaN(d)) return dateStr;
     return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -28,7 +28,7 @@ const INTEREST_BADGE = {
 function InterestBadge({ interest }) {
     const v = interest?.toLowerCase() || '';
     const cfg = Object.entries(INTEREST_BADGE).find(([k]) => v.includes(k))?.[1];
-    if (!cfg) return <span style={{ color: '#64748b', fontSize: 12 }}>{interest || 'â€”'}</span>;
+    if (!cfg) return <span style={{ color: '#64748b', fontSize: 12 }}>{interest || '—'}</span>;
     return (
         <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: cfg.bg, color: cfg.color, whiteSpace: 'nowrap' }}>
             {cfg.label}
@@ -36,9 +36,14 @@ function InterestBadge({ interest }) {
     );
 }
 
-// Map conferenceId â†’ the website that serves /uploads/ files
+// Map conferenceId — the website that serves /uploads/ files
+const IS_DEV = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || 
+     window.location.hostname === '127.0.0.1' || 
+     process.env.NODE_ENV === 'development');
+
 const CONFERENCE_SITE_URLS = {
-    liutex:      process.env.NEXT_PUBLIC_LIUTEX_URL      || 'https://liutexsummit2026.sciengasummits.com',
+    liutex:      process.env.NEXT_PUBLIC_LIUTEX_URL      || (IS_DEV ? 'http://127.0.0.1:5050' : 'https://liutexsummit2026.sciengasummits.com'),
     foodagri:    process.env.NEXT_PUBLIC_FOODAGRI_URL    || 'https://foodagrisummit.sciengasummits.com',
     fluid:       process.env.NEXT_PUBLIC_FLUID_URL       || 'https://fluidsummit.sciengasummits.com',
     renewable:   process.env.NEXT_PUBLIC_RENEWABLE_URL   || 'https://renewablesummit.sciengasummits.com',
@@ -49,17 +54,22 @@ const CONFERENCE_SITE_URLS = {
     icemmae2027: process.env.NEXT_PUBLIC_ICEMMAE_URL     || 'https://icemmae2027.sciengasummits.com',
 };
 
-/** Turns /uploads/foo.docx â†’ https://website.com/uploads/foo.docx */
+/** Turns /uploads/foo.docx —> https://website.com/uploads/foo.docx */
 function resolveFileUrl(fileUrl, conferenceId) {
     if (!fileUrl) return '';
     if (fileUrl.startsWith('http')) return fileUrl; 
     const id = (conferenceId || '').toLowerCase() || 'liutex';
     const base = (CONFERENCE_SITE_URLS[id] || CONFERENCE_SITE_URLS.liutex).replace(/\/$/, '');
-    return `${base}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+    const finalUrl = `${base}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+    
+    if (IS_DEV) console.log(`[FileResolver] Resolved ${fileUrl} to: ${finalUrl}`);
+    
+    return finalUrl;
 }
 
 export default function ViewAbstracts({ conf }) {
     const [rows, setRows] = useState([]);
+    const [expandedId, setExpandedId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -189,6 +199,7 @@ export default function ViewAbstracts({ conf }) {
                                 <th onClick={() => handleSort('interest')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Category <SortIcon field="interest" /></th>
                                 <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Organization</th>
                                 <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Topic</th>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Abstract</th>
                                 <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>File</th>
                                 <th onClick={() => handleSort('createdAt')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Date <SortIcon field="createdAt" /></th>
                                 <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Status</th>
@@ -212,26 +223,37 @@ export default function ViewAbstracts({ conf }) {
                                 const uid = row._id || row.id;
                                 const statusCfg = STATUS_COLORS[row.status] || STATUS_COLORS.Pending;
                                 const absUrl = resolveFileUrl(row.fileUrl, row.conference || conf?.conferenceId);
+                                const isExpanded = expandedId === uid;
                                 
                                 return (
-                                    <tr key={uid} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' }} className="hover:bg-slate-50">
+                                    <React.Fragment key={uid}>
+                                    <tr style={{ borderBottom: isExpanded ? 'none' : '1px solid #f1f5f9', background: isExpanded ? '#f8faff' : undefined, transition: 'background 0.2s' }} className="hover:bg-slate-50">
                                         <td style={{ padding: '16px 20px', fontSize: 13, color: '#64748b' }}>{startIdx + idx}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 500, color: '#1e293b' }}>{row.title || 'â€”'}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 600, color: '#4f46e5' }}>{row.name || 'â€”'}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.country || 'â€”'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 500, color: '#1e293b' }}>{row.title || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 600, color: '#4f46e5' }}>{row.name || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.country || '—'}</td>
                                         <td style={{ padding: '16px 20px', fontSize: 13 }}>
-                                            <a href={`mailto:${row.email}`} style={{ color: '#2563eb', textDecoration: 'none' }}>{row.email || 'â€”'}</a>
+                                            <a href={`mailto:${row.email}`} style={{ color: '#2563eb', textDecoration: 'none' }}>{row.email || '—'}</a>
                                         </td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.phone || 'â€”'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.phone || '—'}</td>
                                         <td style={{ padding: '16px 20px' }}><InterestBadge interest={row.interest} /></td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#7c3aed', fontWeight: 500 }}>{row.organization || 'â€”'}</td>
-                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#0891b2' }}>{row.topic || 'â€”'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#7c3aed', fontWeight: 500 }}>{row.organization || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#0891b2' }}>{row.topic || '—'}</td>
+                                        <td style={{ padding: '16px 20px' }}>
+                                            <button
+                                                onClick={() => setExpandedId(isExpanded ? null : uid)}
+                                                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: isExpanded ? '#ede9fe' : '#f1f5f9', borderRadius: 8, fontSize: 12, fontWeight: 600, color: isExpanded ? '#7c3aed' : '#475569', border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                                            >
+                                                {isExpanded ? <EyeOff size={14} /> : <Eye size={14} />}
+                                                {isExpanded ? 'Hide' : 'View'}
+                                            </button>
+                                        </td>
                                         <td style={{ padding: '16px 20px' }}>
                                             {absUrl ? (
                                                 <a href={absUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: '#f1f5f9', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#475569', textDecoration: 'none', border: '1px solid #e2e8f0' }}>
                                                     <Download size={14} /> Doc <ExternalLink size={12} />
                                                 </a>
-                                            ) : <span style={{ color: '#cbd5e1', fontSize: 12 }}>â€”</span>}
+                                            ) : <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>}
                                         </td>
                                         <td style={{ padding: '16px 20px', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>{formatDate(row.createdAt)}</td>
                                         <td style={{ padding: '16px 20px' }}>
@@ -244,6 +266,39 @@ export default function ViewAbstracts({ conf }) {
                                             </select>
                                         </td>
                                     </tr>
+                                    {isExpanded && (
+                                        <tr style={{ background: '#f8faff', borderBottom: '1px solid #e2e8f0' }}>
+                                            <td colSpan={13} style={{ padding: '20px 40px' }}>
+                                                <div style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24, marginBottom: 20 }}>
+                                                        {row.affiliation && (
+                                                            <div>
+                                                                <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Affiliation</h4>
+                                                                <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.affiliation}</p>
+                                                            </div>
+                                                        )}
+                                                        {row.address && (
+                                                            <div>
+                                                                <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Address</h4>
+                                                                <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.address}</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h4 style={{ margin: '0 0 8px 0', fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Abstract Text</h4>
+                                                        {row.abstractText ? (
+                                                            <div style={{ padding: 16, background: '#f8fafc', borderRadius: 8, fontSize: 14, color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                                                                {row.abstractText}
+                                                            </div>
+                                                        ) : (
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', fontStyle: 'italic' }}>No abstract text provided.</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                    </React.Fragment>
                                 );
                             })}
                         </tbody>
