@@ -154,7 +154,7 @@ const CONFERENCE_CONFIG = {
     brandTop: 'ICEMMAE',
     brandSub: 'SUMMIT 2027',
     footerText: '© Copyright 2027 ICEMMAE SUMMIT.',
-    email: 'icmmae@sciengasummits.com',
+    email: 'icemmae@sciengasummits.com',
     accentColor: '#0369a1',
     accentGlow: 'rgba(3,105,161,0.35)',
   },

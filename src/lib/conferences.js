@@ -50,7 +50,7 @@ export const CONFERENCE_ACCOUNTS = [
     },
     {
         username: 'ICEMMAE2027',
-        email: process.env.ICEMMAE_EMAIL || 'icmmae@sciengasummits.com',
+        email: process.env.ICEMMAE_EMAIL || 'icemmae@sciengasummits.com',
         conferenceId: 'icemmae2027',
         displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027',
     },
@@ -171,7 +171,7 @@ export const CONFERENCE_CONFIG = {
         brandTop: 'ICEMMAE',
         brandSub: 'SUMMIT 2027',
         footerText: '© Copyright 2027 ICEMMAE SUMMIT.',
-        email: 'icmmae@sciengasummits.com',
+        email: 'icemmae@sciengasummits.com',
         accentColor: '#0369a1',
         accentGlow: 'rgba(3,105,161,0.35)',
     },
