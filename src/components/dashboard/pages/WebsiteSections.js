@@ -89,7 +89,13 @@ export default function WebsiteSections({ section, conf }) {
             'Workshop & Breakout Session Details',
             'Venue Maps & Accommodation Guide',
             'Sponsorship & Exhibition Opportunities',
-        ]
+        ],
+        // Add digital brochure fields to prevent overwriting with defaults
+        digitalTitle: '',
+        overview: '',
+        objectives: [],
+        audience: [],
+        themes: []
     });
     const [marquee, setMarquee] = useState({ title: 'Supporting Universities & Institutions', items: [] });
     const [partners, setPartners] = useState({ title: 'Promoting & Media Partners', items: [] });
