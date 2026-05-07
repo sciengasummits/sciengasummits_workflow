@@ -52,6 +52,10 @@ export class RealEmailSender {
                 user: process.env.ICEMMAE_SMTP_USER || this._defaultUser,
                 pass: (process.env.ICEMMAE_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            polymat: {
+                user: process.env.POLYMAT_SMTP_USER || this._defaultUser,
+                pass: (process.env.POLYMAT_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account
@@ -502,6 +506,7 @@ export class RealEmailSender {
             iqce2027:    process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL,
             icogwh:      process.env.ICOGWH_EMAIL,
             icemmae2027: process.env.ICEMMAE_EMAIL,
+            polymat:     process.env.POLYMAT_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)

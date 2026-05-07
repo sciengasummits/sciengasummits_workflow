@@ -38,7 +38,7 @@ export const CONFERENCE_ACCOUNTS = [
     },
     {
         username: 'IQCE2027',
-        email: process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL || 'quantumenginee@sciengasummits.com',
+        email: process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL || 'quantumengineering@sciengasummits.com',
         conferenceId: 'iqce2027',
         displayName: 'QUANTUM COMPUTING & ENGINEERING SUMMIT 2027',
     },
@@ -53,6 +53,12 @@ export const CONFERENCE_ACCOUNTS = [
         email: process.env.ICEMMAE_EMAIL || 'icemmae@sciengasummits.com',
         conferenceId: 'icemmae2027',
         displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027',
+    },
+    {
+        username: 'POLYMATSUMMIT2026',
+        email: process.env.POLYMAT_EMAIL || 'contact@polymatsummit.com',
+        conferenceId: 'polymat',
+        displayName: 'ANNUAL INTERNATIONAL CONFERENCE ON POLYMERS AND COMPOSITE MATERIALS 2026',
     },
 ];
 
