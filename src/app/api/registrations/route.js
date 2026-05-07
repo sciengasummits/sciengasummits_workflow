@@ -51,6 +51,10 @@ export async function POST(request) {
         await reg.save();
 
         const conferenceId = sanitized.conference || 'liutex';
+        
+        // Add registration counter
+        const registrationCount = await Registration.countDocuments({ conference: conferenceId });
+        sanitized.counter = registrationCount;
 
         // Notify admin with full registration + payment details
         try {

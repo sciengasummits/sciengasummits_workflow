@@ -14,7 +14,7 @@ export class RealEmailSender {
         this._defaultUser = process.env.SMTP_USER || 'liutex@sciengasummits.com';
         this._defaultPass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
 
-        // Per-conference credential map  { conferenceId â†’ { user, pass } }
+        // Per-conference credential map  { conferenceId → { user, pass } }
         this._accounts = {
             liutex: {
                 user: process.env.LIUTEX_SMTP_USER || this._defaultUser,
@@ -63,7 +63,7 @@ export class RealEmailSender {
         for (const [confId, creds] of Object.entries(this._accounts)) {
             // If the password is a placeholder or empty, fall back to liutex at send time
             if (!creds.pass || creds.pass.startsWith('REPLACE_WITH')) {
-                console.warn(`âš ï¸  No valid SMTP password for "${confId}" â€” will fall back to liutex sender`);
+                console.warn(`⚠️   No valid SMTP password for "${confId}" — will fall back to liutex sender`);
                 continue;
             }
 
@@ -106,7 +106,7 @@ export class RealEmailSender {
             : this.user;
 
         try {
-            console.log(`ðŸ“§ Attempting Gmail send â†’ from: ${fromUser}  to: ${to}`);
+            console.log(`📧 Attempting Gmail send → from: ${fromUser}  to: ${to}`);
 
             const info = await transporter.sendMail({
                 from: `"Conference Management System" <${fromUser}>`,
@@ -116,11 +116,11 @@ export class RealEmailSender {
                 text: `Your OTP is: ${otp}. It is valid for 10 minutes.`,
             });
 
-            console.log(`âœ… Email sent! Message ID: ${info.messageId}`);
-            console.log(`ðŸ“§ OTP delivered: ${otp}`);
+            console.log(`✅ Email sent! Message ID: ${info.messageId}`);
+            console.log(`📧 OTP delivered: ${otp}`);
             return { success: true, messageId: info.messageId };
         } catch (error) {
-            console.error(`âŒ Nodemailer Gmail error:`, error.message);
+            console.error(`❌ Nodemailer Gmail error:`, error.message);
             return { success: false, error: error.message };
         }
     }
@@ -141,7 +141,7 @@ export class RealEmailSender {
             ? this._accounts[conferenceId].user
             : this.user;
 
-        // â”€â”€ Derive display values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // —— Derive display values —————————————————————————————————
         const registrantName  = reg.name  || 'N/A';
         const registrantEmail = reg.email || 'N/A';
         const phone           = reg.phone || 'N/A';
@@ -149,11 +149,11 @@ export class RealEmailSender {
         const affiliation     = reg.affiliation || reg.company || 'N/A';
         const address         = reg.address || 'N/A';
         const category        = reg.category || reg.registrationCategory || 'N/A';
-        const sponsorship     = reg.sponsorship || 'â€”';
-        const accommodation   = reg.accommodation || 'â€”';
+        const sponsorship     = reg.sponsorship || '—';
+        const accommodation   = reg.accommodation || '—';
         const accompanying    = reg.accompanyingPerson ? 'Yes' : 'No';
         const totalAmount     = reg.totalAmount || reg.amount || 0;
-        const coupon          = reg.coupon || 'â€”';
+        const coupon          = reg.coupon || '—';
         const paymentId       = paymentIds.razorpay_payment_id || reg.paymentId || reg.razorpayPaymentId || 'N/A';
         const orderId         = paymentIds.razorpay_order_id  || reg.orderId  || reg.razorpayOrderId  || 'N/A';
         const registrationId  = reg._id ? String(reg._id) : 'N/A';
@@ -164,16 +164,16 @@ export class RealEmailSender {
         const descriptionRows = (reg.description || '')
             .split('\n')
             .filter(Boolean)
-            .map(line => `<tr><td colspan="2" style="padding:4px 12px;color:#374151;font-size:13px;">â€¢ ${line}</td></tr>`)
+            .map(line => `<tr><td colspan="2" style="padding:4px 12px;color:#374151;font-size:13px;">• ${line}</td></tr>`)
             .join('');
 
-        // â”€â”€ HTML template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // —— HTML template ——————————————————————————————————————
         const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>New Registration â€“ LIUTEX Summit 2026</title>
+  <title>New Registration – LIUTEX Summit 2026</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
@@ -184,10 +184,10 @@ export class RealEmailSender {
         <tr>
           <td style="background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);padding:32px 36px;text-align:center;">
             <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.5px;">
-              âœ… New Registration Confirmed
+              ✅ New Registration Confirmed
             </h1>
             <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">
-              LIUTEX Vortex Summit 2026 Â· Payment Successful
+              LIUTEX Vortex Summit 2026 · Payment Successful
             </p>
           </td>
         </tr>
@@ -196,7 +196,7 @@ export class RealEmailSender {
         <tr>
           <td style="background:#ecfdf5;border-bottom:2px solid #6ee7b7;padding:16px 36px;text-align:center;">
             <p style="margin:0;color:#065f46;font-size:15px;font-weight:600;">
-              ðŸŽ‰ Payment verified &amp; registration is now <strong>PAID</strong>
+              🎉 Payment verified &amp; registration is now <strong>PAID</strong>
             </p>
           </td>
         </tr>
@@ -207,7 +207,7 @@ export class RealEmailSender {
 
             <!-- Registrant Details -->
             <h2 style="margin:0 0 14px;font-size:15px;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid #dbeafe;padding-bottom:6px;">
-              ðŸ‘¤ Registrant Details
+              👤 Registrant Details
             </h2>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
               <tr style="background:#f8faff;">
@@ -238,7 +238,7 @@ export class RealEmailSender {
 
             <!-- Registration Details -->
             <h2 style="margin:0 0 14px;font-size:15px;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid #dbeafe;padding-bottom:6px;">
-              ðŸ“‹ Registration Details
+              📋 Registration Details
             </h2>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
               <tr style="background:#f8faff;">
@@ -270,7 +270,7 @@ export class RealEmailSender {
 
             <!-- Payment Summary -->
             <h2 style="margin:0 0 14px;font-size:15px;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid #dbeafe;padding-bottom:6px;">
-              ðŸ’³ Payment Summary
+              💳 Payment Summary
             </h2>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
               <tr style="background:#f0fdf4;">
@@ -279,7 +279,7 @@ export class RealEmailSender {
               </tr>
               <tr>
                 <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;">Payment Status</td>
-                <td style="padding:8px 12px;"><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">âœ… PAID</span></td>
+                <td style="padding:8px 12px;"><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">✅ PAID</span></td>
               </tr>
               <tr style="background:#f8faff;">
                 <td style="padding:8px 12px;font-weight:600;color:#6b7280;font-size:13px;">Razorpay Payment ID</td>
@@ -307,7 +307,7 @@ export class RealEmailSender {
           <td style="background:#f8faff;border-top:1px solid #e5e7eb;padding:20px 36px;text-align:center;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
               This is an automated notification from the LIUTEX Vortex Summit 2026 registration system.<br/>
-              Â© 2026 SciEnga Summits Â· <a href="mailto:liutex@sciengasummits.com" style="color:#2563eb;">liutex@sciengasummits.com</a>
+              © 2026 SciEnga Summits · <a href="mailto:liutex@sciengasummits.com" style="color:#2563eb;">liutex@sciengasummits.com</a>
             </p>
           </td>
         </tr>
@@ -318,7 +318,7 @@ export class RealEmailSender {
 </body>
 </html>`;
 
-        const subject = `ðŸŽ‰ New Registration: ${registrantName} Â· $${totalAmount} USD Â· LIUTEX Summit 2026`;
+        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · LIUTEX Summit 2026`;
 
         try {
             const info = await transporter.sendMail({
@@ -328,10 +328,10 @@ export class RealEmailSender {
                 html,
                 text: `New Registration Confirmed\n\nName: ${registrantName}\nEmail: ${registrantEmail}\nPhone: ${phone}\nCountry: ${country}\nCategory: ${category}\nTotal Amount: $${totalAmount} USD\nPayment ID: ${paymentId}\nOrder ID: ${orderId}\nRegistration ID: ${registrationId}`,
             });
-            console.log(`âœ… Registration confirmation email sent to ${adminEmail} â€” MsgID: ${info.messageId}`);
+            console.log(`✅ Registration confirmation email sent to ${adminEmail} — MsgID: ${info.messageId}`);
             return { success: true, messageId: info.messageId };
         } catch (err) {
-            console.error(`âŒ Failed to send registration confirmation email:`, err.message);
+            console.error(`❌ Failed to send registration confirmation email:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -346,7 +346,7 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this.user;
             
-        const subject = `ðŸ“¢ Program Schedule Requested by ${name} - ${conferenceId.toUpperCase()}`;
+        const subject = `📢 Program Schedule Requested by ${name} - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; background: #f3f4f6; padding: 20px;">
                 <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px;">
@@ -368,10 +368,10 @@ export class RealEmailSender {
                 subject,
                 html,
             });
-            console.log(`âœ… Admin program request email sent â€” MsgID: ${info.messageId}`);
+            console.log(`✅ Admin program request email sent — MsgID: ${info.messageId}`);
             return { success: true };
         } catch (err) {
-            console.error(`âŒ Admin program request email error:`, err.message);
+            console.error(`❌ Admin program request email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -403,10 +403,10 @@ export class RealEmailSender {
                 subject,
                 html,
             });
-            console.log(`âœ… User program request email sent to ${email} â€” MsgID: ${info.messageId}`);
+            console.log(`✅ User program request email sent to ${email} — MsgID: ${info.messageId}`);
             return { success: true };
         } catch (err) {
-            console.error(`âŒ User program request email error:`, err.message);
+            console.error(`❌ User program request email error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -419,7 +419,7 @@ export class RealEmailSender {
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
-        const subject = `ðŸ”” New Subscription Request - ${conferenceId.toUpperCase()}`;
+        const subject = `🔔 New Subscription Request - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h3>New Subscription Request</h3>
@@ -445,7 +445,7 @@ export class RealEmailSender {
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
-        const subject = `ðŸ“„ Brochure Downloaded by ${name} - ${conferenceId.toUpperCase()}`;
+        const subject = `📄 Brochure Downloaded by ${name} - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h3>Brochure Access Request</h3>
@@ -471,7 +471,7 @@ export class RealEmailSender {
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
-        const emailSubject = `âœ‰ï¸ New Contact Message: ${subject} - ${conferenceId.toUpperCase()}`;
+        const emailSubject = `✉️ New Contact Message: ${subject} - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h3>New Contact Us Message</h3>
@@ -522,7 +522,15 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        const submittedAt = new Date().toLocaleString('en-US', { 
+          year: 'numeric', 
+          month: 'numeric', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true 
+        });
         const confName = conferenceId.toUpperCase();
 
         const CONFERENCE_URLS = {
@@ -547,38 +555,31 @@ export class RealEmailSender {
 
         const subject = `📄 New Abstract Submitted: ${abstractData.name || 'Unknown'} — ${confName}`;
         
-        let html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI',Arial,sans-serif;background:#f9fafb;padding:30px;color:#1f2937;">
-<div style="max-width:650px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.05);border:1px solid #e5e7eb;">
-  <div style="background:linear-gradient(135deg,#1e3a8a,#3b82f6);padding:35px;text-align:center;">
-    <h1 style="margin:0;color:#fff;font-size:24px;letter-spacing:-0.5px;">Abstract Submission Confirmation</h1>
-    <p style="margin:10px 0 0;color:#bfdbfe;font-size:15px;font-weight:500;">${confName} Conference</p>
+        let html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff; padding: 20px; color: #000;">
+<div style="max-width: 700px; margin: 0 auto;">
+  <div style="text-align: center; padding-bottom: 20px;">
+    <h2 style="margin: 0; color: #000; font-size: 24px; font-weight: bold;">Abstract Submission Confirmation for ${confName}</h2>
+    <p style="margin: 10px 0 0; color: #555; font-size: 14px;">Abstract Received for ${confName} conference. Please find the details below</p>
   </div>
-  <div style="padding:40px;">
-    <p style="margin:0 0 25px;font-size:16px;line-height:1.6;color:#374151;">An abstract has been received for the <strong>${confName}</strong> conference. Please find the details below:</p>
-    <div style="background:#f8fafc;border-radius:12px;padding:30px;border:1px solid #f1f5f9;margin-bottom:30px;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;width:150px;">Name:</td><td style="padding:10px 0;color:#111827;font-size:15px;font-weight:600;">${abstractData.name || '—'}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Abstract Date:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${submittedAt} IST</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Email:</td><td style="padding:10px 0;color:#111827;font-size:15px;"><a href="mailto:${abstractData.email}" style="color:#2563eb;text-decoration:none;">${abstractData.email || '—'}</a></td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Mobile Number:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.phone || '—'}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Organization:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.organization || abstractData.affiliation || '—'}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Country:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.country || '—'}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Address:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.address || '—'}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;border-top:1px solid #e2e8f0;padding-top:15px;">Abstract Title:</td><td style="padding:10px 0;color:#1e3a8a;font-size:15px;font-weight:700;border-top:1px solid #e2e8f0;padding-top:15px;">${abstractData.title || '—'}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Session:</td><td style="padding:10px 0;color:#111827;font-size:15px;">${abstractData.topic || '—'}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:14px;">Category:</td><td style="padding:10px 0;color:#111827;font-size:15px;text-transform:capitalize;">${abstractData.interest || abstractData.category || '—'}</td></tr>
-      </table>
-    </div>`;
-
-        if (abstractData.abstractText) {
-            html += `<div style="margin-bottom:30px;"><h3 style="margin:0 0 12px;font-size:14px;color:#64748b;text-transform:uppercase;letter-spacing:1px;">Abstract Body Text</h3><div style="background:#f8fafc;padding:20px;border-radius:10px;border-left:4px solid #3b82f6;font-size:14px;line-height:1.7;color:#374151;white-space:pre-wrap;">${abstractData.abstractText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
-        }
-
-        if (absoluteFileUrl) {
-            html += `<div style="text-align:center;margin-top:40px;padding-top:30px;border-top:1px solid #f1f5f9;"><p style="margin:0 0 15px;font-size:14px;color:#64748b;">Attached document is available for download:</p><a href="${absoluteFileUrl}" style="display:inline-block;padding:14px 30px;background:#2563eb;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(37, 99, 235, 0.2);">Download Abstract File</a><p style="margin:10px 0 0;font-size:12px;color:#94a3b8;">File: ${abstractData.fileName || 'document'}</p></div>`;
-        }
-
-        html += `<div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;"><p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2026 SCIENGASUMMITS. All rights reserved.</p></div></div></body></html>`;
+  <div style="background-color: #ececec; padding: 30px; border-radius: 4px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 15px; color: #000;">
+      <tr><td style="padding: 8px 0; font-weight: bold; width: 160px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.name || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Abstract Date:</td><td style="padding: 8px 0; vertical-align: top;">${submittedAt}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${abstractData.email}" style="color: #007bff; text-decoration: underline;">${abstractData.email || '—'}</a></td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Mobile Number:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.phone || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Organization:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.organization || abstractData.affiliation || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Country:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.country || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Address:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.address || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Abstract Title:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.title || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Session:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.topic || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top; text-transform: capitalize;">${abstractData.interest || abstractData.category || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Download Abstract:</td><td style="padding: 8px 0; vertical-align: top;">
+        ${absoluteFileUrl ? `<a href="${absoluteFileUrl}" style="color: #007bff; text-decoration: underline;" target="_blank">Click Here</a>` : 'Not Provided'}
+      </td></tr>
+    </table>
+  </div>
+  <div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;"><p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2026 SCIENGASUMMITS. All rights reserved.</p></div>
+</div></body></html>`;
 
         try {
             await transporter.sendMail({ from: `"${confName} System" <${fromUser}>`, to: adminEmail, subject, html });
@@ -599,11 +600,11 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const subject = `âœ… Abstract Received â€“ ${conferenceId.toUpperCase()}`;
+        const subject = `✅ Abstract Received – ${conferenceId.toUpperCase()}`;
         const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
 <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
   <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
-    <h1 style="margin:0;color:#fff;font-size:20px;">âœ… Abstract Received</h1>
+    <h1 style="margin:0;color:#fff;font-size:20px;">✅ Abstract Received</h1>
     <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
   </div>
   <div style="padding:28px 32px;">
@@ -611,7 +612,7 @@ export class RealEmailSender {
     <p style="color:#374151;">Thank you for submitting your abstract. We have successfully received it and will review it shortly.</p>
     <div style="background:#f8faff;border:1px solid #dbeafe;border-radius:8px;padding:16px 20px;margin:20px 0;">
       <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Submitted Title:</p>
-      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${abstractData.title || 'â€”'}</p>
+      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${abstractData.title || '—'}</p>
     </div>
     <p style="color:#374151;">You will be notified once your abstract has been reviewed.</p>
     <p style="color:#374151;">Best Regards,<br/><strong>${conferenceId.toUpperCase()} Organizing Committee</strong></p>
@@ -622,7 +623,7 @@ export class RealEmailSender {
             await transporter.sendMail({ from: `"${conferenceId.toUpperCase()}" <${fromUser}>`, to: abstractData.email, subject, html });
             return { success: true };
         } catch (err) {
-            console.error(`âŒ Abstract user confirmation error:`, err.message);
+            console.error(`❌ Abstract user confirmation error:`, err.message);
             return { success: false, error: err.message };
         }
     }
@@ -639,27 +640,30 @@ export class RealEmailSender {
         const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
         const confName = conferenceId.toUpperCase();
 
-        const subject = `🎫 New Registration: ${regData.name || 'Unknown'} — ${confName}`;
+        const subject = `📝 New Registration - ${confName}`;
         
-        const html = `<!DOCTYPE html><html><body style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 20px; color: #000000;">
-<div style="background-color: #eef2f5; padding: 20px; font-family: sans-serif; line-height: 1.8;">
-    <p style="margin:0 0 10px;"><b>Name:</b> ${regData.name || '—'}</p>
-    <p style="margin:0 0 10px;"><b>Registration Date:</b> ${submittedAt}</p>
-    <p style="margin:0 0 10px;"><b>Email:</b> <a href="mailto:${regData.email}" style="color: #0563c1;">${regData.email || '—'}</a></p>
-    <p style="margin:0 0 10px;"><b>Phone:</b> ${regData.phone || regData.number || '—'}</p>
-    <p style="margin:0 0 10px;"><b>Country:</b> ${regData.country || '—'}</p>
-    <p style="margin:0 0 10px;"><b>Company/Affiliation:</b> ${regData.organization || regData.affiliation || '—'}</p>
-    <p style="margin:0 0 10px;"><b>Address:</b> ${regData.address || '—'}</p>
-    <p style="margin:0 0 10px;"><b>Category:</b> ${regData.category || '—'}</p>
-    <p style="margin:0 0 10px;"><b>Conference:</b> ${confName}</p>
-    <p style="margin:0 0 10px;"><b>Registration Counter:</b> ${regData.counter ? '#' + regData.counter : '—'}</p>
-    <p style="margin:0 0 10px;"><b>Payment Description:</b> ${regData.description ? regData.description.replace(/\\n/g, ' ') : '—'}</p>
-</div>
-<div style="margin-top: 20px; font-family: sans-serif;">
-    <p style="margin: 0;">Regards,</p>
-    <p style="margin: 0;">${confName}</p>
-</div>
-</body></html>`;
+        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; padding: 20px; color: #000;">
+<div style="max-width: 700px; margin: 0 auto;">
+  <div style="text-align: center; padding-bottom: 20px;">
+    <h2 style="margin: 0; color: #000; font-size: 24px; font-weight: bold;">Registration Confirmation for ${confName}</h2>
+    <p style="margin: 10px 0 0; color: #555; font-size: 14px;">Registration Received for ${confName} conference. Please find the details below</p>
+  </div>
+  <div style="background-color: #ececec; padding: 30px; border-radius: 4px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 15px; color: #000;">
+      <tr><td style="padding: 8px 0; font-weight: bold; width: 180px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${regData.name || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Registration Date:</td><td style="padding: 8px 0; vertical-align: top;">${submittedAt}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${regData.email}" style="color: #007bff; text-decoration: underline;">${regData.email || '—'}</a></td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Phone:</td><td style="padding: 8px 0; vertical-align: top;">${regData.phone || regData.number || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Country:</td><td style="padding: 8px 0; vertical-align: top;">${regData.country || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Company/Affiliation:</td><td style="padding: 8px 0; vertical-align: top;">${regData.affiliation || regData.company || regData.organization || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Address:</td><td style="padding: 8px 0; vertical-align: top;">${regData.address || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top;">${regData.category || regData.registrationCategory || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Conference:</td><td style="padding: 8px 0; vertical-align: top;">${confName}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Registration Counter:</td><td style="padding: 8px 0; vertical-align: top;">#${regData.counter || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Payment Description:</td><td style="padding: 8px 0; vertical-align: top;">${regData.category || regData.registrationCategory || '—'} : $${regData.amount || regData.totalAmount || '0'}</td></tr>
+    </table>
+  </div>
+</div></body></html>`;
 
         try {
             await transporter.sendMail({ from: `"${confName} Registration" <${fromUser}>`, to: adminEmail, subject, html });
@@ -700,7 +704,7 @@ export class RealEmailSender {
       <table width="100%" style="border-collapse:collapse;">
         <tr>
           <td style="padding:6px 0;font-size:14px;color:#065f46;opacity:0.8;">Category:</td>
-          <td style="padding:6px 0;font-size:14px;color:#064e3b;font-weight:700;">${regData.category || '—'}</td>
+          <td style="padding:6px 0;font-size:14px;color:#064e3b;font-weight:700;">${regData.category || regData.registrationCategory || '—'}</td>
         </tr>
         <tr>
           <td style="padding:6px 0;font-size:14px;color:#065f46;opacity:0.8;">Date:</td>
@@ -733,7 +737,3 @@ export class RealEmailSender {
         }
     }
 }
-
-
-
-
