@@ -228,20 +228,6 @@ export default function BrochureDashboard() {
                 {/* Right column: Content details */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-                    {/* Brochure title */}
-                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px' }}>
-                        <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            Conference Title (Synced with View Online)
-                        </label>
-                        <textarea
-                            style={{ width: '100%', padding: '9px 12px', border: '1px solid #e2e8f0', borderRadius: '9px', fontSize: '13px', color: '#1e293b', boxSizing: 'border-box', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
-                            rows={3}
-                            value={data.title}
-                            onChange={e => setData(prev => ({ ...prev, title: e.target.value }))}
-                            placeholder="Conference full name..."
-                        />
-                    </div>
-
                     {/* Description */}
                     <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px' }}>
                         <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
