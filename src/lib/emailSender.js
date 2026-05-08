@@ -523,13 +523,13 @@ export class RealEmailSender {
             ? this._accounts[conferenceId].user : this._defaultUser;
 
         const submittedAt = new Date().toLocaleString('en-US', { 
-          year: 'numeric', 
-          month: 'numeric', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true 
+            year: 'numeric', 
+            month: 'numeric', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true 
         });
         const confName = conferenceId.toUpperCase();
 
@@ -553,9 +553,18 @@ export class RealEmailSender {
             absoluteFileUrl = `${baseUrl.replace(/\/$/, '')}${absoluteFileUrl.startsWith('/') ? '' : '/'}${absoluteFileUrl}`;
         }
 
-        const subject = `📄 New Abstract Submitted: ${abstractData.name || 'Unknown'} — ${confName}`;
+        // Robust field extraction
+        const safeName = (abstractData.name && String(abstractData.name) !== 'undefined') ? abstractData.name : '—';
+        const safeEmail = (abstractData.email && String(abstractData.email) !== 'undefined') ? abstractData.email : '—';
+        const safePhone = (abstractData.phone && String(abstractData.phone) !== 'undefined') ? abstractData.phone : '—';
+        const safeOrg = (abstractData.organization && String(abstractData.organization) !== 'undefined') ? abstractData.organization : (abstractData.affiliation && String(abstractData.affiliation) !== 'undefined') ? abstractData.affiliation : '—';
+        const safeTitle = (abstractData.title && String(abstractData.title) !== 'undefined') ? abstractData.title : '—';
+        const safeTopic = (abstractData.topic && String(abstractData.topic) !== 'undefined') ? abstractData.topic : '—';
+        const safeCategory = (abstractData.interest && String(abstractData.interest) !== 'undefined') ? abstractData.interest : (abstractData.category && String(abstractData.category) !== 'undefined') ? abstractData.category : '—';
+
+        const subject = `📄 New Abstract Submitted: ${safeName} — ${confName}`;
         
-        let html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff; padding: 20px; color: #000;">
+        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff; padding: 20px; color: #000;">
 <div style="max-width: 700px; margin: 0 auto;">
   <div style="text-align: center; padding-bottom: 20px;">
     <h2 style="margin: 0; color: #000; font-size: 24px; font-weight: bold;">Abstract Submission Confirmation for ${confName}</h2>
@@ -563,16 +572,16 @@ export class RealEmailSender {
   </div>
   <div style="background-color: #ececec; padding: 30px; border-radius: 4px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 15px; color: #000;">
-      <tr><td style="padding: 8px 0; font-weight: bold; width: 160px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.name || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; width: 160px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${safeName}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Abstract Date:</td><td style="padding: 8px 0; vertical-align: top;">${submittedAt}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${abstractData.email}" style="color: #007bff; text-decoration: underline;">${abstractData.email || '—'}</a></td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Mobile Number:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.phone || '—'}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Organization:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.organization || abstractData.affiliation || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${safeEmail}" style="color: #007bff; text-decoration: underline;">${safeEmail}</a></td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Mobile Number:</td><td style="padding: 8px 0; vertical-align: top;">${safePhone}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Organization:</td><td style="padding: 8px 0; vertical-align: top;">${safeOrg}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Country:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.country || '—'}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Address:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.address || '—'}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Abstract Title:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.title || '—'}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Session:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.topic || '—'}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top; text-transform: capitalize;">${abstractData.interest || abstractData.category || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Abstract Title:</td><td style="padding: 8px 0; vertical-align: top;">${safeTitle}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Session:</td><td style="padding: 8px 0; vertical-align: top;">${safeTopic}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top; text-transform: capitalize;">${safeCategory}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Download Abstract:</td><td style="padding: 8px 0; vertical-align: top;">
         ${absoluteFileUrl ? `<a href="${absoluteFileUrl}" style="color: #007bff; text-decoration: underline;" target="_blank">Click Here</a>` : 'Not Provided'}
       </td></tr>
@@ -581,8 +590,10 @@ export class RealEmailSender {
   <div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;"><p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2026 SCIENGASUMMITS. All rights reserved.</p></div>
 </div></body></html>`;
 
+        const text = `New Abstract Submitted\n\nName: ${safeName}\nEmail: ${safeEmail}\nPhone: ${safePhone}\nTitle: ${safeTitle}\nOrganization: ${safeOrg}\nCategory: ${safeCategory}\nFile: ${absoluteFileUrl || 'Not Provided'}`;
+
         try {
-            await transporter.sendMail({ from: `"${confName} System" <${fromUser}>`, to: adminEmail, subject, html });
+            await transporter.sendMail({ from: `"${confName} System" <${fromUser}>`, to: adminEmail, subject, html, text });
             console.log(`✅ Abstract admin email sent to ${adminEmail}`);
             return { success: true };
         } catch (err) {
@@ -600,27 +611,33 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const subject = `✅ Abstract Received – ${conferenceId.toUpperCase()}`;
+        const safeName = (abstractData.name && String(abstractData.name) !== 'undefined') ? abstractData.name : 'Author';
+        const safeTitle = (abstractData.title && String(abstractData.title) !== 'undefined') ? abstractData.title : '—';
+        const confName = conferenceId.toUpperCase();
+
+        const subject = `✅ Abstract Received – ${confName}`;
         const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
 <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
   <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
     <h1 style="margin:0;color:#fff;font-size:20px;">✅ Abstract Received</h1>
-    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${conferenceId.toUpperCase()}</p>
+    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${confName}</p>
   </div>
   <div style="padding:28px 32px;">
-    <p style="color:#374151;">Dear <strong>${abstractData.name || 'Author'}</strong>,</p>
+    <p style="color:#374151;">Dear <strong>${safeName}</strong>,</p>
     <p style="color:#374151;">Thank you for submitting your abstract. We have successfully received it and will review it shortly.</p>
     <div style="background:#f8faff;border:1px solid #dbeafe;border-radius:8px;padding:16px 20px;margin:20px 0;">
       <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Submitted Title:</p>
-      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${abstractData.title || '—'}</p>
+      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${safeTitle}</p>
     </div>
     <p style="color:#374151;">You will be notified once your abstract has been reviewed.</p>
-    <p style="color:#374151;">Best Regards,<br/><strong>${conferenceId.toUpperCase()} Organizing Committee</strong></p>
+    <p style="color:#374151;">Best Regards,<br/><strong>${confName} Organizing Committee</strong></p>
   </div>
 </div></body></html>`;
 
+        const text = `Dear ${safeName},\n\nThank you for submitting your abstract: "${safeTitle}". We have successfully received it and will review it shortly.\n\nBest Regards,\n${confName} Organizing Committee`;
+
         try {
-            await transporter.sendMail({ from: `"${conferenceId.toUpperCase()}" <${fromUser}>`, to: abstractData.email, subject, html });
+            await transporter.sendMail({ from: `"${confName}" <${fromUser}>`, to: abstractData.email, subject, html, text });
             return { success: true };
         } catch (err) {
             console.error(`❌ Abstract user confirmation error:`, err.message);
@@ -640,7 +657,15 @@ export class RealEmailSender {
         const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
         const confName = conferenceId.toUpperCase();
 
-        const subject = `📝 New Registration - ${confName}`;
+        // Robust field extraction
+        const safeName = (regData.name && String(regData.name) !== 'undefined') ? regData.name : '—';
+        const safeEmail = (regData.email && String(regData.email) !== 'undefined') ? regData.email : '—';
+        const safePhone = (regData.phone && String(regData.phone) !== 'undefined') ? regData.phone : (regData.number && String(regData.number) !== 'undefined') ? regData.number : '—';
+        const safeCategory = (regData.category && String(regData.category) !== 'undefined') ? regData.category : (regData.registrationCategory && String(regData.registrationCategory) !== 'undefined') ? regData.registrationCategory : '—';
+        const safeAmount = (regData.amount && String(regData.amount) !== 'undefined') ? regData.amount : (regData.totalAmount && String(regData.totalAmount) !== 'undefined') ? regData.totalAmount : '0';
+        const safeAffiliation = (regData.affiliation && String(regData.affiliation) !== 'undefined') ? regData.affiliation : (regData.company && String(regData.company) !== 'undefined') ? regData.company : (regData.organization && String(regData.organization) !== 'undefined') ? regData.organization : '—';
+
+        const subject = `📝 New Registration - ${confName}: ${safeName}`;
         
         const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; padding: 20px; color: #000;">
 <div style="max-width: 700px; margin: 0 auto;">
@@ -650,23 +675,32 @@ export class RealEmailSender {
   </div>
   <div style="background-color: #ececec; padding: 30px; border-radius: 4px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 15px; color: #000;">
-      <tr><td style="padding: 8px 0; font-weight: bold; width: 180px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${regData.name || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; width: 180px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${safeName}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Registration Date:</td><td style="padding: 8px 0; vertical-align: top;">${submittedAt}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${regData.email}" style="color: #007bff; text-decoration: underline;">${regData.email || '—'}</a></td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Phone:</td><td style="padding: 8px 0; vertical-align: top;">${regData.phone || regData.number || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${safeEmail}" style="color: #007bff; text-decoration: underline;">${safeEmail}</a></td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Phone:</td><td style="padding: 8px 0; vertical-align: top;">${safePhone}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Country:</td><td style="padding: 8px 0; vertical-align: top;">${regData.country || '—'}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Company/Affiliation:</td><td style="padding: 8px 0; vertical-align: top;">${regData.affiliation || regData.company || regData.organization || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Company/Affiliation:</td><td style="padding: 8px 0; vertical-align: top;">${safeAffiliation}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Address:</td><td style="padding: 8px 0; vertical-align: top;">${regData.address || '—'}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top;">${regData.category || regData.registrationCategory || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top;">${safeCategory}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Conference:</td><td style="padding: 8px 0; vertical-align: top;">${confName}</td></tr>
       <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Registration Counter:</td><td style="padding: 8px 0; vertical-align: top;">#${regData.counter || '—'}</td></tr>
-      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Payment Description:</td><td style="padding: 8px 0; vertical-align: top;">${regData.category || regData.registrationCategory || '—'} : $${regData.amount || regData.totalAmount || '0'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Payment Description:</td><td style="padding: 8px 0; vertical-align: top;">${safeCategory} : $${safeAmount}</td></tr>
     </table>
   </div>
+  <div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;"><p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2027 SCIENGASUMMITS. All rights reserved.</p></div>
 </div></body></html>`;
 
+        const text = `New Registration Confirmed\n\nName: ${safeName}\nEmail: ${safeEmail}\nPhone: ${safePhone}\nCategory: ${safeCategory}\nAmount: $${safeAmount}\nAffiliation: ${safeAffiliation}`;
+
         try {
-            await transporter.sendMail({ from: `"${confName} Registration" <${fromUser}>`, to: adminEmail, subject, html });
+            await transporter.sendMail({ 
+                from: `"${confName} Registration" <${fromUser}>`, 
+                to: adminEmail, 
+                subject, 
+                html,
+                text 
+            });
             console.log(`✅ Registration admin email sent to ${adminEmail}`);
             return { success: true };
         } catch (err) {
