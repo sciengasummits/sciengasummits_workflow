@@ -11,7 +11,7 @@ import nodemailer from 'nodemailer';
 export class RealEmailSender {
     constructor() {
         // Legacy / fallback credentials
-        this._defaultUser = process.env.SMTP_USER || 'liutex@sciengasummits.com';
+        this._defaultUser = process.env.SMTP_USER || 'civilenv@sciengasummits.com';
         this._defaultPass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
 
         // Per-conference credential map  { conferenceId → { user, pass } }
@@ -19,6 +19,10 @@ export class RealEmailSender {
             liutex: {
                 user: process.env.LIUTEX_SMTP_USER || this._defaultUser,
                 pass: (process.env.LIUTEX_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
+            civilenv: {
+                user: process.env.CIVILENV_SMTP_USER || this._defaultUser,
+                pass: (process.env.CIVILENV_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
             foodagri: {
                 user: process.env.FOODAGRI_SMTP_USER || this._defaultUser,

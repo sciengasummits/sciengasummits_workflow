@@ -158,6 +158,18 @@ const CONFERENCE_CONFIG = {
     accentColor: '#0369a1',
     accentGlow: 'rgba(3,105,161,0.35)',
   },
+  civilenv: {
+    conferenceId: 'civilenv',
+    displayName: 'CIVIL, ENVIRONMENTAL & ARCHITECTURAL ENGINEERING 2026',
+    shortName: 'CIVILENV SUMMIT',
+    logoText: 'CE',
+    logoSub: 'Summit',
+    brandTop: 'CIVIL, ENVIRONMENTAL',
+    brandSub: '& ARCHITECTURAL ENG.',
+    footerText: '© Copyright 2026 CIVIL, ENVIRONMENTAL & ARCHITECTURAL ENGINEERING SUMMIT.',
+    accentColor: '#059669',
+    accentGlow: 'rgba(5,150,105,0.35)',
+  },
 };
 
 /* â”€â”€ Simple page router â”€â”€ */
