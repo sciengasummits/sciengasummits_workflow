@@ -54,6 +54,12 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'icemmae2027',
         displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027',
     },
+    {
+        username: 'ASTROSPACESUMMIT2026',
+        email: process.env.ASTRO_EMAIL || 'astrospace@sciengasummits.com',
+        conferenceId: 'astrospace',
+        displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026',
+    },
 ];
 
 // Conference config for frontend
@@ -174,5 +180,18 @@ export const CONFERENCE_CONFIG = {
         email: 'icmmae@sciengasummits.com',
         accentColor: '#0369a1',
         accentGlow: 'rgba(3,105,161,0.35)',
+    },
+    astrospace: {
+        conferenceId: 'astrospace',
+        displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026',
+        shortName: 'ASTROSPACESUMMIT 2026',
+        logoText: 'AS',
+        logoSub: 'Summit',
+        brandTop: 'ASTROSPACE',
+        brandSub: 'SUMMIT 2026',
+        footerText: '© Copyright 2026 ASTROSPACESUMMIT.',
+        email: 'astrospace@sciengasummits.com',
+        accentColor: '#7c3aed',
+        accentGlow: 'rgba(124,58,237,0.35)',
     },
 };
