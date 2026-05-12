@@ -60,6 +60,10 @@ export class RealEmailSender {
                 user: process.env.POLYMAT_SMTP_USER || this._defaultUser,
                 pass: (process.env.POLYMAT_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            astrospace: {
+                user: process.env.ASTRO_SMTP_USER || this._defaultUser,
+                pass: (process.env.ASTRO_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account
@@ -345,7 +349,7 @@ export class RealEmailSender {
      * @param {object} payload - { name, email, number, conferenceId }
      */
     async sendProgramRequestToAdmin({ name, email, number, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this.user;
@@ -419,7 +423,7 @@ export class RealEmailSender {
      * Send a "Subscribe" notification to the admin.
      */
     async sendSubscribeToAdmin({ name, email, phone, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
@@ -445,7 +449,7 @@ export class RealEmailSender {
      * Send a "Brochure Access" notification to the admin.
      */
     async sendBrochureToAdmin({ name, email, number, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
@@ -471,7 +475,7 @@ export class RealEmailSender {
      * Send a "Contact Us" message to the admin.
      */
     async sendContactToAdmin({ name, email, subject, message, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
@@ -511,6 +515,7 @@ export class RealEmailSender {
             icogwh:      process.env.ICOGWH_EMAIL,
             icemmae2027: process.env.ICEMMAE_EMAIL,
             polymat:     process.env.POLYMAT_EMAIL,
+            astrospace:  process.env.ASTRO_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
@@ -547,6 +552,7 @@ export class RealEmailSender {
             iqce2027:    'https://iqce2027.sciengasummits.com',
             icogwh:      'https://icogwh2027.sciengasummits.com',
             icemmae2027: 'https://icemmae2027.sciengasummits.com',
+            astrospace:  'https://astrospacesummit2027.sciengasummits.com',
         };
 
         let absoluteFileUrl = abstractData.fileUrl;
