@@ -45,7 +45,7 @@ import FAQManager from '@/components/dashboard/pages/FAQManager';
 import HeroChairs from '@/components/dashboard/pages/HeroChairs';
 import BrochureDashboard from '@/components/dashboard/pages/Brochure';
 
-/* ── Conference config map ── */
+/* â”€â”€ Conference config map â”€â”€ */
 const CONFERENCE_CONFIG = {
   liutex: {
     conferenceId: 'liutex',
@@ -55,7 +55,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'LIUTEX',
     brandSub: 'VORTEX SUMMIT',
-    footerText: '© Copyright 2026 LIUTEX SUMMIT.',
+    footerText: 'Â© Copyright 2026 LIUTEX SUMMIT.',
     accentColor: '#6366f1',
     accentGlow: 'rgba(99,102,241,0.35)',
   },
@@ -67,7 +67,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'FOOD AGRI',
     brandSub: 'SUMMIT 2026',
-    footerText: '© Copyright 2026 FOOD AGRI SUMMIT.',
+    footerText: 'Â© Copyright 2026 FOOD AGRI SUMMIT.',
     accentColor: '#16a34a',
     accentGlow: 'rgba(22,163,74,0.35)',
   },
@@ -79,7 +79,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'FLUID MECHANICS',
     brandSub: '& TURBOMACHINERY',
-    footerText: '© Copyright 2026 FLUID MECHANICS & TURBOMACHINERY SUMMIT.',
+    footerText: 'Â© Copyright 2026 FLUID MECHANICS & TURBOMACHINERY SUMMIT.',
     accentColor: '#0891b2',
     accentGlow: 'rgba(8,145,178,0.35)',
   },
@@ -91,7 +91,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'RENEWABLE ENERGY',
     brandSub: '& CLIMATE CHANGE',
-    footerText: '© Copyright 2026 RENEWABLE ENERGY & CLIMATE CHANGE SUMMIT.',
+    footerText: 'Â© Copyright 2026 RENEWABLE ENERGY & CLIMATE CHANGE SUMMIT.',
     accentColor: '#16a34a',
     accentGlow: 'rgba(22,163,74,0.35)',
   },
@@ -103,7 +103,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'CYBERQUANTUM',
     brandSub: 'SUMMIT 2026',
-    footerText: '© Copyright 2026 CYBERQUANTUM SUMMIT.',
+    footerText: 'Â© Copyright 2026 CYBERQUANTUM SUMMIT.',
     accentColor: '#2563eb',
     accentGlow: 'rgba(37,99,235,0.35)',
   },
@@ -115,7 +115,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'POWER ENERGY',
     brandSub: '& ELECTRICAL ENG.',
-    footerText: '© Copyright 2026 POWER ENERGY & ELECTRICAL ENGINEERING SUMMIT.',
+    footerText: 'Â© Copyright 2026 POWER ENERGY & ELECTRICAL ENGINEERING SUMMIT.',
     accentColor: '#d97706',
     accentGlow: 'rgba(217,119,6,0.35)',
   },
@@ -127,7 +127,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'QUANTUM COMPUTING',
     brandSub: '& ENGINEERING 2027',
-    footerText: '© Copyright 2027 QUANTUM COMPUTING & ENGINEERING SUMMIT.',
+    footerText: 'Â© Copyright 2027 QUANTUM COMPUTING & ENGINEERING SUMMIT.',
     email: 'quantumenginee@sciengasummits.com',
     accentColor: '#1e3a8a',
     accentGlow: 'rgba(30,58,138,0.35)',
@@ -140,7 +140,7 @@ const CONFERENCE_CONFIG = {
     logoSub: 'Summit',
     brandTop: 'ICOGWH',
     brandSub: 'SUMMIT 2027',
-    footerText: '© Copyright 2027 ICOGWH SUMMIT.',
+    footerText: 'Â© Copyright 2027 ICOGWH SUMMIT.',
     email: 'obstetrics@sciengasummits.com',
     accentColor: '#e11d48',
     accentGlow: 'rgba(225,29,72,0.35)',
@@ -154,13 +154,25 @@ const CONFERENCE_CONFIG = {
     brandTop: 'ICEMMAE',
     brandSub: 'SUMMIT 2027',
     footerText: '© Copyright 2027 ICEMMAE SUMMIT.',
-    email: 'icmmae@sciengasummits.com',
+    email: 'icemmae@sciengasummits.com',
     accentColor: '#0369a1',
     accentGlow: 'rgba(3,105,161,0.35)',
   },
+  civilenv: {
+    conferenceId: 'civilenv',
+    displayName: 'CIVIL, ENVIRONMENTAL & ARCHITECTURAL ENGINEERING 2026',
+    shortName: 'CIVILENV SUMMIT',
+    logoText: 'CE',
+    logoSub: 'Summit',
+    brandTop: 'CIVIL, ENVIRONMENTAL',
+    brandSub: '& ARCHITECTURAL ENG.',
+    footerText: '© Copyright 2026 CIVIL, ENVIRONMENTAL & ARCHITECTURAL ENGINEERING SUMMIT.',
+    accentColor: '#059669',
+    accentGlow: 'rgba(5,150,105,0.35)',
+  },
 };
 
-/* ── Simple page router ── */
+/* â”€â”€ Simple page router â”€â”€ */
 function PageContent({ activeNav, setActiveNav, conf }) {
   switch (activeNav) {
 
@@ -223,7 +235,7 @@ function PageContent({ activeNav, setActiveNav, conf }) {
         <>
           <StatsGrid onCardClick={(id) => setActiveNav(id)} conf={conf} />
           <div className="note-banner">
-            <span className="note-icon">📌</span>
+            <span className="note-icon">ðŸ“Œ</span>
             <p>
               <strong>Note:</strong>
               {' Session will be Logged out automatically after '}
@@ -241,7 +253,7 @@ export default function Home() {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [session, setSession] = useState(null);
 
-  const conf = session ? (CONFERENCE_CONFIG[session.conferenceId] || CONFERENCE_CONFIG.liutex) : null;
+  const conf = session ? (CONFERENCE_CONFIG[session.conferenceId?.toLowerCase()] || CONFERENCE_CONFIG.liutex) : null;
 
   useEffect(() => {
     // 1. Session Restoration with Expiry Check (1 Hour TTL)
@@ -360,3 +372,4 @@ export default function Home() {
     </div>
   );
 }
+

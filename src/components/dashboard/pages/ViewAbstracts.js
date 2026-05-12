@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, Search, ChevronsUpDown, Filter, Download, RefreshCw, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { FileText, Search, ChevronsUpDown, Filter, Download, RefreshCw, ChevronLeft, ChevronRight, ExternalLink, Eye, EyeOff } from 'lucide-react';
 import { getAbstracts, updateAbstractStatus } from '@/lib/api';
 
 function formatDate(dateStr) {
-    if (!dateStr) return 'â€”';
+    if (!dateStr) return '—';
     const d = new Date(dateStr);
     if (isNaN(d)) return dateStr;
     return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -28,7 +28,7 @@ const INTEREST_BADGE = {
 function InterestBadge({ interest }) {
     const v = interest?.toLowerCase() || '';
     const cfg = Object.entries(INTEREST_BADGE).find(([k]) => v.includes(k))?.[1];
-    if (!cfg) return <span style={{ color: '#64748b', fontSize: 12 }}>{interest || 'â€”'}</span>;
+    if (!cfg) return <span style={{ color: '#64748b', fontSize: 12 }}>{interest || '—'}</span>;
     return (
         <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: cfg.bg, color: cfg.color, whiteSpace: 'nowrap' }}>
             {cfg.label}
@@ -36,10 +36,43 @@ function InterestBadge({ interest }) {
     );
 }
 
-export default function ViewAbstracts() {
+// Map conferenceId — the website that serves /uploads/ files
+const IS_DEV = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || 
+     window.location.hostname === '127.0.0.1' || 
+     process.env.NODE_ENV === 'development');
+
+const CONFERENCE_SITE_URLS = {
+    liutex:      process.env.NEXT_PUBLIC_LIUTEX_URL      || (IS_DEV ? 'http://127.0.0.1:5050' : 'https://liutexsummit2026.sciengasummits.com'),
+    foodagri:    process.env.NEXT_PUBLIC_FOODAGRI_URL    || 'https://foodagrisummit.sciengasummits.com',
+    fluid:       process.env.NEXT_PUBLIC_FLUID_URL       || 'https://fluidsummit.sciengasummits.com',
+    renewable:   process.env.NEXT_PUBLIC_RENEWABLE_URL   || 'https://renewablesummit.sciengasummits.com',
+    cyber:       process.env.NEXT_PUBLIC_CYBER_URL       || 'https://cyberquantumsummit.com',
+    powereng:    process.env.NEXT_PUBLIC_POWERENG_URL    || 'https://powerenergysummit.com',
+    iqce2027:    process.env.NEXT_PUBLIC_IQCE2027_URL    || 'https://iqce2027.sciengasummits.com',
+    icogwh:      process.env.NEXT_PUBLIC_ICOGWH_URL      || 'https://icogwh2027.sciengasummits.com',
+    icemmae2027: process.env.NEXT_PUBLIC_ICEMMAE_URL     || 'https://icemmae2027.sciengasummits.com',
+};
+
+/** Turns /uploads/foo.docx —> https://website.com/uploads/foo.docx */
+function resolveFileUrl(fileUrl, conferenceId) {
+    if (!fileUrl) return '';
+    if (fileUrl.startsWith('http')) return fileUrl; 
+    const id = (conferenceId || '').toLowerCase() || 'liutex';
+    const base = (CONFERENCE_SITE_URLS[id] || CONFERENCE_SITE_URLS.liutex).replace(/\/$/, '');
+    const finalUrl = `${base}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+    
+    if (IS_DEV) console.log(`[FileResolver] Resolved ${fileUrl} to: ${finalUrl}`);
+    
+    return finalUrl;
+}
+
+export default function ViewAbstracts({ conf }) {
     const [rows, setRows] = useState([]);
+    const [expandedId, setExpandedId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
     const [search, setSearch] = useState('');
     const [entries, setEntries] = useState(10);
     const [page, setPage] = useState(1);
@@ -50,29 +83,43 @@ export default function ViewAbstracts() {
         setLoading(true);
         setError(null);
         try {
-            const data = await getAbstracts(); // uses conference from login session
-            setRows(data);
+            const data = await getAbstracts();
+            setRows(data || []);
         } catch (e) { setError(e.message); }
         finally { setLoading(false); }
     }, []);
 
     useEffect(() => { load(); }, [load]);
 
-    /* â”€â”€â”€ Sort â”€â”€â”€ */
     const handleSort = (field) => {
         setSortDir(sortField === field && sortDir === 'asc' ? 'desc' : 'asc');
         setSortField(field);
     };
 
-    /* â”€â”€â”€ Filter + sort â”€â”€â”€ */
+    const handleStatusChange = async (id, newStatus) => {
+        try {
+            await updateAbstractStatus(id, { status: newStatus });
+            setRows(prev => prev.map(r => (r._id || r.id) === id ? { ...r, status: newStatus } : r));
+        } catch (err) {
+            alert('Failed to update status: ' + err.message);
+        }
+    };
+
     const filtered = (rows || []).filter(r => {
         if (!r) return false;
         const q = search.toLowerCase();
-        return Object.values(r).some(v => String(v).toLowerCase().includes(q));
+        return (
+            r.name?.toLowerCase().includes(q) ||
+            r.email?.toLowerCase().includes(q) ||
+            r.title?.toLowerCase().includes(q) ||
+            r.country?.toLowerCase().includes(q) ||
+            r.organization?.toLowerCase().includes(q) ||
+            r.topic?.toLowerCase().includes(q)
+        );
     }).sort((a, b) => {
-        if (!a || !b) return 0;
         let va = a[sortField] ?? '', vb = b[sortField] ?? '';
         if (sortField === 'createdAt') { va = new Date(va); vb = new Date(vb); }
+        if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
         if (va < vb) return sortDir === 'asc' ? -1 : 1;
         if (va > vb) return sortDir === 'asc' ? 1 : -1;
         return 0;
@@ -84,191 +131,229 @@ export default function ViewAbstracts() {
     const startIdx = filtered.length ? (safePage - 1) * entries + 1 : 0;
     const endIdx = Math.min(safePage * entries, filtered.length);
 
-    /* â”€â”€â”€ Status update â”€â”€â”€ */
-    const handleStatusChange = async (id, newStatus) => {
-        try {
-            const updated = await updateAbstractStatus(id, { status: newStatus });
-            setRows(prev => prev.map(r => (r._id || r.id) === id ? updated : r));
-        } catch { /* silent */ }
-    };
-
     const SortIcon = ({ field }) => (
-        <ChevronsUpDown size={12} className="vr-sort-icon"
-            style={{ color: sortField === field ? '#7c3aed' : undefined }} />
+        <ChevronsUpDown size={12} style={{ marginLeft: 4, opacity: sortField === field ? 1 : 0.3, color: sortField === field ? '#7c3aed' : undefined }} />
     );
 
     return (
-        <div className="ac2-page">
-            {/* Header */}
-            <div className="ac2-page-header">
-                <div className="ac2-title-row">
-                    <div className="ac2-title-icon" style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
-                        <FileText size={20} />
+        <div className="vr-container animate-in fade-in duration-500">
+            <div className="vr-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <div style={{ width: 48, height: 48, background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)' }}>
+                        <FileText size={24} color="#fff" />
                     </div>
                     <div>
-                        <h1 className="ac2-title">Abstracts</h1>
-                        <p className="ac2-subtitle">All abstracts submitted from the website form</p>
+                        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#1e293b' }}>Abstracts</h1>
+                        <p style={{ margin: 0, fontSize: 14, color: '#64748b' }}>All abstracts submitted from the website form</p>
                     </div>
                 </div>
-                <button onClick={load}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '9px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#475569' }}>
-                    <RefreshCw size={14} /> Refresh
+                <button onClick={load} className="vr-refresh-btn" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, cursor: 'pointer', fontWeight: 600, color: '#475569', transition: 'all 0.2s' }}>
+                    <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                    Refresh
                 </button>
             </div>
 
-            <div className="vr-card">
-                {/* Toolbar */}
-                <div className="vr-toolbar">
-                    <div className="vr-toolbar-left">
-                        <span className="vr-entries-label">Show</span>
-                        <select className="vr-entries-select" value={entries}
-                            onChange={e => { setEntries(Number(e.target.value)); setPage(1); }}>
-                            {[10, 20, 50, 100].map(n => <option key={n} value={n}>{n}</option>)}
+            {error && (
+                <div style={{ padding: '16px 20px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 12, color: '#b91c1c', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 18 }}>âš ï¸</span>
+                    <div><strong>Error:</strong> {error}</div>
+                </div>
+            )}
+
+            <div className="vr-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                <div className="vr-toolbar" style={{ padding: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#64748b' }}>
+                        Show 
+                        <select value={entries} onChange={e => { setEntries(Number(e.target.value)); setPage(1); }} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #e2e8f0', outline: 'none' }}>
+                            {[10, 25, 50, 100].map(n => <option key={n} value={n}>{n}</option>)}
                         </select>
-                        <span className="vr-entries-label">entries</span>
+                        entries
                     </div>
-                    <div className="vr-toolbar-right">
-                        <div className="vr-search-box">
-                            <span className="vr-search-label">Search:</span>
-                            <div className="vr-search-input-wrap">
-                                <Search size={14} className="vr-search-icon" />
-                                <input type="text" className="vr-search-input" value={search}
-                                    onChange={e => { setSearch(e.target.value); setPage(1); }}
-                                    placeholder="Filter records..." />
-                            </div>
-                        </div>
+                    <div style={{ position: 'relative' }}>
+                        <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                        <input
+                            type="text"
+                            placeholder="Filter records..."
+                            value={search}
+                            onChange={e => { setSearch(e.target.value); setPage(1); }}
+                            style={{ padding: '10px 12px 10px 36px', borderRadius: 10, border: '1px solid #e2e8f0', width: 260, outline: 'none', fontSize: 14, transition: 'border-color 0.2s' }}
+                        />
                     </div>
                 </div>
 
-                {/* Count banner */}
-                <div className="vr-count-banner" style={{ borderLeftColor: '#7c3aed', background: '#f5f3ff', color: '#4c1d95', borderColor: '#ddd6fe' }}>
-                    <Filter size={14} className="vr-count-icon" style={{ color: '#7c3aed' }} />
-                    <span>Total Abstracts = <strong>{rows.length}</strong>
-                        {filtered.length !== rows.length && <span style={{ color: '#64748b', fontWeight: 400 }}> ({filtered.length} matching search)</span>}
-                    </span>
+                <div style={{ padding: '12px 20px', background: '#f8fafc', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#475569' }}>
+                    <Filter size={14} />
+                    <span>Total Abstracts = <strong>{filtered.length}</strong></span>
                 </div>
 
-                {/* Loading/Error */}
-                {loading && (
-                    <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
-                        <div style={{ width: 40, height: 40, border: '3px solid #e2e8f0', borderTopColor: '#7c3aed', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-                        Loading abstracts from database…
-                    </div>
-                )}
-                {error && !loading && (
-                    <div style={{ color: '#ef4444', textAlign: 'center', padding: '60px 0' }}>
-                        ⚠️ {error}. Make sure the backend server is running and refresh.
-                    </div>
-                )}
-
-                {/* Table */}
-                {!loading && !error && (
-                    <div className="vr-table-wrapper">
-                        <table className="vr-table" style={{ minWidth: 1400 }}>
-                            <thead>
-                                <tr className="vr-thead-row">
-                                    <th className="vr-th" style={{ width: 50 }}><div className="vr-th-content">Sno</div></th>
-                                    <th className="vr-th" style={{ width: 60 }} onClick={() => handleSort('title')}><div className="vr-th-content">Title <SortIcon field="title" /></div></th>
-                                    <th className="vr-th vr-sortable" style={{ minWidth: 140 }} onClick={() => handleSort('name')}><div className="vr-th-content">Name <SortIcon field="name" /></div></th>
-                                    <th className="vr-th vr-sortable" style={{ minWidth: 100 }} onClick={() => handleSort('country')}><div className="vr-th-content">Country <SortIcon field="country" /></div></th>
-                                    <th className="vr-th vr-sortable" style={{ minWidth: 180 }} onClick={() => handleSort('email')}><div className="vr-th-content">Email <SortIcon field="email" /></div></th>
-                                    <th className="vr-th" style={{ minWidth: 120 }}><div className="vr-th-content">Phone</div></th>
-                                    <th className="vr-th vr-sortable" style={{ minWidth: 150 }} onClick={() => handleSort('interest')}><div className="vr-th-content">Category <SortIcon field="interest" /></div></th>
-                                    <th className="vr-th" style={{ minWidth: 160 }}><div className="vr-th-content">Organization</div></th>
-                                    <th className="vr-th" style={{ minWidth: 180 }}><div className="vr-th-content">Topic / Track</div></th>
-                                    <th className="vr-th" style={{ minWidth: 140 }}><div className="vr-th-content">File</div></th>
-                                    <th className="vr-th vr-sortable" style={{ minWidth: 100 }} onClick={() => handleSort('createdAt')}><div className="vr-th-content">Date <SortIcon field="createdAt" /></div></th>
-                                    <th className="vr-th" style={{ minWidth: 110 }}><div className="vr-th-content">Status</div></th>
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 1200 }}>
+                        <thead>
+                            <tr style={{ background: '#f8fafc' }}>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', width: 60 }}>Sno</th>
+                                <th onClick={() => handleSort('title')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Title <SortIcon field="title" /></th>
+                                <th onClick={() => handleSort('name')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Name <SortIcon field="name" /></th>
+                                <th onClick={() => handleSort('country')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Country <SortIcon field="country" /></th>
+                                <th onClick={() => handleSort('email')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Email <SortIcon field="email" /></th>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Phone</th>
+                                <th onClick={() => handleSort('interest')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Category <SortIcon field="interest" /></th>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Organization</th>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Topic</th>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Abstract</th>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>File</th>
+                                <th onClick={() => handleSort('createdAt')} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>Date <SortIcon field="createdAt" /></th>
+                                <th style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={12} style={{ padding: 60, textAlign: 'center' }}>
+                                        <RefreshCw size={24} className="animate-spin" style={{ color: '#7c3aed', margin: '0 auto 12px' }} />
+                                        <div style={{ color: '#64748b', fontSize: 14 }}>Loading abstracts...</div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {paged.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={12} style={{ padding: '48px', textAlign: 'center', color: '#64748b' }}>
-                                            {rows.length === 0
-                                                ? 'No abstracts yet. They will appear here once users submit from the website.'
-                                                : 'No abstracts match your search.'}
+                            ) : paged.length === 0 ? (
+                                <tr>
+                                    <td colSpan={12} style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 14 }}>
+                                        No abstracts found matching your criteria.
+                                    </td>
+                                </tr>
+                            ) : paged.map((row, idx) => {
+                                const uid = row._id || row.id;
+                                const statusCfg = STATUS_COLORS[row.status] || STATUS_COLORS.Pending;
+                                const absUrl = resolveFileUrl(row.fileUrl, row.conference || conf?.conferenceId);
+                                const isExpanded = expandedId === uid;
+                                
+                                return (
+                                    <React.Fragment key={uid}>
+                                    <tr style={{ borderBottom: isExpanded ? 'none' : '1px solid #f1f5f9', background: isExpanded ? '#f8faff' : undefined, transition: 'background 0.2s' }} className="hover:bg-slate-50">
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#64748b' }}>{startIdx + idx}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 500, color: '#1e293b' }}>{row.title || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 600, color: '#4f46e5' }}>{row.name || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.country || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13 }}>
+                                            <a href={`mailto:${row.email}`} style={{ color: '#2563eb', textDecoration: 'none' }}>{row.email || '—'}</a>
+                                        </td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#1e293b' }}>{row.phone || '—'}</td>
+                                        <td style={{ padding: '16px 20px' }}><InterestBadge interest={row.interest} /></td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#7c3aed', fontWeight: 500 }}>{row.organization || '—'}</td>
+                                        <td style={{ padding: '16px 20px', fontSize: 13, color: '#0891b2' }}>{row.topic || '—'}</td>
+                                        <td style={{ padding: '16px 20px' }}>
+                                            <button
+                                                onClick={() => setExpandedId(isExpanded ? null : uid)}
+                                                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: isExpanded ? '#ede9fe' : '#f1f5f9', borderRadius: 8, fontSize: 12, fontWeight: 600, color: isExpanded ? '#7c3aed' : '#475569', border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                                            >
+                                                {isExpanded ? <EyeOff size={14} /> : <Eye size={14} />}
+                                                {isExpanded ? 'Hide' : 'View'}
+                                            </button>
+                                        </td>
+                                        <td style={{ padding: '16px 20px' }}>
+                                            {absUrl ? (
+                                                <a href={absUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: '#f1f5f9', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#475569', textDecoration: 'none', border: '1px solid #e2e8f0' }}>
+                                                    <Download size={14} /> Doc <ExternalLink size={12} />
+                                                </a>
+                                            ) : <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>}
+                                        </td>
+                                        <td style={{ padding: '16px 20px', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>{formatDate(row.createdAt)}</td>
+                                        <td style={{ padding: '16px 20px' }}>
+                                            <select 
+                                                value={row.status || 'Pending'} 
+                                                onChange={e => handleStatusChange(uid, e.target.value)}
+                                                style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: statusCfg.bg, color: statusCfg.color, border: `1px solid ${statusCfg.border}`, cursor: 'pointer', outline: 'none' }}
+                                            >
+                                                {Object.keys(STATUS_COLORS).map(s => <option key={s} value={s}>{s}</option>)}
+                                            </select>
                                         </td>
                                     </tr>
-                                ) : paged.map((row, idx) => {
-                                    const uid = row._id || row.id;
-                                    const statusCfg = STATUS_COLORS[row.status] || STATUS_COLORS.Pending;
-                                    return (
-                                        <tr key={uid || idx} className="vr-tr">
-                                            <td className="vr-td vr-text-center">{startIdx + idx}</td>
-                                            <td className="vr-td">{row.title || 'â€”'}</td>
-                                            <td className="vr-td vr-font-medium" style={{ color: '#0284c7' }}>{row.name || 'â€”'}</td>
-                                            <td className="vr-td" style={{ color: '#0284c7' }}>{row.country || 'â€”'}</td>
-                                            <td className="vr-td">
-                                                {row.email
-                                                    ? <a href={`mailto:${row.email}`} className="vr-email-link">{row.email}</a>
-                                                    : 'â€”'}
-                                            </td>
-                                            <td className="vr-td">{row.phone || 'â€”'}</td>
-                                            <td className="vr-td"><InterestBadge interest={row.interest} /></td>
-                                            <td className="vr-td" style={{ color: '#7c3aed', fontWeight: 500, fontSize: 13 }}>{row.organization || 'â€”'}</td>
-                                            <td className="vr-td" style={{ color: '#0f766e', fontSize: 13 }}>{row.topic || 'â€”'}</td>
-                                            <td className="vr-td">
-                                                {row.fileUrl ? (
-                                                    <a href={row.fileUrl} target="_blank" rel="noreferrer"
-                                                        className="va-file-link"
-                                                        style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                        <Download size={13} />
-                                                        {row.fileName || 'Download'}
-                                                        <ExternalLink size={11} />
-                                                    </a>
-                                                ) : row.fileName ? (
-                                                    <span style={{ fontSize: 12, color: '#64748b' }}>{row.fileName}</span>
-                                                ) : <span style={{ color: '#cbd5e1' }}>â€”</span>}
-                                            </td>
-                                            <td className="vr-td vr-text-sm">{formatDate(row.createdAt)}</td>
-                                            <td className="vr-td">
-                                                <select
-                                                    value={row.status || 'Pending'}
-                                                    onChange={e => handleStatusChange(uid, e.target.value)}
-                                                    style={{
-                                                        padding: '3px 8px', borderRadius: 20, fontSize: 11, fontWeight: 700,
-                                                        background: statusCfg.bg, color: statusCfg.color,
-                                                        border: `1px solid ${statusCfg.border}`, cursor: 'pointer', outline: 'none',
-                                                    }}>
-                                                    {['Pending', 'Accepted', 'Revision', 'Rejected'].map(s => (
-                                                        <option key={s} value={s}>{s}</option>
-                                                    ))}
-                                                </select>
+                                    {isExpanded && (
+                                        <tr style={{ background: '#f8faff', borderBottom: '1px solid #e2e8f0' }}>
+                                            <td colSpan={13} style={{ padding: '24px 40px' }}>
+                                                <div style={{ background: '#fff', padding: 30, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)' }}>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 30, marginBottom: 30 }}>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Full Name</h4>
+                                                            <p style={{ margin: 0, fontSize: 15, color: '#1e293b', fontWeight: 600 }}>{row.title} {row.name}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Contact Info</h4>
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.email}</p>
+                                                            <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#64748b' }}>{row.phone || 'No phone provided'}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Session / Topic</h4>
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#4f46e5', fontWeight: 600 }}>{row.topic || '—'}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Organization & Country</h4>
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.organization || row.affiliation || '—'}</p>
+                                                            <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#64748b' }}>{row.country || '—'}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div style={{ marginBottom: 30 }}>
+                                                        <h4 style={{ margin: '0 0 10px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Postal Address</h4>
+                                                        <p style={{ margin: 0, fontSize: 14, color: '#334155', background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #f1f5f9' }}>{row.address || 'No address provided'}</p>
+                                                    </div>
+
+                                                    <div style={{ marginBottom: 30 }}>
+                                                        <h4 style={{ margin: '0 0 10px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Abstract Text</h4>
+                                                        {row.abstractText ? (
+                                                            <div style={{ padding: 20, background: '#f8fafc', borderRadius: 12, fontSize: 14, color: '#334155', lineHeight: 1.7, whiteSpace: 'pre-wrap', border: '1px solid #f1f5f9' }}>
+                                                                {row.abstractText}
+                                                            </div>
+                                                        ) : (
+                                                            <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', fontStyle: 'italic' }}>No abstract text body provided.</p>
+                                                        )}
+                                                    </div>
+
+                                                    {absUrl && (
+                                                        <div style={{ paddingTop: 20, borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                            <div>
+                                                                <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Uploaded File</h4>
+                                                                <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>{row.fileName || 'document'}</p>
+                                                            </div>
+                                                            <a href={absUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 24px', background: '#4f46e5', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', textDecoration: 'none', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)' }}>
+                                                                <Download size={18} /> Download Document
+                                                            </a>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                                    )}
 
-                {/* Pagination */}
-                {!loading && !error && filtered.length > 0 && (
-                    <div className="vr-pagination-container">
-                        <div className="vr-pagination-info">
-                            Showing {startIdx} to {endIdx} of {filtered.length} entries
-                        </div>
-                        <div className="vr-pagination">
-                            <button className="vr-page-btn vr-page-prev" disabled={safePage === 1}
-                                onClick={() => setPage(p => p - 1)}>
-                                <ChevronLeft size={14} /> Previous
-                            </button>
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                                <button key={p}
-                                    className={`vr-page-btn vr-page-num${p === safePage ? ' vr-page-active' : ''}`}
-                                    onClick={() => setPage(p)}>{p}</button>
-                            ))}
-                            <button className="vr-page-btn vr-page-next" disabled={safePage === totalPages}
-                                onClick={() => setPage(p => p + 1)}>
-                                Next <ChevronRight size={14} />
-                            </button>
-                        </div>
+                                    </React.Fragment>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style={{ padding: 20, borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: 13, color: '#64748b' }}>
+                        Showing {startIdx} to {endIdx} of {filtered.length} entries
                     </div>
-                )}
+                    <div style={{ display: 'flex', gap: 6 }}>
+                        <button disabled={safePage === 1} onClick={() => setPage(p => p - 1)} style={{ padding: '8px 12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, cursor: safePage === 1 ? 'default' : 'pointer', opacity: safePage === 1 ? 0.5 : 1 }}>
+                            <ChevronLeft size={16} />
+                        </button>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                            <button key={p} onClick={() => setPage(p)} style={{ width: 36, height: 36, background: p === safePage ? '#7c3aed' : '#fff', border: '1px solid', borderColor: p === safePage ? '#7c3aed' : '#e2e8f0', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: p === safePage ? '#fff' : '#475569' }}>
+                                {p}
+                            </button>
+                        ))}
+                        <button disabled={safePage === totalPages} onClick={() => setPage(p => p + 1)} style={{ padding: '8px 12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, cursor: safePage === totalPages ? 'default' : 'pointer', opacity: safePage === totalPages ? 0.5 : 1 }}>
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
             </div>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            
+            <style jsx global>{`
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .animate-spin { animation: spin 1s linear infinite; }
+            `}</style>
         </div>
     );
 }

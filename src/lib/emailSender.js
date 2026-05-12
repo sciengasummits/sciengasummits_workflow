@@ -11,7 +11,7 @@ import nodemailer from 'nodemailer';
 export class RealEmailSender {
     constructor() {
         // Legacy / fallback credentials
-        this._defaultUser = process.env.SMTP_USER || 'liutex@sciengasummits.com';
+        this._defaultUser = process.env.SMTP_USER || 'civilenv@sciengasummits.com';
         this._defaultPass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
 
         // Per-conference credential map  { conferenceId → { user, pass } }
@@ -19,6 +19,10 @@ export class RealEmailSender {
             liutex: {
                 user: process.env.LIUTEX_SMTP_USER || this._defaultUser,
                 pass: (process.env.LIUTEX_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
+            civilenv: {
+                user: process.env.CIVILENV_SMTP_USER || this._defaultUser,
+                pass: (process.env.CIVILENV_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
             foodagri: {
                 user: process.env.FOODAGRI_SMTP_USER || this._defaultUser,
@@ -52,6 +56,10 @@ export class RealEmailSender {
                 user: process.env.ICEMMAE_SMTP_USER || this._defaultUser,
                 pass: (process.env.ICEMMAE_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            polymat: {
+                user: process.env.POLYMAT_SMTP_USER || this._defaultUser,
+                pass: (process.env.POLYMAT_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account
@@ -59,7 +67,7 @@ export class RealEmailSender {
         for (const [confId, creds] of Object.entries(this._accounts)) {
             // If the password is a placeholder or empty, fall back to liutex at send time
             if (!creds.pass || creds.pass.startsWith('REPLACE_WITH')) {
-                console.warn(`⚠️  No valid SMTP password for "${confId}" — will fall back to liutex sender`);
+                console.warn(`⚠️   No valid SMTP password for "${confId}" — will fall back to liutex sender`);
                 continue;
             }
 
@@ -137,7 +145,7 @@ export class RealEmailSender {
             ? this._accounts[conferenceId].user
             : this.user;
 
-        // ── Derive display values ──────────────────────────────────
+        // —— Derive display values —————————————————————————————————
         const registrantName  = reg.name  || 'N/A';
         const registrantEmail = reg.email || 'N/A';
         const phone           = reg.phone || 'N/A';
@@ -163,7 +171,7 @@ export class RealEmailSender {
             .map(line => `<tr><td colspan="2" style="padding:4px 12px;color:#374151;font-size:13px;">• ${line}</td></tr>`)
             .join('');
 
-        // ── HTML template ──────────────────────────────────────────
+        // —— HTML template ——————————————————————————————————————
         const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -488,32 +496,282 @@ export class RealEmailSender {
     }
 
     /**
-     * Send an "Abstract Submitted" notification to the admin.
+     * Resolve the admin email for a given conference.
+     * Checks env vars in priority order, then falls back to the SMTP user.
+     */
+    _getAdminEmail(conferenceId) {
+        const envMap = {
+            liutex:      process.env.LIUTEX_EMAIL,
+            foodagri:    process.env.FOODAGRI_EMAIL,
+            fluid:       process.env.FLUID_EMAIL,
+            renewable:   process.env.RENEWABLE_EMAIL,
+            cyber:       process.env.CYBER_EMAIL,
+            powereng:    process.env.POWERENG_EMAIL,
+            iqce2027:    process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL,
+            icogwh:      process.env.ICOGWH_EMAIL,
+            icemmae2027: process.env.ICEMMAE_EMAIL,
+            polymat:     process.env.POLYMAT_EMAIL,
+        };
+        return envMap[conferenceId]
+            || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
+            || this._defaultUser;
+    }
+
+    /**
+     * Send an "Abstract Submitted" notification to the admin (full details).
      */
     async sendAbstractToAdmin(abstractData, conferenceId = 'liutex') {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
-        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
 
-        const subject = `📝 New Abstract Submitted by ${abstractData.name || 'Unknown'} - ${conferenceId.toUpperCase()}`;
-        const html = `
-            <div style="font-family: Arial, sans-serif; padding: 20px;">
-                <h3>New Abstract Submission</h3>
-                <p>A new abstract has been submitted to the system.</p>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Name:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.name || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.email || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Affiliation:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.affiliation || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Title:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.title || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Category:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.category || 'N/A'}</td></tr>
-                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Topic:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${abstractData.topic || 'N/A'}</td></tr>
-                </table>
-            </div>`;
+        const submittedAt = new Date().toLocaleString('en-US', { 
+            year: 'numeric', 
+            month: 'numeric', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true 
+        });
+        const confName = conferenceId.toUpperCase();
+
+        const CONFERENCE_URLS = {
+            liutex:      'https://liutexsummit2026.sciengasummits.com',
+            foodagri:    'https://foodagrisummit.sciengasummits.com',
+            fluid:       'https://fluidsummit.sciengasummits.com',
+            renewable:   'https://renewablesummit.sciengasummits.com',
+            cyber:       'https://cyberquantumsummit.com',
+            powereng:    'https://powerenergysummit.com',
+            iqce2027:    'https://iqce2027.sciengasummits.com',
+            icogwh:      'https://icogwh2027.sciengasummits.com',
+            icemmae2027: 'https://icemmae2027.sciengasummits.com',
+        };
+
+        let absoluteFileUrl = abstractData.fileUrl;
+        if (absoluteFileUrl && !absoluteFileUrl.startsWith('http')) {
+            const baseUrl = process.env.NODE_ENV === 'development' 
+                ? (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5050')
+                : (process.env.FRONTEND_URL || CONFERENCE_URLS[conferenceId] || CONFERENCE_URLS.liutex);
+            absoluteFileUrl = `${baseUrl.replace(/\/$/, '')}${absoluteFileUrl.startsWith('/') ? '' : '/'}${absoluteFileUrl}`;
+        }
+
+        // Robust field extraction
+        const safeName = (abstractData.name && String(abstractData.name) !== 'undefined') ? abstractData.name : '—';
+        const safeEmail = (abstractData.email && String(abstractData.email) !== 'undefined') ? abstractData.email : '—';
+        const safePhone = (abstractData.phone && String(abstractData.phone) !== 'undefined') ? abstractData.phone : '—';
+        const safeOrg = (abstractData.organization && String(abstractData.organization) !== 'undefined') ? abstractData.organization : (abstractData.affiliation && String(abstractData.affiliation) !== 'undefined') ? abstractData.affiliation : '—';
+        const safeTitle = (abstractData.title && String(abstractData.title) !== 'undefined') ? abstractData.title : '—';
+        const safeTopic = (abstractData.topic && String(abstractData.topic) !== 'undefined') ? abstractData.topic : '—';
+        const safeCategory = (abstractData.interest && String(abstractData.interest) !== 'undefined') ? abstractData.interest : (abstractData.category && String(abstractData.category) !== 'undefined') ? abstractData.category : '—';
+
+        const subject = `📄 New Abstract Submitted: ${safeName} — ${confName}`;
+        
+        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff; padding: 20px; color: #000;">
+<div style="max-width: 700px; margin: 0 auto;">
+  <div style="text-align: center; padding-bottom: 20px;">
+    <h2 style="margin: 0; color: #000; font-size: 24px; font-weight: bold;">Abstract Submission Confirmation for ${confName}</h2>
+    <p style="margin: 10px 0 0; color: #555; font-size: 14px;">Abstract Received for ${confName} conference. Please find the details below</p>
+  </div>
+  <div style="background-color: #ececec; padding: 30px; border-radius: 4px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 15px; color: #000;">
+      <tr><td style="padding: 8px 0; font-weight: bold; width: 160px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${safeName}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Abstract Date:</td><td style="padding: 8px 0; vertical-align: top;">${submittedAt}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${safeEmail}" style="color: #007bff; text-decoration: underline;">${safeEmail}</a></td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Mobile Number:</td><td style="padding: 8px 0; vertical-align: top;">${safePhone}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Organization:</td><td style="padding: 8px 0; vertical-align: top;">${safeOrg}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Country:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.country || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Address:</td><td style="padding: 8px 0; vertical-align: top;">${abstractData.address || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Abstract Title:</td><td style="padding: 8px 0; vertical-align: top;">${safeTitle}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Session:</td><td style="padding: 8px 0; vertical-align: top;">${safeTopic}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top; text-transform: capitalize;">${safeCategory}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Download Abstract:</td><td style="padding: 8px 0; vertical-align: top;">
+        ${absoluteFileUrl ? `<a href="${absoluteFileUrl}" style="color: #007bff; text-decoration: underline;" target="_blank">Click Here</a>` : 'Not Provided'}
+      </td></tr>
+    </table>
+  </div>
+  <div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;"><p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2026 SCIENGASUMMITS. All rights reserved.</p></div>
+</div></body></html>`;
+
+        const text = `New Abstract Submitted\n\nName: ${safeName}\nEmail: ${safeEmail}\nPhone: ${safePhone}\nTitle: ${safeTitle}\nOrganization: ${safeOrg}\nCategory: ${safeCategory}\nFile: ${absoluteFileUrl || 'Not Provided'}`;
+
         try {
-            await transporter.sendMail({ from: `"System" <${fromUser}>`, to: adminEmail, subject, html });
+            await transporter.sendMail({ from: `"${confName} System" <${fromUser}>`, to: adminEmail, subject, html, text });
+            console.log(`✅ Abstract admin email sent to ${adminEmail}`);
             return { success: true };
-        } catch (err) { return { success: false, error: err.message }; }
+        } catch (err) {
+            console.error(`❌ Abstract admin email error:`, err.message);
+            return { success: false, error: err.message };
+        }
+    }
+
+
+    /**
+     * Send a submission confirmation to the abstract author.
+     */
+    async sendAbstractConfirmationToUser(abstractData, conferenceId = 'liutex') {
+        const transporter = this._transporters[conferenceId] || this._defaultTransporter;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
+
+        const safeName = (abstractData.name && String(abstractData.name) !== 'undefined') ? abstractData.name : 'Author';
+        const safeTitle = (abstractData.title && String(abstractData.title) !== 'undefined') ? abstractData.title : '—';
+        const confName = conferenceId.toUpperCase();
+
+        const subject = `✅ Abstract Received – ${confName}`;
+        const html = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f3f4f6;padding:24px;">
+<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:28px 32px;">
+    <h1 style="margin:0;color:#fff;font-size:20px;">✅ Abstract Received</h1>
+    <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">${confName}</p>
+  </div>
+  <div style="padding:28px 32px;">
+    <p style="color:#374151;">Dear <strong>${safeName}</strong>,</p>
+    <p style="color:#374151;">Thank you for submitting your abstract. We have successfully received it and will review it shortly.</p>
+    <div style="background:#f8faff;border:1px solid #dbeafe;border-radius:8px;padding:16px 20px;margin:20px 0;">
+      <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Submitted Title:</p>
+      <p style="margin:0;font-size:15px;font-weight:700;color:#1e3a8a;">${safeTitle}</p>
+    </div>
+    <p style="color:#374151;">You will be notified once your abstract has been reviewed.</p>
+    <p style="color:#374151;">Best Regards,<br/><strong>${confName} Organizing Committee</strong></p>
+  </div>
+</div></body></html>`;
+
+        const text = `Dear ${safeName},\n\nThank you for submitting your abstract: "${safeTitle}". We have successfully received it and will review it shortly.\n\nBest Regards,\n${confName} Organizing Committee`;
+
+        try {
+            await transporter.sendMail({ from: `"${confName}" <${fromUser}>`, to: abstractData.email, subject, html, text });
+            return { success: true };
+        } catch (err) {
+            console.error(`❌ Abstract user confirmation error:`, err.message);
+            return { success: false, error: err.message };
+        }
+    }
+
+    /**
+     * Send a professional registration notification to the admin.
+     */
+    async sendRegistrationToAdmin(regData, conferenceId = 'liutex') {
+        const adminEmail = this._getAdminEmail(conferenceId);
+        const transporter = this._transporters[conferenceId] || this._defaultTransporter;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
+
+        const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        const confName = conferenceId.toUpperCase();
+
+        // Robust field extraction
+        const safeName = (regData.name && String(regData.name) !== 'undefined') ? regData.name : '—';
+        const safeEmail = (regData.email && String(regData.email) !== 'undefined') ? regData.email : '—';
+        const safePhone = (regData.phone && String(regData.phone) !== 'undefined') ? regData.phone : (regData.number && String(regData.number) !== 'undefined') ? regData.number : '—';
+        const safeCategory = (regData.category && String(regData.category) !== 'undefined') ? regData.category : (regData.registrationCategory && String(regData.registrationCategory) !== 'undefined') ? regData.registrationCategory : '—';
+        const safeAmount = (regData.amount && String(regData.amount) !== 'undefined') ? regData.amount : (regData.totalAmount && String(regData.totalAmount) !== 'undefined') ? regData.totalAmount : '0';
+        const safeAffiliation = (regData.affiliation && String(regData.affiliation) !== 'undefined') ? regData.affiliation : (regData.company && String(regData.company) !== 'undefined') ? regData.company : (regData.organization && String(regData.organization) !== 'undefined') ? regData.organization : '—';
+
+        const subject = `📝 New Registration - ${confName}: ${safeName}`;
+        
+        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; padding: 20px; color: #000;">
+<div style="max-width: 700px; margin: 0 auto;">
+  <div style="text-align: center; padding-bottom: 20px;">
+    <h2 style="margin: 0; color: #000; font-size: 24px; font-weight: bold;">Registration Confirmation for ${confName}</h2>
+    <p style="margin: 10px 0 0; color: #555; font-size: 14px;">Registration Received for ${confName} conference. Please find the details below</p>
+  </div>
+  <div style="background-color: #ececec; padding: 30px; border-radius: 4px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 15px; color: #000;">
+      <tr><td style="padding: 8px 0; font-weight: bold; width: 180px; vertical-align: top;">Name:</td><td style="padding: 8px 0; vertical-align: top;">${safeName}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Registration Date:</td><td style="padding: 8px 0; vertical-align: top;">${submittedAt}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Email:</td><td style="padding: 8px 0; vertical-align: top;"><a href="mailto:${safeEmail}" style="color: #007bff; text-decoration: underline;">${safeEmail}</a></td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Phone:</td><td style="padding: 8px 0; vertical-align: top;">${safePhone}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Country:</td><td style="padding: 8px 0; vertical-align: top;">${regData.country || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Company/Affiliation:</td><td style="padding: 8px 0; vertical-align: top;">${safeAffiliation}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Address:</td><td style="padding: 8px 0; vertical-align: top;">${regData.address || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Category:</td><td style="padding: 8px 0; vertical-align: top;">${safeCategory}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Conference:</td><td style="padding: 8px 0; vertical-align: top;">${confName}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Registration Counter:</td><td style="padding: 8px 0; vertical-align: top;">#${regData.counter || '—'}</td></tr>
+      <tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Payment Description:</td><td style="padding: 8px 0; vertical-align: top;">${safeCategory} : $${safeAmount}</td></tr>
+    </table>
+  </div>
+  <div style="background:#f9fafb;padding:25px;text-align:center;border-top:1px solid #f1f5f9;"><p style="margin:0;color:#9ca3af;font-size:12px;letter-spacing:0.5px;">© 2027 SCIENGASUMMITS. All rights reserved.</p></div>
+</div></body></html>`;
+
+        const text = `New Registration Confirmed\n\nName: ${safeName}\nEmail: ${safeEmail}\nPhone: ${safePhone}\nCategory: ${safeCategory}\nAmount: $${safeAmount}\nAffiliation: ${safeAffiliation}`;
+
+        try {
+            await transporter.sendMail({ 
+                from: `"${confName} Registration" <${fromUser}>`, 
+                to: adminEmail, 
+                subject, 
+                html,
+                text 
+            });
+            console.log(`✅ Registration admin email sent to ${adminEmail}`);
+            return { success: true };
+        } catch (err) {
+            console.error(`❌ Registration admin email error:`, err.message);
+            return { success: false, error: err.message };
+        }
+    }
+
+    /**
+     * Send a professional registration confirmation to the participant.
+     */
+    async sendRegistrationConfirmationToUser(regData, conferenceId = 'liutex') {
+        const transporter = this._transporters[conferenceId] || this._defaultTransporter;
+        const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
+            ? this._accounts[conferenceId].user : this._defaultUser;
+
+        const confName = conferenceId.toUpperCase();
+        const subject = `✅ Registration Confirmed — ${confName}`;
+        
+        const html = `<!DOCTYPE html><html><body style="font-family:'Segoe UI',Arial,sans-serif;background:#f3f4f6;padding:30px;color:#1f2937;">
+<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#059669,#10b981);padding:40px;text-align:center;">
+    <div style="background:rgba(255,255,255,0.2);display:inline-block;padding:8px 16px;border-radius:8px;color:#fff;font-size:13px;font-weight:700;margin-bottom:15px;text-transform:uppercase;letter-spacing:1px;">${confName}</div>
+    <h1 style="margin:0;color:#fff;font-size:26px;letter-spacing:-0.5px;">Registration Confirmed</h1>
+  </div>
+  
+  <div style="padding:40px;">
+    <p style="margin:0 0 20px;font-size:17px;color:#374151;">Dear <strong>${regData.name}</strong>,</p>
+    <p style="margin:0 0 25px;font-size:15px;line-height:1.7;color:#4b5563;">
+      We are delighted to confirm your registration for the <strong>${confName}</strong>. Your participation has been successfully recorded in our system.
+    </p>
+
+    <div style="background:#f0fdf4;border-radius:12px;padding:25px;border:1px solid #d1fae5;margin-bottom:25px;">
+      <h3 style="margin:0 0 15px;font-size:13px;color:#065f46;text-transform:uppercase;letter-spacing:1px;">Registration Summary</h3>
+      <table width="100%" style="border-collapse:collapse;">
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#065f46;opacity:0.8;">Category:</td>
+          <td style="padding:6px 0;font-size:14px;color:#064e3b;font-weight:700;">${regData.category || regData.registrationCategory || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#065f46;opacity:0.8;">Date:</td>
+          <td style="padding:6px 0;font-size:14px;color:#064e3b;font-weight:600;">${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="margin:0 0 25px;font-size:15px;line-height:1.7;color:#4b5563;">
+      You will receive further updates regarding the conference schedule, venue details, and speaker announcements as we get closer to the event dates.
+    </p>
+
+    <div style="border-top:1px solid #e5e7eb;padding-top:25px;margin-top:10px;">
+      <p style="margin:0;font-size:14px;color:#6b7280;">Warm Regards,</p>
+      <p style="margin:5px 0 0;font-size:16px;font-weight:700;color:#065f46;">${confName} Organizing Committee</p>
+    </div>
+  </div>
+  
+  <div style="background:#f9fafb;padding:20px;text-align:center;border-top:1px solid #f3f4f6;">
+    <p style="margin:0;color:#9ca3af;font-size:12px;">This is an automated confirmation of your conference registration.</p>
+  </div>
+</div></body></html>`;
+
+        try {
+            await transporter.sendMail({ from: `"${confName} Registration" <${fromUser}>`, to: regData.email, subject, html });
+            return { success: true };
+        } catch (err) {
+            console.error(`❌ Registration user confirmation error:`, err.message);
+            return { success: false, error: err.message };
+        }
     }
 }
-
-

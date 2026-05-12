@@ -9,8 +9,8 @@ import { getContent, updateContent, uploadFile, getConference } from '@/lib/api'
 
 const DEFAULT_DATA = {
     pdfUrl: '',
-    title: 'Quantum Computing & Engineering Summit 2027 (IQCE-2027)',
-    description: 'Download the official conference brochure to get comprehensive information about the Quantum Computing & Engineering Summit. It serves as your complete guide to the event, featuring detailed schedules, speaker profiles, and venue information.',
+    title: 'International Conference on Renewable Energy Systems and Applications',
+    description: 'Download the official conference brochure to get comprehensive information about the conference. It serves as your complete guide to the event, featuring detailed schedules, speaker profiles, and venue information.',
     note: '* PDF will be available soon. Format: PDF',
     features: [
         'Complete 3-Day Program Schedule',
@@ -19,6 +19,29 @@ const DEFAULT_DATA = {
         'Venue Maps & Accommodation Guide',
         'Sponsorship & Exhibition Opportunities',
     ],
+    // Digital Brochure Fields
+    digitalTitle: 'INTERNATIONAL CONFERENCE ON RECC THEORY AND TURBULENCE MECHANISM',
+    overview: 'The INTERNATIONAL CONFERENCE ON RENEWABLE ENERGY AND CLIMATE CHANGE is the premier gathering for experts in vortex identification and turbulence science. This summit bridges the gap between pure mathematics and practical engineering.',
+    objectives: [
+        'Advance the knowledge of Renewable-based rotation definitions.',
+        'Solve the "shear contamination" problem in vortex identification.',
+        'Promote cross-disciplinary research in CFD and fluid mechanics.',
+        'Implement AI-driven vortex detection frameworks.'
+    ],
+    audience: [
+        'Aerospace & Mechanical Engineers',
+        'Computational Fluid Dynamics (CFD) Researchers',
+        'Atmospheric Scientists & Meteorologists',
+        'Applied Mathematicians & Physicists'
+    ],
+    themes: [
+        'Solar Photovoltaics',
+        'Omega Method',
+        'Turbulence Structure Analysis',
+        'Machined Learning in Fluids',
+        'Aerospace Application',
+        'Climate Action'
+    ]
 };
 
 export default function BrochureDashboard() {
@@ -205,26 +228,10 @@ export default function BrochureDashboard() {
                 {/* Right column: Content details */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-                    {/* Brochure title */}
-                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px' }}>
-                        <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            Conference Title (shown on brochure preview card)
-                        </label>
-                        <textarea
-                            style={{ width: '100%', padding: '9px 12px', border: '1px solid #e2e8f0', borderRadius: '9px', fontSize: '13px', color: '#1e293b', boxSizing: 'border-box', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
-                            rows={3}
-                            value={data.title}
-                            onChange={e => setData(prev => ({ ...prev, title: e.target.value }))}
-                            placeholder="Conference full name..."
-                            onFocus={e => e.target.style.border = `1px solid ${accentColor}`}
-                            onBlur={e => e.target.style.border = '1px solid #e2e8f0'}
-                        />
-                    </div>
-
                     {/* Description */}
                     <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px' }}>
                         <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            Description Paragraph (shown below "Inside the Brochure" heading)
+                            Description / Overview (Synced with View Online)
                         </label>
                         <textarea
                             style={{ width: '100%', padding: '9px 12px', border: '1px solid #e2e8f0', borderRadius: '9px', fontSize: '13px', color: '#1e293b', boxSizing: 'border-box', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
@@ -232,8 +239,6 @@ export default function BrochureDashboard() {
                             value={data.description || ''}
                             onChange={e => setData(prev => ({ ...prev, description: e.target.value }))}
                             placeholder="Describe what the brochure contains..."
-                            onFocus={e => e.target.style.border = `1px solid ${accentColor}`}
-                            onBlur={e => e.target.style.border = '1px solid #e2e8f0'}
                         />
                     </div>
 
@@ -273,6 +278,102 @@ export default function BrochureDashboard() {
                             ))}
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* ── Digital Brochure Sections ── */}
+            <div style={{ marginTop: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                
+                {/* Left: Overview & Title */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '24px' }}>
+                        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#1e293b', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FileText size={16} color={accentColor} /> Digital Brochure Cover
+                        </h2>
+                        <p style={{ fontSize: '11px', color: '#64748b', marginBottom: '16px' }}>
+                            <strong>Note:</strong> Leave "Cover Main Title" and "Overview" empty to automatically use the title and description from above.
+                        </p>
+                        <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', marginBottom: '8px', display: 'block', textTransform: 'uppercase' }}>Cover Main Title (Optional Overwrite)</label>
+                        <textarea
+                            style={{ width: '100%', padding: '9px 12px', border: '1px solid #e2e8f0', borderRadius: '9px', fontSize: '13px', color: '#1e293b', boxSizing: 'border-box', outline: 'none', resize: 'vertical' }}
+                            rows={3}
+                            value={data.digitalTitle}
+                            onChange={e => setData(prev => ({ ...prev, digitalTitle: e.target.value }))}
+                            placeholder="Cover title..."
+                        />
+                    </div>
+
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '24px' }}>
+                        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#1e293b', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Info size={16} color={accentColor} /> Conference Overview
+                        </h2>
+                        <textarea
+                            style={{ width: '100%', padding: '9px 12px', border: '1px solid #e2e8f0', borderRadius: '9px', fontSize: '13px', color: '#1e293b', boxSizing: 'border-box', outline: 'none', resize: 'vertical' }}
+                            rows={6}
+                            value={data.overview}
+                            onChange={e => setData(prev => ({ ...prev, overview: e.target.value }))}
+                            placeholder="Conference overview paragraph..."
+                        />
+                    </div>
+                </div>
+
+                {/* Right: Lists (Objectives, Audience, Themes) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    
+                    {/* Objectives */}
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Core Objectives</label>
+                            <button onClick={() => setData(prev => ({ ...prev, objectives: [...(prev.objectives || []), ''] }))} style={{ fontSize: '11px', padding: '3px 8px', background: accentColor, color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>+ Add</button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {(data.objectives || []).map((obj, i) => (
+                                <div key={i} style={{ display: 'flex', gap: '6px' }}>
+                                    <input style={{ flex: 1, padding: '7px 10px', border: '1px solid #e2e8f0', borderRadius: '7px', fontSize: '12px' }} value={obj} onChange={e => {
+                                        const next = [...data.objectives]; next[i] = e.target.value; setData(d => ({ ...d, objectives: next }));
+                                    }} />
+                                    <button onClick={() => setData(d => ({ ...d, objectives: d.objectives.filter((_, idx) => idx !== i) }))} style={{ padding: '6px', color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Audience */}
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Target Audience</label>
+                            <button onClick={() => setData(prev => ({ ...prev, audience: [...(prev.audience || []), ''] }))} style={{ fontSize: '11px', padding: '3px 8px', background: accentColor, color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>+ Add</button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {(data.audience || []).map((aud, i) => (
+                                <div key={i} style={{ display: 'flex', gap: '6px' }}>
+                                    <input style={{ flex: 1, padding: '7px 10px', border: '1px solid #e2e8f0', borderRadius: '7px', fontSize: '12px' }} value={aud} onChange={e => {
+                                        const next = [...data.audience]; next[i] = e.target.value; setData(d => ({ ...d, audience: next }));
+                                    }} />
+                                    <button onClick={() => setData(d => ({ ...d, audience: d.audience.filter((_, idx) => idx !== i) }))} style={{ padding: '6px', color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Themes */}
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Key Themes</label>
+                            <button onClick={() => setData(prev => ({ ...prev, themes: [...(prev.themes || []), ''] }))} style={{ fontSize: '11px', padding: '3px 8px', background: accentColor, color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>+ Add</button>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {(data.themes || []).map((thm, i) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                                    <input style={{ border: 'none', background: 'none', fontSize: '12px', width: '120px', outline: 'none' }} value={thm} onChange={e => {
+                                        const next = [...data.themes]; next[i] = e.target.value; setData(d => ({ ...d, themes: next }));
+                                    }} />
+                                    <button onClick={() => setData(d => ({ ...d, themes: d.themes.filter((_, idx) => idx !== i) }))} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444', fontSize: '10px' }}>✕</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

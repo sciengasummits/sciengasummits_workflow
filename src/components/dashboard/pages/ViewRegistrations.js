@@ -201,45 +201,110 @@ export default function ViewRegistrations() {
                                     const uid = row._id || row.id;
                                     const actualStatus = (row.status === 'success' || row.status === 'Paid') ? 'Paid' : 'Pending';
                                     const statusCfg = STATUS_COLORS[actualStatus];
+                                    const isExpanded = editId === uid;
+
                                     return (
-                                        <tr key={uid || idx} className="vr-tr">
-                                            <td className="vr-td vr-text-center">{startIdx + idx}</td>
-                                            <td className="vr-td">{row.title}</td>
-                                            <td className="vr-td vr-font-medium">{row.name || 'â€”'}</td>
-                                            <td className="vr-td">
-                                                {row.email
-                                                    ? <a href={`mailto:${row.email}`} className="vr-email-link">{row.email}</a>
-                                                    : 'â€”'}
-                                            </td>
-                                            <td className="vr-td">{row.phone || 'â€”'}</td>
-                                            <td className="vr-td">{row.country || 'â€”'}</td>
-                                            <td className="vr-td vr-text-center">
-                                                {row.totalAmount ? `$${row.totalAmount}` : 'â€”'}
-                                            </td>
-                                            <td className="vr-td vr-text-sm">{formatDate(row.createdAt)}</td>
-                                            <td className="vr-td">
-                                                <span
-                                                    style={{
-                                                        padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 700,
-                                                        background: statusCfg.bg, color: statusCfg.color,
-                                                        border: `1px solid ${statusCfg.border}`, display: 'inline-block'
-                                                    }}
-                                                >
-                                                    {actualStatus}
-                                                </span>
-                                            </td>
-                                            <td className="vr-td" style={{ fontSize: '12px', color: '#64748b' }}>
-                                                {row.txnId || <span style={{ color: '#cbd5e1' }}>â€”</span>}
-                                            </td>
-                                            <td className="vr-td vr-td-desc">
-                                                {(row.description || '').split('\n').map((line, i) => (
-                                                    <div key={i} className="vr-desc-line">{line}</div>
-                                                ))}
-                                            </td>
-                                        </tr>
+                                        <React.Fragment key={uid || idx}>
+                                            <tr 
+                                                className={`vr-tr ${isExpanded ? 'vr-tr-active' : ''}`}
+                                                onClick={() => setEditId(isExpanded ? null : uid)}
+                                                style={{ cursor: 'pointer', transition: 'background 0.2s' }}
+                                            >
+                                                <td className="vr-td vr-text-center">{startIdx + idx}</td>
+                                                <td className="vr-td">{row.title}</td>
+                                                <td className="vr-td vr-font-medium">{row.name || '—'}</td>
+                                                <td className="vr-td">
+                                                    {row.email
+                                                        ? <a href={`mailto:${row.email}`} onClick={e => e.stopPropagation()} className="vr-email-link">{row.email}</a>
+                                                        : '—'}
+                                                </td>
+                                                <td className="vr-td">{row.phone || row.number || '—'}</td>
+                                                <td className="vr-td">{row.country || '—'}</td>
+                                                <td className="vr-td vr-text-center">
+                                                    {row.totalAmount ? `$${row.totalAmount}` : '—'}
+                                                </td>
+                                                <td className="vr-td vr-text-sm">{formatDate(row.createdAt)}</td>
+                                                <td className="vr-td">
+                                                    <span
+                                                        style={{
+                                                            padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 700,
+                                                            background: statusCfg.bg, color: statusCfg.color,
+                                                            border: `1px solid ${statusCfg.border}`, display: 'inline-block'
+                                                        }}
+                                                    >
+                                                        {actualStatus}
+                                                    </span>
+                                                </td>
+                                                <td className="vr-td" style={{ fontSize: '12px', color: '#64748b' }}>
+                                                    {row.txnId || <span style={{ color: '#cbd5e1' }}>—</span>}
+                                                </td>
+                                                <td className="vr-td vr-td-desc">
+                                                    <div style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        {row.category || (row.description || '').split('\n')[0] || '—'}
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            {isExpanded && (
+                                                <tr style={{ background: '#f8faff', borderBottom: '1px solid #e2e8f0' }}>
+                                                    <td colSpan={11} style={{ padding: '24px 40px' }}>
+                                                        <div style={{ background: '#fff', padding: 30, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)' }}>
+                                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 30, marginBottom: 30 }}>
+                                                                <div>
+                                                                    <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Full Name</h4>
+                                                                    <p style={{ margin: 0, fontSize: 15, color: '#1e293b', fontWeight: 600 }}>{row.title} {row.name}</p>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Contact Info</h4>
+                                                                    <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.email}</p>
+                                                                    <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#64748b' }}>{row.phone || row.number || 'No phone provided'}</p>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Category & Amount</h4>
+                                                                    <p style={{ margin: 0, fontSize: 14, color: '#059669', fontWeight: 600 }}>{row.category || '—'}</p>
+                                                                    <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#1e293b', fontWeight: 700 }}>{row.totalAmount ? `$${row.totalAmount} USD` : '—'}</p>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Organization & Country</h4>
+                                                                    <p style={{ margin: 0, fontSize: 14, color: '#1e293b' }}>{row.organization || row.affiliation || '—'}</p>
+                                                                    <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#64748b' }}>{row.country || '—'}</p>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 30, marginBottom: 30 }}>
+                                                                <div>
+                                                                    <h4 style={{ margin: '0 0 10px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Postal Address</h4>
+                                                                    <p style={{ margin: 0, fontSize: 14, color: '#334155', background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #f1f5f9' }}>{row.address || 'No address provided'}</p>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 style={{ margin: '0 0 10px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Package Description</h4>
+                                                                    <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #f1f5f9' }}>
+                                                                        {(row.description || '').split('\n').map((line, i) => (
+                                                                            <p key={i} style={{ margin: '0 0 4px 0', fontSize: 13, color: '#475569' }}>{line}</p>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div style={{ paddingTop: 20, borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                <div>
+                                                                    <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Transaction ID</h4>
+                                                                    <p style={{ margin: 0, fontSize: 13, color: '#64748b', fontFamily: 'monospace' }}>{row.txnId || row.razorpayPaymentId || 'N/A'}</p>
+                                                                </div>
+                                                                <div style={{ textAlign: 'right' }}>
+                                                                    <h4 style={{ margin: '0 0 4px 0', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Submission ID</h4>
+                                                                    <p style={{ margin: 0, fontSize: 11, color: '#cbd5e1' }}>{uid}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
                                     );
                                 })}
                             </tbody>
+
                         </table>
                     </div>
                 )}

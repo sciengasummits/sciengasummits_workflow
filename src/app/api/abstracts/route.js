@@ -28,20 +28,44 @@ export async function POST(request) {
     try {
         await dbConnect();
         const body = await request.json();
-        // Sanitize: only allow known abstract fields
-        const allowed = ['conference', 'name', 'email', 'phone', 'affiliation', 'country', 'topic', 'title', 'abstractText', 'fileUrl', 'fileName', 'category', 'coAuthors'];
-        const sanitized = {};
-        for (const key of allowed) {
-            if (body[key] !== undefined) sanitized[key] = body[key];
-        }
+        // Robust Sanitization
+        const safeStr = (val) => (val && String(val) !== 'undefined') ? String(val).trim() : '';
+        
+        const sanitized = {
+            conference: safeStr(body.conference) || 'liutex',
+            name: safeStr(body.name) || 'Unknown',
+            email: safeStr(body.email) || '',
+            phone: safeStr(body.phone) || '',
+            affiliation: safeStr(body.affiliation) || safeStr(body.organization) || '—',
+            organization: safeStr(body.organization) || safeStr(body.affiliation) || '—',
+            country: safeStr(body.country) || '—',
+            address: safeStr(body.address) || '—',
+            topic: safeStr(body.topic) || '—',
+            title: safeStr(body.title) || 'Untitled',
+            abstractText: safeStr(body.abstractText) || '',
+            fileUrl: safeStr(body.fileUrl) || '',
+            fileName: safeStr(body.fileName) || '',
+            category: safeStr(body.category) || safeStr(body.interest) || '—',
+            interest: safeStr(body.interest) || safeStr(body.category) || '—',
+        };
+
         const abs = new Abstract(sanitized);
         await abs.save();
 
-        // Notify admin via email
+        const conferenceId = sanitized.conference;
+
+        // Notify admin via email (full details)
         try {
-            await realEmailSender.sendAbstractToAdmin(sanitized, sanitized.conference);
+            await realEmailSender.sendAbstractToAdmin(sanitized, conferenceId);
         } catch (emailErr) {
-            console.error('[AbstractSubmission] Failed to send email to admin:', emailErr);
+            console.error('[AbstractSubmission] Failed to send admin email:', emailErr);
+        }
+
+        // Send confirmation email to user
+        try {
+            await realEmailSender.sendAbstractConfirmationToUser(sanitized, conferenceId);
+        } catch (emailErr) {
+            console.error('[AbstractSubmission] Failed to send user confirmation email:', emailErr);
         }
 
         return NextResponse.json(abs, { status: 201 });
