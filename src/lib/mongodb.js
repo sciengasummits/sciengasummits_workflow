@@ -3,18 +3,6 @@ import dns from 'dns';
 
 dns.setDefaultResultOrder('ipv4first');
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
-}
-
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
 const mongoOptions = {
   serverSelectionTimeoutMS: 45000,
   socketTimeoutMS: 60000,
@@ -27,6 +15,17 @@ const mongoOptions = {
 };
 
 export default async function dbConnect() {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error('Please define the MONGODB_URI environment variable');
+  }
+
+  if (!global.mongoose) {
+    global.mongoose = { conn: null, promise: null };
+  }
+  const cached = global.mongoose;
+
   if (cached.conn) {
     return cached.conn;
   }

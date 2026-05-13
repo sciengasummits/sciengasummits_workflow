@@ -158,6 +158,19 @@ const CONFERENCE_CONFIG = {
     accentColor: '#0369a1',
     accentGlow: 'rgba(3,105,161,0.35)',
   },
+  advancenano: {
+    conferenceId: 'advancenano',
+    displayName: 'ADVANCE NANO SUMMIT 2026',
+    shortName: 'ADVANCE NANO SUMMIT',
+    logoText: 'AN',
+    logoSub: 'Summit',
+    brandTop: 'ADVANCE NANO',
+    brandSub: 'SUMMIT 2026',
+    footerText: '© Copyright 2026 ADVANCE NANO SUMMIT.',
+    email: 'advancenanosummit@sciengasummits.com',
+    accentColor: '#1e3a8a',
+    accentGlow: 'rgba(30,58,138,0.35)',
+  },
 };
 
 /* â”€â”€ Simple page router â”€â”€ */

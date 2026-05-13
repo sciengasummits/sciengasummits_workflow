@@ -56,6 +56,10 @@ export class RealEmailSender {
                 user: process.env.POLYMAT_SMTP_USER || this._defaultUser,
                 pass: (process.env.POLYMAT_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            advancenano: {
+                user: process.env.ADVANCENANO_SMTP_USER || 'advancenanosummit@sciengasummits.com',
+                pass: process.env.ADVANCENANO_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+            },
         };
 
         // Build one transporter per conference account
@@ -507,6 +511,7 @@ export class RealEmailSender {
             icogwh:      process.env.ICOGWH_EMAIL,
             icemmae2027: process.env.ICEMMAE_EMAIL,
             polymat:     process.env.POLYMAT_EMAIL,
+            advancenano: process.env.ADVANCENANO_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
@@ -543,6 +548,7 @@ export class RealEmailSender {
             iqce2027:    'https://iqce2027.sciengasummits.com',
             icogwh:      'https://icogwh2027.sciengasummits.com',
             icemmae2027: 'https://icemmae2027.sciengasummits.com',
+            advancenano: 'https://advancenanosummit2026.sciengasummits.com',
         };
 
         let absoluteFileUrl = abstractData.fileUrl;
