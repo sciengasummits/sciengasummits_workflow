@@ -11,8 +11,8 @@ import nodemailer from 'nodemailer';
 export class RealEmailSender {
     constructor() {
         // Legacy / fallback credentials
-        this._defaultUser = process.env.SMTP_USER || 'civilenv@sciengasummits.com';
-        this._defaultPass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
+        this._defaultUser = process.env.SMTP_USER || process.env.LIUTEX_SMTP_USER || 'liutex@sciengasummits.com';
+        this._defaultPass = (process.env.SMTP_PASS || process.env.LIUTEX_SMTP_PASS || '').replace(/\s/g, '');
 
         // Per-conference credential map  { conferenceId → { user, pass } }
         this._accounts = {
@@ -76,17 +76,19 @@ export class RealEmailSender {
             }
 
             this._transporters[confId] = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
                 auth: { user: creds.user, pass: creds.pass },
-                tls: { rejectUnauthorized: false },
             });
         }
 
         // Always build a default/fallback transporter (liutex)
         this._defaultTransporter = this._transporters['liutex'] || nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
             auth: { user: this._defaultUser, pass: this._defaultPass },
-            tls: { rejectUnauthorized: false },
         });
 
         // Backward-compat: keep .user / .pass / .transporter so nothing else breaks
@@ -141,8 +143,10 @@ export class RealEmailSender {
      * @param {object} [paymentIds] - { razorpay_order_id, razorpay_payment_id }
      */
     async sendRegistrationConfirmation(reg, paymentIds = {}) {
-        const adminEmail = process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com';
-        const conferenceId = 'liutex';
+        // Derive conferenceId from the registration record itself
+        const conferenceId = reg.conference || 'liutex';
+        const adminEmail = this._getAdminEmail(conferenceId);
+        const confConfig = this._getConfDisplay(conferenceId);
 
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
@@ -181,7 +185,7 @@ export class RealEmailSender {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>New Registration – LIUTEX Summit 2026</title>
+  <title>New Registration – ${confConfig.displayName}</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
@@ -195,7 +199,7 @@ export class RealEmailSender {
               ✅ New Registration Confirmed
             </h1>
             <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">
-              LIUTEX Vortex Summit 2026 · Payment Successful
+              ${confConfig.displayName} · Payment Successful
             </p>
           </td>
         </tr>
@@ -314,8 +318,8 @@ export class RealEmailSender {
         <tr>
           <td style="background:#f8faff;border-top:1px solid #e5e7eb;padding:20px 36px;text-align:center;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
-              This is an automated notification from the LIUTEX Vortex Summit 2026 registration system.<br/>
-              © 2026 SciEnga Summits · <a href="mailto:liutex@sciengasummits.com" style="color:#2563eb;">liutex@sciengasummits.com</a>
+              This is an automated notification from the ${confConfig.displayName} registration system.<br/>
+              © ${new Date().getFullYear()} SciEnga Summits · <a href="mailto:${adminEmail}" style="color:#2563eb;">${adminEmail}</a>
             </p>
           </td>
         </tr>
@@ -326,11 +330,11 @@ export class RealEmailSender {
 </body>
 </html>`;
 
-        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · LIUTEX Summit 2026`;
+        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · ${confConfig.displayName}`;
 
         try {
             const info = await transporter.sendMail({
-                from: `"LIUTEX Summit 2026" <${fromUser}>`,
+                from: `"${confConfig.displayName}" <${fromUser}>`,
                 to: adminEmail,
                 subject,
                 html,
@@ -393,7 +397,7 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this.user;
             
-        const subject = `Program Schedule Request Received - ${conferenceId.toUpperCase()} Summit 2026`;
+        const subject = `Program Schedule Request Received - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h2 style="color: #1e3a8a;">Hello ${name},</h2>
@@ -497,6 +501,26 @@ export class RealEmailSender {
             await transporter.sendMail({ from: `"System" <${fromUser}>`, to: adminEmail, subject: emailSubject, html });
             return { success: true };
         } catch (err) { return { success: false, error: err.message }; }
+    }
+
+    /**
+     * Resolve display name and email for a given conference from CONFERENCE_CONFIG.
+     */
+    _getConfDisplay(conferenceId) {
+        const displayMap = {
+            liutex:      { displayName: 'LIUTEX VORTEX SUMMIT 2026' },
+            foodagri:    { displayName: 'FOOD AGRI SUMMIT 2026' },
+            fluid:       { displayName: 'FLUID MECHANICS & TURBOMACHINERY 2026' },
+            renewable:   { displayName: 'RENEWABLE ENERGY & CLIMATE CHANGE 2026' },
+            cyber:       { displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026' },
+            powereng:    { displayName: 'POWER ENERGY & ELECTRICAL ENGINEERING 2026' },
+            iqce2027:    { displayName: 'QUANTUM COMPUTING & ENGINEERING SUMMIT 2027' },
+            icogwh:      { displayName: 'OBSTETRICS, GYNECOLOGY AND WOMEN HEALTH 2027' },
+            icemmae2027: { displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027' },
+            polymat:     { displayName: 'POLYMERS AND COMPOSITE MATERIALS 2026' },
+            astrospace:  { displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026' },
+        };
+        return displayMap[conferenceId] || { displayName: conferenceId.toUpperCase() };
     }
 
     /**

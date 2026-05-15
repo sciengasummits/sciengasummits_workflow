@@ -27,7 +27,7 @@ export async function POST(request) {
             notes: notes || {},
         });
 
-        return NextResponse.json(order);
+        return NextResponse.json({ order });
     } catch (err) {
         console.error('Create order error:', err);
         return NextResponse.json({ error: err.message || 'Failed to create payment order' }, { status: 500 });
