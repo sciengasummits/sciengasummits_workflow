@@ -72,6 +72,12 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'astrospace',
         displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026',
     },
+    {
+        username: 'AIROBOTSMLSUMMIT2026',
+        email: process.env.AIROBOTSML_EMAIL || 'airobotsml@sciengasummits.com',
+        conferenceId: 'airobotsml',
+        displayName: 'ARTIFICIAL INTELLIGENCE, ROBOTICS AND MACHINE LEARNING 2026',
+    },
 ];
 
 // Conference config for frontend
@@ -218,5 +224,18 @@ export const CONFERENCE_CONFIG = {
         email: 'astrospace@sciengasummits.com',
         accentColor: '#7c3aed',
         accentGlow: 'rgba(124,58,237,0.35)',
+    },
+    airobotsml: {
+        conferenceId: 'airobotsml',
+        displayName: 'ARTIFICIAL INTELLIGENCE, ROBOTICS AND MACHINE LEARNING 2026',
+        shortName: 'AI ROBOTS ML 2026',
+        logoText: 'AI',
+        logoSub: 'Summit',
+        brandTop: 'AI ROBOTS',
+        brandSub: '& MACHINE LEARNING',
+        footerText: '© Copyright 2026 AI ROBOTS ML SUMMIT.',
+        email: 'airobotsml@sciengasummits.com',
+        accentColor: '#0ea5e9',
+        accentGlow: 'rgba(14,165,233,0.35)',
     },
 };
