@@ -47,8 +47,7 @@ import HeroChairs from '@/components/dashboard/pages/HeroChairs';
 import BrochureDashboard from '@/components/dashboard/pages/Brochure';
 import MailBox from '@/components/dashboard/pages/MailBox';
 
-
-/* Ã¢â€ â‚¬Ã¢â€ â‚¬ Simple page router Ã¢â€ â‚¬Ã¢â€ â‚¬ */
+/* â”€â”€ Simple page router â”€â”€ */
 function PageContent({ activeNav, setActiveNav, conf }) {
   switch (activeNav) {
 

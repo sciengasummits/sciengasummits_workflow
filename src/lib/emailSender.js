@@ -84,6 +84,10 @@ export class RealEmailSender {
                 user: process.env.AIROBOTSML_SMTP_USER || 'airobotsml@sciengasummits.com',
                 pass: (process.env.AIROBOTSML_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD').replace(/\s/g, ''),
             },
+            wscsn2027: {
+                user: process.env.WSCSN_SMTP_USER || 'wscsnsummit@sciengasummits.com',
+                pass: process.env.WSCSN_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+            },
         };
 
         // Build one transporter per conference account
@@ -161,8 +165,8 @@ export class RealEmailSender {
      * @param {object} [paymentIds] - { razorpay_order_id, razorpay_payment_id }
      */
     async sendRegistrationConfirmation(reg, paymentIds = {}) {
-        const adminEmail = process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com';
-        const conferenceId = 'liutex';
+        const conferenceId = reg.conference || 'liutex';
+        const adminEmail = this._getAdminEmail(conferenceId);
 
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
@@ -201,7 +205,7 @@ export class RealEmailSender {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>New Registration – LIUTEX Summit 2026</title>
+    <title>New Registration – ${conferenceId.toUpperCase()} Summit</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
@@ -215,7 +219,7 @@ export class RealEmailSender {
               ✅ New Registration Confirmed
             </h1>
             <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">
-              LIUTEX Vortex Summit 2026 · Payment Successful
+              ${conferenceId.toUpperCase()} Summit · Payment Successful
             </p>
           </td>
         </tr>
@@ -334,8 +338,8 @@ export class RealEmailSender {
         <tr>
           <td style="background:#f8faff;border-top:1px solid #e5e7eb;padding:20px 36px;text-align:center;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
-              This is an automated notification from the LIUTEX Vortex Summit 2026 registration system.<br/>
-              © 2026 SciEnga Summits · <a href="mailto:liutex@sciengasummits.com" style="color:#2563eb;">liutex@sciengasummits.com</a>
+              This is an automated notification from the ${conferenceId.toUpperCase()} Summit registration system.<br/>
+              © 2027 SciEnga Summits · <a href="mailto:${adminEmail}" style="color:#2563eb;">${adminEmail}</a>
             </p>
           </td>
         </tr>
@@ -346,11 +350,11 @@ export class RealEmailSender {
 </body>
 </html>`;
 
-        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · LIUTEX Summit 2026`;
+        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · ${conferenceId.toUpperCase()} Summit`;
 
         try {
             const info = await transporter.sendMail({
-                from: `"LIUTEX Summit 2026" <${fromUser}>`,
+                from: `"${conferenceId.toUpperCase()} Summit" <${fromUser}>`,
                 to: adminEmail,
                 subject,
                 html,
@@ -542,6 +546,7 @@ export class RealEmailSender {
             astrospace:  process.env.ASTRO_EMAIL,
             condensedphys: process.env.CONDENSEDPHYS_EMAIL,
             airobotsml:  process.env.AIROBOTSML_EMAIL,
+            wscsn2027:   process.env.WSCSN_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
@@ -583,6 +588,7 @@ export class RealEmailSender {
             cropscieng:  'https://cropsciengsummit2026.sciengasummits.com',
             cleaneng:    'https://cleanengtechsummit2026.sciengasummits.com',
             airobotsml:  'https://airobotsmlsummit2027.sciengasummits.com',
+            wscsn2027:   'https://wscsn2027.sciengasummits.com',
         };
 
         let absoluteFileUrl = abstractData.fileUrl;

@@ -9,18 +9,18 @@ import {
 } from 'lucide-react';
 import { getContent, updateContent } from '@/lib/api';
 
-/* â”€â”€â”€ Pre-filled content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ——————————————————————————————————————————— */
 const INITIAL_CONTENT = `<p><strong>Dear Esteemed Participants,</strong></p>
 
-<p>It is with great joy and enthusiasm that we extend a warm invitation to participants from around the world to join us for the <strong>Annual International Conference on Liutex and Vortex Identification (LIUTEXVORTEXSUMMIT2026)</strong>, taking place in <strong>Outram,  Munich, Germany, from December 14â€“16, 2026</strong>.</p>
+<p>It is with great joy and enthusiasm that we extend a warm invitation to participants from around the world to join us for the conference, taking place in <strong>Munich, Germany</strong>.</p>
 
-<p>This conference brings together leading researchers, academicians, computational scientists, engineers, and industry professionals to explore recent developments, theoretical foundations, numerical methods, and real-world applications of Liutex-based vortex analysis.</p>
+<p>This conference brings together leading researchers, academicians, scientists, engineers, and industry professionals to explore recent developments and theoretical foundations in the field.</p>
 
-<p>The theme for LIUTEXVORTEXSUMMIT2026, <strong>"Liutex Theory and Applications in Vortex Identification and Vortex Dynamics,"</strong> aims to bring together visionaries, innovators, and scholars from across the globe. This conference will provide a dynamic platform to explore groundbreaking research through carefully curated scientific sessions covering <strong>Liutex Theory, Vortex Identification, Vortex Dynamics</strong>, and their real-world applications in <strong>aerospace, mechanical, civil, and environmental engineering</strong>.</p>
+<p>The theme for the conference aims to bring together visionaries, innovators, and scholars from across the globe. This conference will provide a dynamic platform to explore groundbreaking research through carefully curated scientific sessions.</p>
 
-<p>The future of fluid mechanics and vortex science has never looked brighter. Don't miss this exceptional opportunity to connect, collaborate, and innovate with the global research community.</p>
+<p>The future of science and technology has never looked brighter. Don't miss this exceptional opportunity to connect, collaborate, and innovate with the global research community.</p>
 
-<p><strong>Mark your calendars</strong> for this impactful event that promises to shape the future of vortex science. We look forward to welcoming you to <strong> Munich, Germany</strong> for an unforgettable experience!</p>
+<p><strong>Mark your calendars</strong> for this impactful event that promises to shape the future. We look forward to welcoming you for an unforgettable experience!</p>
 
 <p>&nbsp;</p>
 
@@ -271,7 +271,7 @@ export default function AboutConference() {
                         </span>
                     )}
                     <span style={{ fontSize: '12px', color: '#64748b', background: '#f1f5f9', padding: '5px 10px', borderRadius: '6px' }}>
-                        Syncs live to LIUTEXVORTEXSUMMIT2026 website
+                        Syncs live to conference website
                     </span>
                 </div>
             </div>

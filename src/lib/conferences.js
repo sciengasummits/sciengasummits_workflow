@@ -126,6 +126,13 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'airobotsml',
         displayName: 'AI ROBOTS & MACHINE LEARNING SUMMIT 2027',
     },
+    {
+        username: 'WSCSN2027',
+        aliases: ['WSCSN2027SUMMIT'],
+        email: process.env.WSCSN_EMAIL || 'wscsnsummit@sciengasummits.com',
+        conferenceId: 'wscsn2027',
+        displayName: 'INTERNATIONAL CONFERENCE ON BRAIN SCIENCE, COMPUTATIONAL AND SYSTEMS NEUROSCIENCE 2027',
+    },
 ];
 
 // Conference config for frontend
@@ -363,5 +370,18 @@ export const CONFERENCE_CONFIG = {
         email: 'airobotsml@sciengasummits.com',
         accentColor: '#4f46e5',
         accentGlow: 'rgba(79,70,229,0.35)',
+    },
+    wscsn2027: {
+        conferenceId: 'wscsn2027',
+        displayName: 'INTERNATIONAL CONFERENCE ON BRAIN SCIENCE, COMPUTATIONAL AND SYSTEMS NEUROSCIENCE 2027',
+        shortName: 'WSCSN 2027',
+        logoText: 'WS',
+        logoSub: 'Summit',
+        brandTop: 'WSCSN',
+        brandSub: 'SUMMIT 2027',
+        footerText: '© Copyright 2027 WSCSN SUMMIT.',
+        email: 'wscsnsummit@sciengasummits.com',
+        accentColor: '#8c6239',
+        accentGlow: 'rgba(140, 98, 57, 0.35)',
     },
 };
