@@ -170,6 +170,18 @@ const CONFERENCE_CONFIG = {
     accentColor: '#059669',
     accentGlow: 'rgba(5,150,105,0.35)',
   },
+  airobotsml: {
+    conferenceId: 'airobotsml',
+    displayName: 'ARTIFICIAL INTELLIGENCE, ROBOTICS AND MACHINE LEARNING 2026',
+    shortName: 'AI ROBOTS ML 2026',
+    logoText: 'AI',
+    logoSub: 'Summit',
+    brandTop: 'AI ROBOTS',
+    brandSub: '& MACHINE LEARNING',
+    footerText: '© Copyright 2026 AI ROBOTS ML SUMMIT.',
+    accentColor: '#0ea5e9',
+    accentGlow: 'rgba(14,165,233,0.35)',
+  },
 };
 
 /* â”€â”€ Simple page router â”€â”€ */

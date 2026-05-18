@@ -68,6 +68,10 @@ export class RealEmailSender {
                 user: process.env.CONDENSEDPHYS_SMTP_USER || this._defaultUser,
                 pass: (process.env.CONDENSEDPHYS_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            airobotsml: {
+                user: process.env.AIROBOTSML_SMTP_USER || this._defaultUser,
+                pass: (process.env.AIROBOTSML_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account
@@ -524,6 +528,7 @@ export class RealEmailSender {
             polymat:     { displayName: 'POLYMERS AND COMPOSITE MATERIALS 2026' },
             astrospace:  { displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026' },
             condensedphys: { displayName: 'CONDENSED MATTER & APPLIED PHYSICS SUMMIT 2027' },
+            airobotsml:  { displayName: 'ARTIFICIAL INTELLIGENCE, ROBOTICS AND MACHINE LEARNING 2027' },
         };
         return displayMap[conferenceId] || { displayName: conferenceId.toUpperCase() };
     }
@@ -546,6 +551,7 @@ export class RealEmailSender {
             polymat:     process.env.POLYMAT_EMAIL,
             astrospace:  process.env.ASTRO_EMAIL,
             condensedphys: process.env.CONDENSEDPHYS_EMAIL,
+            airobotsml:  process.env.AIROBOTSML_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
@@ -583,6 +589,7 @@ export class RealEmailSender {
             icogwh:      'https://icogwh2027.sciengasummits.com',
             icemmae2027: 'https://icemmae2027.sciengasummits.com',
             astrospace:  'https://astrospacesummit2027.sciengasummits.com',
+            airobotsml:  'https://airobotsml.sciengasummits.com',
         };
 
         let absoluteFileUrl = abstractData.fileUrl;
