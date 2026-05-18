@@ -47,6 +47,7 @@ const CATEGORIES = [
     { key: 'Poster Presenter', label: 'Poster Presenter', db: 'Poster Presenter', color: '#0ea5e9' },
     { key: 'Plenary Speaker', label: 'Plenary Speaker', db: 'Plenary Speaker', color: '#f43f5e' },
     { key: 'Delegate', label: 'Delegate', db: 'Delegate', color: '#10b981' },
+    { key: 'Student', label: 'Student', db: 'Student', color: '#f59e0b' },
     { key: 'Invited Speaker', label: 'Invited Speaker', db: 'Invited Speaker', color: '#f97316' },
 ];
 
