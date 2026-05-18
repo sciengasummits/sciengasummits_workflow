@@ -72,6 +72,12 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'astrospace',
         displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026',
     },
+    {
+        username: 'CONDENSEDPHYSSUMMIT2026',
+        email: process.env.CONDENSEDPHYS_EMAIL || 'condensedphy@sciengasummits.com',
+        conferenceId: 'condensedphys',
+        displayName: 'CONDENSED MATTER & APPLIED PHYSICS SUMMIT 2027',
+    },
 ];
 
 // Conference config for frontend
@@ -218,5 +224,18 @@ export const CONFERENCE_CONFIG = {
         email: 'astrospace@sciengasummits.com',
         accentColor: '#7c3aed',
         accentGlow: 'rgba(124,58,237,0.35)',
+    },
+    condensedphys: {
+        conferenceId: 'condensedphys',
+        displayName: 'CONDENSED MATTER & APPLIED PHYSICS SUMMIT 2027',
+        shortName: 'CONDENSEDPHYSSUMMIT 2027',
+        logoText: 'CP',
+        logoSub: 'Summit',
+        brandTop: 'CONDENSEDPHYS',
+        brandSub: 'SUMMIT 2027',
+        footerText: '© Copyright 2027 CONDENSEDPHYSSUMMIT.',
+        email: 'condensedphy@sciengasummits.com',
+        accentColor: '#001F3F',
+        accentGlow: 'rgba(0,31,63,0.35)',
     },
 };

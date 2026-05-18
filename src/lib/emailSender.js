@@ -64,6 +64,10 @@ export class RealEmailSender {
                 user: process.env.ASTRO_SMTP_USER || this._defaultUser,
                 pass: (process.env.ASTRO_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
+            condensedphys: {
+                user: process.env.CONDENSEDPHYS_SMTP_USER || this._defaultUser,
+                pass: (process.env.CONDENSEDPHYS_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account
@@ -519,6 +523,7 @@ export class RealEmailSender {
             icemmae2027: { displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027' },
             polymat:     { displayName: 'POLYMERS AND COMPOSITE MATERIALS 2026' },
             astrospace:  { displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026' },
+            condensedphys: { displayName: 'CONDENSED MATTER & APPLIED PHYSICS SUMMIT 2027' },
         };
         return displayMap[conferenceId] || { displayName: conferenceId.toUpperCase() };
     }
@@ -540,6 +545,7 @@ export class RealEmailSender {
             icemmae2027: process.env.ICEMMAE_EMAIL,
             polymat:     process.env.POLYMAT_EMAIL,
             astrospace:  process.env.ASTRO_EMAIL,
+            condensedphys: process.env.CONDENSEDPHYS_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
