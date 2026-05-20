@@ -309,6 +309,31 @@ const seedData = [
             note: '* Format: PDF • Updated: September 2026',
         },
     },
+
+    // ── 12. Hero Chairs ──────────────────────────────────────────────────────
+    {
+        key: 'heroChairs',
+        data: [
+            {
+                id: 1775152215801,
+                title: 'Conference Chairperson',
+                name: 'Prof. Dr. Sung-Bae Cho',
+                designation: 'Professor of Computer Science',
+                affiliation: 'Yonsei University',
+                country: 'South Korea',
+                image: ''
+            },
+            {
+                id: 1775152215802,
+                title: 'Conference Co-Chairperson',
+                name: 'Prof. Dr. Elizabeth Croft',
+                designation: 'Professor of Robotics',
+                affiliation: 'Monash University',
+                country: 'Australia',
+                image: ''
+            }
+        ]
+    },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
