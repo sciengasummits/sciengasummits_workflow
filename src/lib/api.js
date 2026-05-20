@@ -145,6 +145,7 @@ export const updateRegistrationStatus = (id, data) => request('PATCH', `/registr
 export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('image', file);
+    formData.append('conference', _conference); // Tag with current active conference
 
     const token = getAuthToken();
     const headers = {};

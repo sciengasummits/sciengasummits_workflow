@@ -53,6 +53,7 @@ const CONFERENCE_SITE_URLS = {
     icogwh:      process.env.NEXT_PUBLIC_ICOGWH_URL      || 'https://icogwh2027.sciengasummits.com',
     icemmae2027: process.env.NEXT_PUBLIC_ICEMMAE_URL     || 'https://icemmae2027.sciengasummits.com',
     advancenano: process.env.NEXT_PUBLIC_ADVANCENANO_URL || 'https://advancenanosummit2026.sciengasummits.com',
+    opticphoton: process.env.NEXT_PUBLIC_OPTICPHOTON_URL || 'https://opticphotonsummit2026.com',
 };
 
 /** Turns /uploads/foo.docx —> https://website.com/uploads/foo.docx */

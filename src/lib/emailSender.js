@@ -60,6 +60,18 @@ export class RealEmailSender {
                 user: process.env.ADVANCENANO_SMTP_USER || 'advancenanosummit@sciengasummits.com',
                 pass: process.env.ADVANCENANO_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
             },
+            opticphoton: {
+                user: process.env.OPTIC_SMTP_USER || 'opticphotosummit@sciengasummits.com',
+                pass: process.env.OPTIC_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+            },
+            cropscieng: {
+                user: process.env.CROPSCIENG_SMTP_USER || 'cropsciengasummits@sciengasummits.com',
+                pass: process.env.CROPSCIENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+            },
+            cleaneng: {
+                user: process.env.CLEANENG_SMTP_USER || 'cleanengtech@sciengasummits.com',
+                pass: process.env.CLEANENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+            },
         };
 
         // Build one transporter per conference account
@@ -512,6 +524,9 @@ export class RealEmailSender {
             icemmae2027: process.env.ICEMMAE_EMAIL,
             polymat:     process.env.POLYMAT_EMAIL,
             advancenano: process.env.ADVANCENANO_EMAIL,
+            opticphoton: process.env.OPTIC_EMAIL,
+            cropscieng:  process.env.CROPSCIENG_EMAIL,
+            cleaneng:    process.env.CLEANENG_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
@@ -549,6 +564,9 @@ export class RealEmailSender {
             icogwh:      'https://icogwh2027.sciengasummits.com',
             icemmae2027: 'https://icemmae2027.sciengasummits.com',
             advancenano: 'https://advancenanosummit2026.sciengasummits.com',
+            opticphoton: 'https://opticphotonsummit2026.com',
+            cropscieng:  'https://cropsciengsummit2026.sciengasummits.com',
+            cleaneng:    'https://cleanengtechsummit2026.sciengasummits.com',
         };
 
         let absoluteFileUrl = abstractData.fileUrl;
