@@ -11,14 +11,18 @@ import nodemailer from 'nodemailer';
 export class RealEmailSender {
     constructor() {
         // Legacy / fallback credentials
-        this._defaultUser = process.env.SMTP_USER || 'liutex@sciengasummits.com';
-        this._defaultPass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
+        this._defaultUser = process.env.SMTP_USER || process.env.LIUTEX_SMTP_USER || 'liutex@sciengasummits.com';
+        this._defaultPass = (process.env.SMTP_PASS || process.env.LIUTEX_SMTP_PASS || '').replace(/\s/g, '');
 
         // Per-conference credential map  { conferenceId → { user, pass } }
         this._accounts = {
             liutex: {
                 user: process.env.LIUTEX_SMTP_USER || this._defaultUser,
                 pass: (process.env.LIUTEX_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
+            civilenv: {
+                user: process.env.CIVILENV_SMTP_USER || this._defaultUser,
+                pass: (process.env.CIVILENV_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
             foodagri: {
                 user: process.env.FOODAGRI_SMTP_USER || this._defaultUser,
@@ -56,7 +60,7 @@ export class RealEmailSender {
                 user: process.env.POLYMAT_SMTP_USER || this._defaultUser,
                 pass: (process.env.POLYMAT_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
-            advancenano: {
+advancenano: {
                 user: process.env.ADVANCENANO_SMTP_USER || 'advancenanosummit@sciengasummits.com',
                 pass: process.env.ADVANCENANO_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
             },
@@ -71,6 +75,17 @@ export class RealEmailSender {
             cleaneng: {
                 user: process.env.CLEANENG_SMTP_USER || 'cleanengtech@sciengasummits.com',
                 pass: process.env.CLEANENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+astrospace: {
+                user: process.env.ASTRO_SMTP_USER || this._defaultUser,
+                pass: (process.env.ASTRO_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
+            condensedphys: {
+                user: process.env.CONDENSEDPHYS_SMTP_USER || this._defaultUser,
+                pass: (process.env.CONDENSEDPHYS_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
+            airobotsml: {
+                user: process.env.AIROBOTSML_SMTP_USER || this._defaultUser,
+                pass: (process.env.AIROBOTSML_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
         };
 
@@ -84,17 +99,19 @@ export class RealEmailSender {
             }
 
             this._transporters[confId] = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
                 auth: { user: creds.user, pass: creds.pass },
-                tls: { rejectUnauthorized: false },
             });
         }
 
         // Always build a default/fallback transporter (liutex)
         this._defaultTransporter = this._transporters['liutex'] || nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
             auth: { user: this._defaultUser, pass: this._defaultPass },
-            tls: { rejectUnauthorized: false },
         });
 
         // Backward-compat: keep .user / .pass / .transporter so nothing else breaks
@@ -149,8 +166,10 @@ export class RealEmailSender {
      * @param {object} [paymentIds] - { razorpay_order_id, razorpay_payment_id }
      */
     async sendRegistrationConfirmation(reg, paymentIds = {}) {
-        const adminEmail = process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com';
-        const conferenceId = 'liutex';
+        // Derive conferenceId from the registration record itself
+        const conferenceId = reg.conference || 'liutex';
+        const adminEmail = this._getAdminEmail(conferenceId);
+        const confConfig = this._getConfDisplay(conferenceId);
 
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
@@ -189,7 +208,7 @@ export class RealEmailSender {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>New Registration – LIUTEX Summit 2026</title>
+  <title>New Registration – ${confConfig.displayName}</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
@@ -203,7 +222,7 @@ export class RealEmailSender {
               ✅ New Registration Confirmed
             </h1>
             <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">
-              LIUTEX Vortex Summit 2026 · Payment Successful
+              ${confConfig.displayName} · Payment Successful
             </p>
           </td>
         </tr>
@@ -322,8 +341,8 @@ export class RealEmailSender {
         <tr>
           <td style="background:#f8faff;border-top:1px solid #e5e7eb;padding:20px 36px;text-align:center;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
-              This is an automated notification from the LIUTEX Vortex Summit 2026 registration system.<br/>
-              © 2026 SciEnga Summits · <a href="mailto:liutex@sciengasummits.com" style="color:#2563eb;">liutex@sciengasummits.com</a>
+              This is an automated notification from the ${confConfig.displayName} registration system.<br/>
+              © ${new Date().getFullYear()} SciEnga Summits · <a href="mailto:${adminEmail}" style="color:#2563eb;">${adminEmail}</a>
             </p>
           </td>
         </tr>
@@ -334,11 +353,11 @@ export class RealEmailSender {
 </body>
 </html>`;
 
-        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · LIUTEX Summit 2026`;
+        const subject = `🎉 New Registration: ${registrantName} · $${totalAmount} USD · ${confConfig.displayName}`;
 
         try {
             const info = await transporter.sendMail({
-                from: `"LIUTEX Summit 2026" <${fromUser}>`,
+                from: `"${confConfig.displayName}" <${fromUser}>`,
                 to: adminEmail,
                 subject,
                 html,
@@ -357,7 +376,7 @@ export class RealEmailSender {
      * @param {object} payload - { name, email, number, conferenceId }
      */
     async sendProgramRequestToAdmin({ name, email, number, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this.user;
@@ -401,7 +420,7 @@ export class RealEmailSender {
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId])
             ? this._accounts[conferenceId].user : this.user;
             
-        const subject = `Program Schedule Request Received - ${conferenceId.toUpperCase()} Summit 2026`;
+        const subject = `Program Schedule Request Received - ${conferenceId.toUpperCase()}`;
         const html = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h2 style="color: #1e3a8a;">Hello ${name},</h2>
@@ -431,7 +450,7 @@ export class RealEmailSender {
      * Send a "Subscribe" notification to the admin.
      */
     async sendSubscribeToAdmin({ name, email, phone, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
@@ -457,7 +476,7 @@ export class RealEmailSender {
      * Send a "Brochure Access" notification to the admin.
      */
     async sendBrochureToAdmin({ name, email, number, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
@@ -483,7 +502,7 @@ export class RealEmailSender {
      * Send a "Contact Us" message to the admin.
      */
     async sendContactToAdmin({ name, email, subject, message, conferenceId = 'liutex' }) {
-        const adminEmail = conferenceId === 'liutex' ? (process.env.LIUTEX_EMAIL || 'liutex@sciengasummits.com') : this.user;
+        const adminEmail = this._getAdminEmail(conferenceId);
         const transporter = this._transporters[conferenceId] || this._defaultTransporter;
         const fromUser = (this._accounts[conferenceId] && this._transporters[conferenceId]) ? this._accounts[conferenceId].user : this.user;
 
@@ -508,6 +527,28 @@ export class RealEmailSender {
     }
 
     /**
+     * Resolve display name and email for a given conference from CONFERENCE_CONFIG.
+     */
+    _getConfDisplay(conferenceId) {
+        const displayMap = {
+            liutex:      { displayName: 'LIUTEX VORTEX SUMMIT 2026' },
+            foodagri:    { displayName: 'FOOD AGRI SUMMIT 2026' },
+            fluid:       { displayName: 'FLUID MECHANICS & TURBOMACHINERY 2026' },
+            renewable:   { displayName: 'RENEWABLE ENERGY & CLIMATE CHANGE 2026' },
+            cyber:       { displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026' },
+            powereng:    { displayName: 'POWER ENERGY & ELECTRICAL ENGINEERING 2026' },
+            iqce2027:    { displayName: 'QUANTUM COMPUTING & ENGINEERING SUMMIT 2027' },
+            icogwh:      { displayName: 'OBSTETRICS, GYNECOLOGY AND WOMEN HEALTH 2027' },
+            icemmae2027: { displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027' },
+            polymat:     { displayName: 'POLYMERS AND COMPOSITE MATERIALS 2026' },
+            astrospace:  { displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026' },
+            condensedphys: { displayName: 'CONDENSED MATTER & APPLIED PHYSICS SUMMIT 2027' },
+            airobotsml:  { displayName: 'ARTIFICIAL INTELLIGENCE, ROBOTICS AND MACHINE LEARNING 2027' },
+        };
+        return displayMap[conferenceId] || { displayName: conferenceId.toUpperCase() };
+    }
+
+    /**
      * Resolve the admin email for a given conference.
      * Checks env vars in priority order, then falls back to the SMTP user.
      */
@@ -523,10 +564,13 @@ export class RealEmailSender {
             icogwh:      process.env.ICOGWH_EMAIL,
             icemmae2027: process.env.ICEMMAE_EMAIL,
             polymat:     process.env.POLYMAT_EMAIL,
-            advancenano: process.env.ADVANCENANO_EMAIL,
+advancenano: process.env.ADVANCENANO_EMAIL,
             opticphoton: process.env.OPTIC_EMAIL,
             cropscieng:  process.env.CROPSCIENG_EMAIL,
             cleaneng:    process.env.CLEANENG_EMAIL,
+astrospace:  process.env.ASTRO_EMAIL,
+            condensedphys: process.env.CONDENSEDPHYS_EMAIL,
+            airobotsml:  process.env.AIROBOTSML_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)
@@ -563,10 +607,12 @@ export class RealEmailSender {
             iqce2027:    'https://iqce2027.sciengasummits.com',
             icogwh:      'https://icogwh2027.sciengasummits.com',
             icemmae2027: 'https://icemmae2027.sciengasummits.com',
-            advancenano: 'https://advancenanosummit2026.sciengasummits.com',
+advancenano: 'https://advancenanosummit2026.sciengasummits.com',
             opticphoton: 'https://opticphotonsummit2026.com',
             cropscieng:  'https://cropsciengsummit2026.sciengasummits.com',
             cleaneng:    'https://cleanengtechsummit2026.sciengasummits.com',
+astrospace:  'https://astrospacesummit2027.sciengasummits.com',
+            airobotsml:  'https://airobotsml.sciengasummits.com',
         };
 
         let absoluteFileUrl = abstractData.fileUrl;

@@ -43,13 +43,15 @@ function SpeakerAvatar({ speaker, index, size = 48 }) {
 const CATEGORIES = [
     { key: 'All', label: 'All Speakers', db: null, color: '#6366f1' },
     { key: 'Committee', label: 'Committee', db: 'Committee', color: '#8b5cf6' },
-    { key: 'Keynote', label: 'Keynote Speaker', db: 'Keynote', color: '#8a2be2' },
-    { key: 'Posters', label: 'Poster Presenter', db: 'Posters', color: '#0ea5e9' },
-    { key: 'Plenary', label: 'Plenary Speaker', db: 'Plenary', color: '#f43f5e' },
-    { key: 'Delegates', label: 'Delegate', db: 'Delegates', color: '#10b981' },
+    { key: 'Keynote Speaker', label: 'Keynote Speaker', db: 'Keynote Speaker', color: '#8a2be2' },
+    { key: 'Poster Presenter', label: 'Poster Presenter', db: 'Poster Presenter', color: '#0ea5e9' },
+    { key: 'Plenary Speaker', label: 'Plenary Speaker', db: 'Plenary Speaker', color: '#f43f5e' },
+    { key: 'Delegate', label: 'Delegate', db: 'Delegate', color: '#10b981' },
+    { key: 'Student', label: 'Student', db: 'Student', color: '#f59e0b' },
+    { key: 'Invited Speaker', label: 'Invited Speaker', db: 'Invited Speaker', color: '#f97316' },
 ];
 
-const EMPTY_FORM = { name: '', title: '', affiliation: '', country: '', bio: '', image: null, category: 'Keynote', visible: true };
+const EMPTY_FORM = { name: '', title: '', affiliation: '', country: '', bio: '', image: null, category: 'Keynote Speaker', visible: true };
 const PAGE_SIZE_OPTS = [5, 10, 25, 50];
 
 export default function AllSpeakers() {

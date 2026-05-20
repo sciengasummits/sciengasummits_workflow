@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "seed:iqces2026": "node --experimental-vm-modules scripts/seed-iqces2026.js",
-    "seed:iqces2026:force": "node --experimental-vm-modules scripts/seed-iqces2026.js --force"
+    "seed:iqces2026:force": "node --experimental-vm-modules scripts/seed-iqces2026.js --force",
+    "seed:astrospace": "node --experimental-vm-modules scripts/seed-astrospace.js",
+    "seed:astrospace:force": "node --experimental-vm-modules scripts/seed-astrospace.js --force",
+    "seed:condensedphys": "node --experimental-vm-modules scripts/seed-condensedphys.js",
+    "seed:condensedphys:force": "node --experimental-vm-modules scripts/seed-condensedphys.js --force",
+    "migrate:partners-logos": "node --experimental-vm-modules scripts/migrate-add-partners-logos.js"
   },
   "dependencies": {
     "cors": "^2.8.6",
