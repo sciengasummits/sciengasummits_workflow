@@ -1,13 +1,14 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Seed Script — ASTROSPACESUMMIT2026
- * Conference ID : 'astrospace'
- * Run with     : node --experimental-vm-modules scripts/seed-astrospace.js
- * Force update : node --experimental-vm-modules scripts/seed-astrospace.js --force
+ * Seed Script — CONDENSEDPHYSSUMMIT2026
+ * Conference ID : 'condensedphys'
+ * Run with     : node --experimental-vm-modules scripts/seed-condensedphys.js
+ * Force update : node --experimental-vm-modules scripts/seed-condensedphys.js --force
  * ─────────────────────────────────────────────────────────────────────────────
- * Seeds all SiteContent keys used by the ASTROSPACESUMMIT2026 frontend:
+ * Seeds all SiteContent keys used by the CONDENSEDPHYSSUMMIT2026 frontend:
  *   hero · heroChairs · about · importantDates · stats · contact ·
- *   sessions · pricing · registration-prices · faq · venue · brochure · marquee
+ *   sessions · pricing · registration-prices · faq · venue · brochure ·
+ *   marquee · partners_logos · visa-info
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -32,7 +33,7 @@ SiteContentSchema.index({ conference: 1, key: 1 }, { unique: true });
 const SiteContent = mongoose.models.SiteContent || mongoose.model('SiteContent', SiteContentSchema);
 
 // ─── Conference ID ────────────────────────────────────────────────────────────
-const CONF = 'astrospace';
+const CONF = 'condensedphys';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEED DATA
@@ -44,11 +45,11 @@ const seedData = [
         key: 'hero',
         data: {
             subtitle: 'ANNUAL INTERNATIONAL CONFERENCE ON',
-            title: 'ASTRONOMY, ASTROPHYSICS\nAND SPACE SCIENCE',
-            description: 'Annual International Conference on Astronomy, Astrophysics and Space Science, where global experts unite to explore the mysteries of the universe. Discover ground-breaking research, connect with leading astronomers and astrophysicists, and explore cutting-edge discoveries transforming our understanding of space and cosmic phenomena.',
-            conferenceDate: 'April 12-14, 2027',
-            venue: 'Tokyo, Japan',
-            countdownTarget: '2027-04-12T09:00:00+09:00',
+            title: 'CONDENSED MATTER &\nAPPLIED PHYSICS SUMMIT',
+            description: 'Annual International Conference on Condensed Matter & Applied Physics Summit, where global experts unite to explore the frontiers of quantum materials, superconductivity, nanoscience, and applied physics. Discover ground-breaking research, connect with leading physicists, and explore cutting-edge discoveries transforming our understanding of matter and its applications.',
+            conferenceDate: 'March 23-25, 2027',
+            venue: 'Munich, Germany',
+            countdownTarget: '2027-03-23T09:00:00+01:00',
             showRegister: true,
             showAbstract: true,
             showBrochure: true,
@@ -64,25 +65,25 @@ const seedData = [
         data: [
             {
                 id: 1,
-                name: 'Dr. Hiroshi Tanaka',
-                affiliation: 'University of Tokyo, Japan',
-                country: 'Japan',
+                name: 'Prof. Klaus Müller',
+                affiliation: 'Technical University of Munich, Germany',
+                country: 'Germany',
                 title: 'Conference Chairman',
                 image: '',
             },
             {
                 id: 2,
-                name: 'Dr. Elena Vasquez',
-                affiliation: 'European Space Agency (ESA)',
-                country: 'Netherlands',
+                name: 'Dr. Priya Sharma',
+                affiliation: 'Indian Institute of Science (IISc), Bangalore',
+                country: 'India',
                 title: 'Conference Co-Chairman',
                 image: '',
             },
             {
                 id: 3,
-                name: 'Prof. Rajan Mehta',
-                affiliation: 'Indian Space Research Organisation (ISRO)',
-                country: 'India',
+                name: 'Prof. Li Wei',
+                affiliation: 'Peking University, China',
+                country: 'China',
                 title: 'Conference Co-Chairman',
                 image: '',
             },
@@ -93,27 +94,29 @@ const seedData = [
     {
         key: 'about',
         data: {
-            subtitle: 'Welcome to Tokyo, Japan',
+            subtitle: 'Welcome to Munich, Germany',
             title: 'About the Conference',
-            paragraph1: 'We are thrilled to welcome you to the Annual International Conference on Astronomy, Astrophysics and Space Science (ASTROSPACESUMMIT 2026), scheduled to take place from April 12–14, 2027, in the vibrant city of Tokyo, Japan. This premier scientific gathering brings together global experts from academia, research institutions, and space agencies to discuss groundbreaking advancements in astronomical science.',
-            paragraph2: 'Our mission is to foster a collaborative environment where researchers can share innovative findings, explore the next generation of space telescopes and observatories, and discuss the practical applications of astrophysical discoveries. Through interdisciplinary dialogue, we aim to accelerate the transition from theoretical astronomy to real-world space exploration missions.',
-            paragraph3: 'Join us for three immersive days of high-level plenary talks, technical sessions, poster presentations, and meaningful networking in the heart of Japan!',
+            paragraph1: 'We are thrilled to welcome you to the Annual International Conference on Condensed Matter & Applied Physics Summit 2027, scheduled to take place from March 23–25, 2027, in the vibrant city of Munich, Germany. This premier scientific gathering brings together global experts from academia, research institutions, and industry to discuss groundbreaking advancements in condensed matter physics and applied sciences.',
+            paragraph2: 'Our mission is to foster a collaborative environment where researchers can share innovative findings, explore the next generation of quantum materials and devices, and discuss the practical applications of condensed matter physics. Through interdisciplinary dialogue, we aim to accelerate the transition from fundamental physics to real-world technological applications.\n\nMunich is home to world-leading research institutions including the Technical University of Munich (TUM) and Ludwig Maximilian University (LMU), making it an ideal location for this premier scientific event. The city\'s state-of-the-art conference infrastructure and rich scientific heritage provide the perfect backdrop for advancing the frontiers of condensed matter physics.',
+            paragraph3: 'Join us for three immersive days of high-level plenary talks, technical sessions, poster presentations, and meaningful networking in the heart of Bavaria!',
             objectives: [
-                'Accelerate Innovation: To provide a global stage for showcasing breakthrough research in astronomy, astrophysics, and space exploration.',
-                'Bridge Research and Industry: To facilitate knowledge transfer between theoretical astrophysics and real-world space mission implementation.',
+                'Accelerate Innovation: To provide a global stage for showcasing breakthrough research in condensed matter physics, quantum materials, and applied physics.',
+                'Bridge Research and Industry: To facilitate knowledge transfer between fundamental physics research and real-world technological applications.',
                 'Foster Collaborative Networks: To connect leading scientists with emerging researchers to build lasting international partnerships.',
-                'Discuss Future Missions: To address upcoming space telescope missions, planetary exploration, and deep-space research priorities.',
+                'Discuss Future Directions: To address upcoming challenges in quantum computing materials, superconductivity, and next-generation devices.',
                 'Empower the Next Generation: To support students and early-career researchers through specialized workshops and poster sessions.',
             ],
             keyThemes: [
-                'Stellar Astrophysics & Stellar Evolution',
-                'Galactic & Extragalactic Astronomy',
-                'Cosmology & Dark Matter/Dark Energy',
-                'Exoplanet Detection & Characterization',
-                'High-Energy Astrophysics & Black Holes',
-                'Space Telescopes & Observational Techniques',
-                'Planetary Science & Solar System Exploration',
-                'Gravitational Waves & Multi-Messenger Astronomy',
+                'Condensed Matter Physics & Quantum Materials',
+                'Superconductivity & Superfluidity',
+                'Nanoscience & Nanotechnology',
+                'Topological Materials & Phenomena',
+                'Strongly Correlated Electron Systems',
+                'Photonics & Optoelectronics',
+                'Magnetic Materials & Spintronics',
+                'Semiconductor Physics & Devices',
+                'Soft Condensed Matter & Biophysics',
+                'Computational & Theoretical Physics',
             ],
         },
     },
@@ -123,10 +126,10 @@ const seedData = [
         key: 'importantDates',
         data: {
             dates: [
-                { month: 'JAN', day: '15', year: '2027', event: 'Abstract Submission Opens',    icon: 'CalendarDays' },
-                { month: 'FEB', day: '28', year: '2027', event: 'Early Bird Deadline',           icon: 'CheckCircle' },
-                { month: 'MAR', day: '20', year: '2027', event: 'Final Submission Deadline',     icon: 'Clock' },
-                { month: 'APR', day: '12', year: '2027', event: 'Conference Start Date', sub: 'April 12–14, Tokyo, Japan', icon: 'Star' },
+                { month: 'SEP', day: '15', year: '2026', event: 'Abstract Submission Opens',    icon: 'CalendarDays' },
+                { month: 'NOV', day: '25', year: '2026', event: 'Early Bird Deadline',           icon: 'CheckCircle' },
+                { month: 'JAN', day: '25', year: '2027', event: 'Final Submission Deadline',     icon: 'Clock' },
+                { month: 'MAR', day: '23', year: '2027', event: 'Conference Start Date', sub: 'March 23–25, Munich, Germany', icon: 'Star' },
             ],
         },
     },
@@ -135,16 +138,16 @@ const seedData = [
     {
         key: 'stats',
         data: {
-            title: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE SUMMIT APPROACH',
+            title: 'CONDENSED MATTER & APPLIED PHYSICS SUMMIT APPROACH',
             items: [
-                { id: 1, icon: 'Calendar',     number: '15+',   label: 'Years Experience' },
-                { id: 2, icon: 'CalendarCheck',number: '100+',  label: 'Events'           },
-                { id: 3, icon: 'MapPin',       number: '200+',  label: 'Onsite Approach'  },
-                { id: 4, icon: 'Mic',          number: '2000+', label: 'Speakers'         },
-                { id: 5, icon: 'Users',        number: '5000+', label: 'Attendees'        },
-                { id: 6, icon: 'Building2',    number: '20+',   label: 'Exhibitors'       },
-                { id: 7, icon: 'Globe',        number: '150+',  label: 'Countries'        },
-                { id: 8, icon: 'Newspaper',    number: '2000+', label: 'Publications'     },
+                { id: 1, icon: 'Calendar',      number: '15+',   label: 'Years Experience' },
+                { id: 2, icon: 'CalendarCheck', number: '100+',  label: 'Events'           },
+                { id: 3, icon: 'MapPin',        number: '200+',  label: 'Onsite Approach'  },
+                { id: 4, icon: 'Mic',           number: '2000+', label: 'Speakers'         },
+                { id: 5, icon: 'Users',         number: '5000+', label: 'Attendees'        },
+                { id: 6, icon: 'Building2',     number: '20+',   label: 'Exhibitors'       },
+                { id: 7, icon: 'Globe',         number: '150+',  label: 'Countries'        },
+                { id: 8, icon: 'Newspaper',     number: '2000+', label: 'Publications'     },
             ],
         },
     },
@@ -153,10 +156,10 @@ const seedData = [
     {
         key: 'contact',
         data: {
-            email:    'astrospace@sciengasummits.com',
+            email:    'condensedphy@sciengasummits.com',
             phone:    '+91 7842090097',
             whatsapp: '+91 7842090097',
-            venue:    'Tokyo, Japan',
+            venue:    'Munich, Germany',
         },
     },
 
@@ -165,21 +168,29 @@ const seedData = [
         key: 'sessions',
         data: {
             sessions: [
-                { title: 'Stellar Astrophysics & Stellar Evolution',         icon: 'Star'        },
-                { title: 'Galactic & Extragalactic Astronomy',               icon: 'Globe'       },
-                { title: 'Cosmology & Large-Scale Structure',                icon: 'Cpu'         },
-                { title: 'Dark Matter & Dark Energy',                        icon: 'Activity'    },
-                { title: 'Exoplanet Detection & Habitability',               icon: 'Zap'         },
-                { title: 'High-Energy Astrophysics & Black Holes',           icon: 'ShieldCheck' },
-                { title: 'Space Telescopes & Instrumentation',               icon: 'Lightbulb'   },
-                { title: 'Planetary Science & Solar System',                 icon: 'MapPin'      },
-                { title: 'Gravitational Waves & Multi-Messenger Astronomy',  icon: 'Activity'    },
-                { title: 'Astrochemistry & Molecular Clouds',                icon: 'Cpu'         },
-                { title: 'Radio Astronomy & VLBI',                           icon: 'Globe'       },
-                { title: 'Astrobiology & Origins of Life',                   icon: 'ShieldCheck' },
-                { title: 'Space Mission Design & Engineering',               icon: 'Factory'     },
-                { title: 'Computational Astrophysics & Simulations',         icon: 'Cpu'         },
-                { title: 'Space Policy, Outreach & Education',               icon: 'Newspaper'   },
+                { title: 'Condensed Matter Physics',                    icon: 'Cpu'         },
+                { title: 'Quantum Materials & Phenomena',               icon: 'Zap'         },
+                { title: 'Applied Physics Research',                    icon: 'Activity'    },
+                { title: 'Superconductivity & Superfluidity',           icon: 'ShieldCheck' },
+                { title: 'Nanoscience & Nanotechnology',                icon: 'Microscope'  },
+                { title: 'Photonics & Optoelectronics',                 icon: 'Lightbulb'   },
+                { title: 'Magnetic Materials & Spintronics',            icon: 'Globe'       },
+                { title: 'Surface & Interface Physics',                 icon: 'MapPin'      },
+                { title: 'Strongly Correlated Systems',                 icon: 'Activity'    },
+                { title: 'Computational Physics & Simulations',         icon: 'Cpu'         },
+                { title: 'Semiconductor Physics & Devices',             icon: 'Zap'         },
+                { title: 'Soft Condensed Matter & Biophysics',          icon: 'Activity'    },
+                { title: 'Energy Materials & Devices',                  icon: 'Globe'       },
+                { title: 'Topological Materials & Phenomena',           icon: 'Lightbulb'   },
+                { title: 'Low-Dimensional Systems & 2D Materials',      icon: 'Cpu'         },
+                { title: 'Physics of Complex Systems',                  icon: 'Zap'         },
+                { title: 'Materials Characterization Techniques',       icon: 'Microscope'  },
+                { title: 'Optical Properties of Solids',                icon: 'Lightbulb'   },
+                { title: 'Quantum Computing Materials',                 icon: 'Cpu'         },
+                { title: 'Nanoelectronics & Quantum Devices',           icon: 'Zap'         },
+                { title: 'Thermoelectric & Piezoelectric Materials',    icon: 'Activity'    },
+                { title: 'Disordered Systems & Glasses',                icon: 'Globe'       },
+                { title: 'Physics Education & Outreach',                icon: 'Newspaper'   },
             ],
             schedule: {
                 day1: [
@@ -221,7 +232,7 @@ const seedData = [
             packages: [
                 {
                     title: 'Speaker',
-                    price: '$749',
+                    price: '$599',
                     badge: 'Early Bird',
                     features: [
                         'Oral / Poster Presentation',
@@ -233,7 +244,7 @@ const seedData = [
                 },
                 {
                     title: 'Delegate',
-                    price: '$899',
+                    price: '$699',
                     badge: 'Early Bird',
                     featured: true,
                     features: [
@@ -247,7 +258,7 @@ const seedData = [
                 },
                 {
                     title: 'Virtual',
-                    price: '$199',
+                    price: '$200',
                     badge: 'Early Bird',
                     features: [
                         'Live Stream All Sessions',
@@ -265,18 +276,18 @@ const seedData = [
     {
         key: 'registration-prices',
         data: {
-            registrationStartDate: '2026-10-01',
-            earlyBirdEndDate:      '2027-02-28',
-            standardEndDate:       '2027-03-20',
-            onspotEndDate:         '2027-04-12',
-            processingFeePercent:  5,
+            registrationStartDate:   '2026-09-15',
+            earlyBirdEndDate:        '2026-11-25',
+            standardEndDate:         '2027-01-25',
+            onspotEndDate:           '2027-03-23',
+            processingFeePercent:    5,
             accompanyingPersonPrice: 249,
             categories: [
-                { id: 'speaker',  label: 'Speaker Registration',  early: 749,  standard: 849,  onspot: 949  },
-                { id: 'delegate', label: 'Delegate Registration',  early: 899,  standard: 999,  onspot: 1099 },
-                { id: 'poster',   label: 'Poster Registration',    early: 449,  standard: 549,  onspot: 649  },
-                { id: 'student',  label: 'Student',                early: 299,  standard: 399,  onspot: 499  },
-                { id: 'virtual',  label: 'Virtual (Online)',        early: 199,  standard: 249,  onspot: 299  },
+                { id: 'speaker',  label: 'Speaker Registration',  early: 599, standard: 699, onspot: 799 },
+                { id: 'delegate', label: 'Delegate Registration',  early: 699, standard: 799, onspot: 899 },
+                { id: 'poster',   label: 'Poster Registration',    early: 399, standard: 499, onspot: 599 },
+                { id: 'student',  label: 'Student',                early: 299, standard: 399, onspot: 499 },
+                { id: 'virtual',  label: 'Virtual (Online)',        early: 200, standard: 300, onspot: 400 },
             ],
             sponsorships: [
                 { id: 'platinum',  label: 'Platinum Sponsor', price: 4999 },
@@ -305,16 +316,24 @@ const seedData = [
                     category: 'Registration',
                     items: [
                         {
-                            question: 'How can I register for ASTROSPACESUMMIT 2026?',
-                            answer: "You can register online through our website by visiting the 'Register' page. Early bird registration is available until February 28, 2027.",
+                            question: 'How can I register for CONDENSEDPHYSSUMMIT 2027?',
+                            answer: "You can register online through our website by visiting the 'Register' page and clicking 'Online Registration'. Early bird registration is available until November 25, 2026.",
+                        },
+                        {
+                            question: 'What are the registration categories?',
+                            answer: 'We offer Speaker, Delegate, Poster, Student, and Virtual (Online) registration categories. Each comes with different benefits and pricing tiers.',
                         },
                         {
                             question: 'Is there a discount for group registrations?',
-                            answer: 'Yes, we offer group discounts for groups larger than 5 attendees. Please contact our support team for more details.',
+                            answer: 'Yes, we offer group discounts for groups larger than 5 attendees. Please contact condensedphy@sciengasummits.com for more details.',
                         },
                         {
                             question: 'Can I cancel my registration?',
                             answer: 'Cancellations are subject to our refund policy. Please refer to the Terms & Conditions page for detailed information.',
+                        },
+                        {
+                            question: 'How do I apply a discount code?',
+                            answer: "On the Online Registration page, enter your discount code in the 'Have a Discount Code?' section and click 'Apply Code' before completing your registration.",
                         },
                     ],
                 },
@@ -330,6 +349,10 @@ const seedData = [
                             question: 'When will I be notified about abstract acceptance?',
                             answer: 'Notifications of acceptance will be sent via email within 2–3 weeks after the submission deadline.',
                         },
+                        {
+                            question: 'What topics are covered at the conference?',
+                            answer: 'The conference covers condensed matter physics, quantum materials, superconductivity, nanoscience, photonics, spintronics, topological materials, semiconductor physics, and many more applied physics topics.',
+                        },
                     ],
                 },
                 {
@@ -338,11 +361,11 @@ const seedData = [
                     items: [
                         {
                             question: 'Where is the conference taking place?',
-                            answer: 'The conference will be held in Tokyo, Japan. Detailed venue information is available on the Venue page.',
+                            answer: 'The conference will be held in Munich, Germany. Detailed venue information is available on the Venue page.',
                         },
                         {
                             question: 'Are there recommended hotels nearby?',
-                            answer: 'Yes, we have partnered with several hotels near the venue to offer discounted rates for attendees.',
+                            answer: 'Yes, we have partnered with several hotels near the venue to offer discounted rates for attendees. Accommodation packages can be added during registration.',
                         },
                     ],
                 },
@@ -352,7 +375,29 @@ const seedData = [
                     items: [
                         {
                             question: 'Do I need a visa to attend?',
-                            answer: 'Visa requirements depend on your nationality. We can provide an invitation letter upon successful registration. Contact astrospace@sciengasummits.com.',
+                            answer: 'Visa requirements depend on your nationality. We can provide an invitation letter upon successful registration. Contact condensedphy@sciengasummits.com.',
+                        },
+                        {
+                            question: 'How do I get an invitation letter?',
+                            answer: 'After completing your registration and payment, contact us at condensedphy@sciengasummits.com with your registration ID to request an official invitation letter.',
+                        },
+                    ],
+                },
+                {
+                    id: 'cat_payment',
+                    category: 'Payment',
+                    items: [
+                        {
+                            question: 'What payment methods are accepted?',
+                            answer: 'We accept all major credit/debit cards and net banking through our secure Razorpay payment gateway.',
+                        },
+                        {
+                            question: 'Is my payment information secure?',
+                            answer: 'Yes. All payments are processed through Razorpay, a PCI-DSS compliant payment gateway. Your financial information is never stored on our servers.',
+                        },
+                        {
+                            question: 'Will I receive a receipt after payment?',
+                            answer: 'Yes, a confirmation email with your registration details will be sent to your registered email address after successful payment.',
                         },
                     ],
                 },
@@ -365,10 +410,12 @@ const seedData = [
         key: 'venue',
         data: {
             images: [
-                'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920&q=80',
-                'https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=1920&q=80',
+                'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1920&q=80',
+                'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=1920&q=80',
                 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1920&q=80',
             ],
+            title: 'Munich, Germany',
+            description: 'Munich, the capital of Bavaria, is a world-class hub for science and technology, home to the Technical University of Munich (TUM) and Ludwig Maximilian University (LMU). The city offers state-of-the-art conference facilities and a rich cultural heritage.',
         },
     },
 
@@ -377,8 +424,8 @@ const seedData = [
         key: 'brochure',
         data: {
             pdfUrl: '',
-            title: 'Annual International Conference on Astronomy, Astrophysics and Space Science (ASTROSPACESUMMIT 2026)',
-            note: '* Format: PDF • Updated: May 2026',
+            title: 'Annual International Conference on Condensed Matter & Applied Physics Summit 2027',
+            note: '* Format: PDF • Updated: 2026',
         },
     },
 
@@ -397,6 +444,23 @@ const seedData = [
         data: {
             title: 'Promoting & Media Partners',
             items: [],
+        },
+    },
+
+    // ── 15. Visa Info ─────────────────────────────────────────────────────────
+    {
+        key: 'visa-info',
+        data: {
+            title: 'Visa Information',
+            intro: 'Participants from countries requiring a visa to enter Germany should apply well in advance. We are happy to provide an official invitation letter to support your visa application.',
+            steps: [
+                'Complete your conference registration and payment.',
+                'Email condensedphy@sciengasummits.com with your registration ID and passport details.',
+                'We will issue an official invitation letter within 3–5 business days.',
+                'Submit the invitation letter along with your visa application to the German embassy/consulate in your country.',
+            ],
+            note: 'Please apply for your visa at least 6–8 weeks before the conference date. The organizing committee cannot be held responsible for visa rejections.',
+            contactEmail: 'condensedphy@sciengasummits.com',
         },
     },
 ];
