@@ -93,7 +93,7 @@ export const CONFERENCE_ACCOUNTS = [
     {
         username: 'ASTROSPACESUMMIT2026',
         email: process.env.ASTRO_EMAIL || 'astrospace@sciengasummits.com',
-        conferenceId: 'astro',
+        conferenceId: 'astrospace',
         displayName: 'ASTRO SPACE SUMMIT 2026',
     },
     {
@@ -301,8 +301,8 @@ export const CONFERENCE_CONFIG = {
         accentColor: '#1e3a8a',
         accentGlow: 'rgba(30,58,138,0.35)',
     },
-    astro: {
-        conferenceId: 'astro',
+    astrospace: {
+        conferenceId: 'astrospace',
         displayName: 'ASTRO SPACE SUMMIT 2026',
         shortName: 'ASTRO SPACE SUMMIT',
         logoText: 'AS',

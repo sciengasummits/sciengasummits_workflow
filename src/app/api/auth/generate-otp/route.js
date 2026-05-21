@@ -22,6 +22,8 @@ async function sendOTPEmail(email, otp, username, conferenceId) {
     : conferenceId === 'iqces2026' ? '#1e3a8a'
     : conferenceId === 'advancenano' ? '#1e3a8a'
     : conferenceId === 'healthmed' ? '#1e3a8a'
+    : conferenceId === 'astrospace' ? '#4f46e5'
+    : conferenceId === 'condensedphys' ? '#1d4ed8'
     : '#8b5cf6';
 
   const htmlContent = `
