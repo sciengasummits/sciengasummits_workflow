@@ -10,7 +10,7 @@ export async function GET(request, { params }) {
         const { searchParams } = new URL(request.url);
         const conf = searchParams.get('conference') || 'liutex';
         const item = await SiteContent.findOne({ conference: conf, key });
-        if (!item) return NextResponse.json({ error: 'Content not found' }, { status: 404 });
+        if (!item) return NextResponse.json(null);
         return NextResponse.json(item.data);
     } catch (err) {
         return NextResponse.json({ error: err.message }, { status: 500 });
