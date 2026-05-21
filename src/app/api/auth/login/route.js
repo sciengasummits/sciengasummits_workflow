@@ -22,7 +22,10 @@ export async function POST(request) {
             );
         }
 
-        const account = CONFERENCE_ACCOUNTS.find(acc => acc.username.toLowerCase() === username.toLowerCase());
+        const account = CONFERENCE_ACCOUNTS.find(acc => 
+            acc.username.toLowerCase() === username.toLowerCase() ||
+            (acc.aliases && acc.aliases.some(alias => alias.toLowerCase() === username.toLowerCase()))
+        );
         if (!account) {
             return NextResponse.json({ success: false, message: 'Invalid credentials.' }, { status: 401 });
         }
