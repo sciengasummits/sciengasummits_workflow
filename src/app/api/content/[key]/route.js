@@ -8,7 +8,18 @@ export async function GET(request, { params }) {
         await dbConnect();
         const { key } = params;
         const { searchParams } = new URL(request.url);
-        const conf = searchParams.get('conference') || 'liutex';
+        const conf = searchParams.get('conference') || 'advancenano';
+        // If the conference is advancenano, fetch data from the external ADVANCENANOSUMMIT2026 API
+        if (conf === 'advancenano') {
+          try {
+            const external = await import('../../../lib/advancenanoApi.js');
+            const data = await external.fetchContent(key);
+            return NextResponse.json(data);
+          } catch (e) {
+            console.error('External fetch error:', e);
+            return NextResponse.json(null, { status: 502 });
+          }
+        }
         const item = await SiteContent.findOne({ conference: conf, key });
         if (!item) return NextResponse.json(null);
         return NextResponse.json(item.data);
