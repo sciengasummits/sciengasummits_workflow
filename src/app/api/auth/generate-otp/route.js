@@ -15,15 +15,15 @@ async function sendOTPEmail(email, otp, username, conferenceId) {
 
   const gradientEnd = conferenceId === 'liutex' ? '#8b5cf6'
     : conferenceId === 'foodagri' ? '#15803d'
-      : conferenceId === 'fluid' ? '#0e7490'
-        : conferenceId === 'renewable' ? '#15803d'
-          : conferenceId === 'cyber' ? '#1d4ed8'
-            : conferenceId === 'powereng' ? '#b45309'
-              : conferenceId === 'iqces2026' ? '#1e3a8a'
-: conferenceId === 'advancenano' ? '#1e3a8a'
-                : '#8b5cf6';
-: conferenceId === 'airobotsml' ? '#0369a1'
-                  : '#8b5cf6';
+    : conferenceId === 'fluid' ? '#0e7490'
+    : conferenceId === 'renewable' ? '#15803d'
+    : conferenceId === 'cyber' ? '#1d4ed8'
+    : conferenceId === 'powereng' ? '#b45309'
+    : conferenceId === 'iqces2026' ? '#1e3a8a'
+    : conferenceId === 'advancenano' ? '#1e3a8a'
+    : conferenceId === 'airobotsml' ? '#0369a1'
+    : conferenceId === 'healthmed' ? '#1e3a8a'
+    : '#8b5cf6';
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">

@@ -91,6 +91,12 @@ export const CONFERENCE_ACCOUNTS = [
         displayName: 'CLEAN ENERGY & SUSTAINABLE TECHNOLOGIES 2026',
     },
     {
+        username: 'HEALTHMEDSUMMIT2026',
+        email: process.env.HEALTHMED_EMAIL || 'healthmedsummit@sciengasummits.com',
+        conferenceId: 'healthmed',
+        displayName: 'HEALTH MED SUMMIT 2026',
+    },
+    {
         username: 'ASTROSPACESUMMIT2026',
         email: process.env.ASTRO_EMAIL || 'astrospace@sciengasummits.com',
         conferenceId: 'astrospace',
@@ -107,7 +113,6 @@ export const CONFERENCE_ACCOUNTS = [
         email: process.env.AIROBOTSML_EMAIL || 'airobotsml@sciengasummits.com',
         conferenceId: 'airobotsml',
         displayName: 'ARTIFICIAL INTELLIGENCE, ROBOTICS AND MACHINE LEARNING 2026',
-    }
     },
 ];
 
@@ -293,9 +298,22 @@ advancenano: {
         footerText: '© Copyright 2026 CLEAN ENERGY SUMMIT.',
         email: 'cleanengtech@sciengasummits.com',
         accentColor: '#10b981',
-        accentGlow: 'rgba(16,185,129,0.35)',,
-    {
-astrospace: {
+        accentGlow: 'rgba(16,185,129,0.35)',
+    },
+    healthmed: {
+        conferenceId: 'healthmed',
+        displayName: 'HEALTH MED SUMMIT 2026',
+        shortName: 'HEALTH MED SUMMIT',
+        logoText: 'HM',
+        logoSub: 'Summit',
+        brandTop: 'HEALTH & MEDICINE',
+        brandSub: 'SUMMIT 2026',
+        footerText: '© Copyright 2026 HEALTH & MEDICINE SUMMIT.',
+        email: 'healthmedsummit@sciengasummits.com',
+        accentColor: '#1e3a8a',
+        accentGlow: 'rgba(30,58,138,0.35)',
+    },
+    astrospace: {
         conferenceId: 'astrospace',
         displayName: 'ASTRONOMY, ASTROPHYSICS AND SPACE SCIENCE 2026',
         shortName: 'ASTROSPACESUMMIT 2026',

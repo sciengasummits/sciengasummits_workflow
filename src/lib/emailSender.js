@@ -75,7 +75,8 @@ advancenano: {
             cleaneng: {
                 user: process.env.CLEANENG_SMTP_USER || 'cleanengtech@sciengasummits.com',
                 pass: process.env.CLEANENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
-astrospace: {
+            },
+            astrospace: {
                 user: process.env.ASTRO_SMTP_USER || this._defaultUser,
                 pass: (process.env.ASTRO_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },

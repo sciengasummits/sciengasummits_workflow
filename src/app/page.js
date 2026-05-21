@@ -209,7 +209,8 @@ advancenano: {
     email: 'cleanengtech@sciengasummits.com',
     accentColor: '#10b981',
     accentGlow: 'rgba(16,185,129,0.35)',
-civilenv: {
+  },
+  civilenv: {
     conferenceId: 'civilenv',
     displayName: 'CIVIL, ENVIRONMENTAL & ARCHITECTURAL ENGINEERING 2026',
     shortName: 'CIVILENV SUMMIT',
