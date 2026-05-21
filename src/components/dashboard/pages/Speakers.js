@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import {
@@ -41,15 +41,18 @@ function SpeakerAvatar({ speaker, index, size = 48 }) {
 
 /* ─── Category config ─── */
 const CATEGORIES = [
-    { key: 'All', label: 'All Speakers', db: null, color: '#6366f1' },
-    { key: 'Committee', label: 'Committee', db: 'Committee', color: '#8b5cf6' },
-    { key: 'Keynote', label: 'Keynote Speaker', db: 'Keynote', color: '#8a2be2' },
-    { key: 'Posters', label: 'Poster Presenter', db: 'Posters', color: '#0ea5e9' },
-    { key: 'Plenary', label: 'Plenary Speaker', db: 'Plenary', color: '#f43f5e' },
-    { key: 'Delegates', label: 'Delegate', db: 'Delegates', color: '#10b981' },
+    { key: 'All', label: 'All Speakers', color: '#6366f1' },
+    { key: 'Committee', label: 'Committee', color: '#8b5cf6' },
+    { key: 'Plenary Speaker', label: 'Plenary Speaker', color: '#f43f5e' },
+    { key: 'Keynote Speaker', label: 'Keynote Speaker', color: '#8a2be2' },
+    { key: 'Invited Speaker', label: 'Invited Speaker', color: '#ec4899' },
+    { key: 'Featured', label: 'Featured Speaker', color: '#eab308' },
+    { key: 'Poster Presenter', label: 'Poster Presenter', color: '#0ea5e9' },
+    { key: 'Student', label: 'Student Presenter', color: '#14b8a6' },
+    { key: 'Delegate', label: 'Delegate', color: '#10b981' },
 ];
 
-const EMPTY_FORM = { name: '', title: '', affiliation: '', country: '', bio: '', image: null, category: 'Keynote', visible: true };
+const EMPTY_FORM = { name: '', title: '', affiliation: '', country: '', bio: '', image: null, category: 'Keynote Speaker', visible: true };
 const PAGE_SIZE_OPTS = [5, 10, 25, 50];
 
 export default function AllSpeakers() {

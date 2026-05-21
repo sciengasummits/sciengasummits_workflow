@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { RealEmailSender } from '@/lib/emailSender';
+import dbConnect from '@/lib/mongodb';
+import MailMessage from '@/models/MailMessage';
 
 const realEmailSender = new RealEmailSender();
 
@@ -12,7 +14,22 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: 'Name, email, and contact number are required' }, { status: 400 });
         }
 
+        // Save to Database
+        try {
+            await dbConnect();
+            await MailMessage.create({
+                conference,
+                type: 'program',
+                name,
+                email,
+                phone: number || ''
+            });
+        } catch (dbErr) {
+            console.error('[ProgramRequest] Failed to save to database:', dbErr);
+        }
+
         // Send email to Admin
+
         const adminPromise = realEmailSender.sendProgramRequestToAdmin({
             name,
             email,

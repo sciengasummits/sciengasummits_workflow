@@ -136,10 +136,12 @@ export const deleteSponsor = (id) => request('DELETE', `/sponsors/${id}`);
 // ── Abstracts
 export const getAbstracts = () => request('GET', withConf('/abstracts'));
 export const updateAbstractStatus = (id, data) => request('PATCH', `/abstracts/${id}`, data);
+export const deleteAbstract = (id) => request('DELETE', `/abstracts/${id}`);
 
 // ── Registrations
 export const getRegistrations = () => request('GET', withConf('/registrations'));
 export const updateRegistrationStatus = (id, data) => request('PATCH', `/registrations/${id}`, data);
+export const deleteRegistration = (id) => request('DELETE', `/registrations/${id}`);
 
 // ── Image upload (stores in MongoDB via /api/upload)
 export async function uploadImage(file) {
@@ -185,3 +187,7 @@ export const deleteDiscount = (id) => request('DELETE', `/discounts/${id}`);
 
 // ── Dashboard Statistics
 export const getDashboardStats = () => request('GET', withConf('/stats'));
+
+// ── Mail Messages (Contact / Subscribe / Program requests)
+export const getMailMessages = (type) =>
+    request('GET', withConf('/mail-messages') + (type ? `&type=${type}` : ''));

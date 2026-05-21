@@ -572,7 +572,7 @@ export class RealEmailSender {
             liutex:      'https://liutexsummit2026.sciengasummits.com',
             foodagri:    'https://foodagrisummit.sciengasummits.com',
             fluid:       'https://fluidsummit.sciengasummits.com',
-            renewable:   'https://renewablesummit.sciengasummits.com',
+            renewable:   'https://recc2026.sciengasummits.com',
             cyber:       'https://cyberquantumsummit.com',
             powereng:    'https://powerenergysummit.com',
             iqce2027:    'https://iqce2027.sciengasummits.com',

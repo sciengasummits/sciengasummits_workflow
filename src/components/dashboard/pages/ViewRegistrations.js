@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Search, ChevronsUpDown, Filter, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getRegistrations, updateRegistrationStatus } from '@/lib/api';
+import { ClipboardList, Search, ChevronsUpDown, Filter, RefreshCw, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { getRegistrations, updateRegistrationStatus, deleteRegistration } from '@/lib/api';
 
 function formatDate(dateStr) {
     if (!dateStr) return 'â€”';
@@ -86,6 +86,17 @@ export default function ViewRegistrations() {
             setRows(prev => (prev || []).map(r => r && (r._id || r.id) === id ? updated : r));
         } catch { /* silent */ }
         setEditId(null);
+    };
+
+    const handleDelete = async (id, e) => {
+        if (e) e.stopPropagation();
+        if (!window.confirm('Are you sure you want to delete this registration?')) return;
+        try {
+            await deleteRegistration(id);
+            setRows(prev => prev.filter(r => (r._id || r.id) !== id));
+        } catch (err) {
+            alert('Failed to delete: ' + err.message);
+        }
     };
 
     const SortIcon = ({ field }) => (
@@ -186,12 +197,13 @@ export default function ViewRegistrations() {
                                     <th className="vr-th" style={{ minWidth: 110 }}><div className="vr-th-content">Status</div></th>
                                     <th className="vr-th" style={{ minWidth: 110 }}><div className="vr-th-content">Txn ID</div></th>
                                     <th className="vr-th" style={{ minWidth: 200 }}><div className="vr-th-content">Description</div></th>
+                                    <th className="vr-th" style={{ width: 60 }}><div className="vr-th-content">Action</div></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {paged.length === 0 ? (
                                     <tr>
-                                        <td colSpan={11} className="sp-empty" style={{ padding: '48px', textAlign: 'center', color: '#64748b' }}>
+                                        <td colSpan={12} className="sp-empty" style={{ padding: '48px', textAlign: 'center', color: '#64748b' }}>
                                             {rows.length === 0
                                                 ? 'No registrations yet. They will appear here once users submit the website form.'
                                                 : 'No registrations match your search.'}
@@ -243,11 +255,16 @@ export default function ViewRegistrations() {
                                                         {row.category || (row.description || '').split('\n')[0] || '—'}
                                                     </div>
                                                 </td>
+                                                <td className="vr-td vr-text-center">
+                                                    <button onClick={(e) => handleDelete(uid, e)} style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', padding: 4 }}>
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </td>
                                             </tr>
 
                                             {isExpanded && (
                                                 <tr style={{ background: '#f8faff', borderBottom: '1px solid #e2e8f0' }}>
-                                                    <td colSpan={11} style={{ padding: '24px 40px' }}>
+                                                    <td colSpan={12} style={{ padding: '24px 40px' }}>
                                                         <div style={{ background: '#fff', padding: 30, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)' }}>
                                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 30, marginBottom: 30 }}>
                                                                 <div>

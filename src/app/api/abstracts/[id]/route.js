@@ -25,3 +25,18 @@ export async function PATCH(request, { params }) {
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
+
+export async function DELETE(request, { params }) {
+    const auth = requireAuth(request);
+    if (auth.error) return auth.error;
+
+    try {
+        await dbConnect();
+        const { id } = await params;
+        const deleted = await Abstract.findByIdAndDelete(id);
+        if (!deleted) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        return NextResponse.json({ success: true, message: 'Abstract deleted' });
+    } catch (err) {
+        return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+}

@@ -45,6 +45,7 @@ import VisaInfo from '@/components/dashboard/pages/VisaInfo';
 import FAQManager from '@/components/dashboard/pages/FAQManager';
 import HeroChairs from '@/components/dashboard/pages/HeroChairs';
 import BrochureDashboard from '@/components/dashboard/pages/Brochure';
+import MailBox from '@/components/dashboard/pages/MailBox';
 
 
 /* Ã¢â€ â‚¬Ã¢â€ â‚¬ Simple page router Ã¢â€ â‚¬Ã¢â€ â‚¬ */
@@ -100,6 +101,8 @@ function PageContent({ activeNav, setActiveNav, conf }) {
     case 'student': return <StudentsSpeakers conf={conf} />;
     case 'delegate': return <DelegatesSpeakers conf={conf} />;
     case 'tracks': return <Sessions conf={conf} />;
+
+    case 'mailbox': return <MailBox conf={conf} />;
 
     case 'contact-email': return <ContactSettings type="email" conf={conf} />;
     case 'contact-phone': return <ContactSettings type="phone" conf={conf} />;

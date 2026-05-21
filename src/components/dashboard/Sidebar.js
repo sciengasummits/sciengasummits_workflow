@@ -121,8 +121,6 @@ const NAV_ITEMS = [
             { id: 'view-abstracts', label: 'View Abstracts', icon: <FileText size={childIconSize} /> },
             { id: 'registration-prices', label: 'Registration Prices', icon: <DollarSign size={childIconSize} /> },
             { id: 'payment-link', label: 'Generate Payment Link', icon: <Link size={childIconSize} /> },
-            { id: 'export-conf-unsubscribes', label: 'Export Conference Unsubscribes', icon: <Ban size={childIconSize} /> },
-            { id: 'export-unsubscribes', label: 'Export Global Unsubscribes', icon: <FileDown size={childIconSize} /> },
         ]
     },
     { id: 'discount', label: 'Discount', icon: <CreditCard size={iconSize} /> },
