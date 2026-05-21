@@ -72,6 +72,14 @@ export class RealEmailSender {
                 user: process.env.CLEANENG_SMTP_USER || 'cleanengtech@sciengasummits.com',
                 pass: process.env.CLEANENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
             },
+            astro: {
+                user: process.env.ASTRO_SMTP_USER || this._defaultUser,
+                pass: (process.env.ASTRO_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
+            condensedphys: {
+                user: process.env.CONDENSEDPHYS_SMTP_USER || this._defaultUser,
+                pass: (process.env.CONDENSEDPHYS_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
+            },
         };
 
         // Build one transporter per conference account
@@ -527,6 +535,8 @@ export class RealEmailSender {
             opticphoton: process.env.OPTIC_EMAIL,
             cropscieng:  process.env.CROPSCIENG_EMAIL,
             cleaneng:    process.env.CLEANENG_EMAIL,
+            astro:       process.env.ASTRO_EMAIL,
+            condensedphys: process.env.CONDENSEDPHYS_EMAIL,
         };
         return envMap[conferenceId]
             || (this._accounts[conferenceId] && this._accounts[conferenceId].user)

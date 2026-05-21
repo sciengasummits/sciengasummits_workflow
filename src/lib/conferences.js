@@ -90,6 +90,18 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'healthmed',
         displayName: 'HEALTH MED SUMMIT 2026',
     },
+    {
+        username: 'ASTROSPACESUMMIT2026',
+        email: process.env.ASTRO_EMAIL || 'astrospace@sciengasummits.com',
+        conferenceId: 'astro',
+        displayName: 'ASTRO SPACE SUMMIT 2026',
+    },
+    {
+        username: 'CONDENSEDPHYSSUMMIT2026',
+        email: process.env.CONDENSEDPHYS_EMAIL || 'condensedphyssummit2026@sciengasummits.com',
+        conferenceId: 'condensedphys',
+        displayName: 'CONDENSED MATTER PHYSICS SUMMIT 2026',
+    },
 ];
 
 // Conference config for frontend
@@ -288,5 +300,31 @@ export const CONFERENCE_CONFIG = {
         email: 'healthmedsummit@sciengasummits.com',
         accentColor: '#1e3a8a',
         accentGlow: 'rgba(30,58,138,0.35)',
+    },
+    astro: {
+        conferenceId: 'astro',
+        displayName: 'ASTRO SPACE SUMMIT 2026',
+        shortName: 'ASTRO SPACE SUMMIT',
+        logoText: 'AS',
+        logoSub: 'Summit',
+        brandTop: 'ASTRO SPACE',
+        brandSub: 'SUMMIT 2026',
+        footerText: '© Copyright 2026 ASTRO SPACE SUMMIT.',
+        email: 'astrospace@sciengasummits.com',
+        accentColor: '#6366f1',
+        accentGlow: 'rgba(99,102,241,0.35)',
+    },
+    condensedphys: {
+        conferenceId: 'condensedphys',
+        displayName: 'CONDENSED MATTER PHYSICS SUMMIT 2026',
+        shortName: 'CONDENSED PHYS SUMMIT',
+        logoText: 'CP',
+        logoSub: 'Summit',
+        brandTop: 'CONDENSED PHYS',
+        brandSub: 'SUMMIT 2026',
+        footerText: '© Copyright 2026 CONDENSED MATTER PHYSICS SUMMIT.',
+        email: 'condensedphyssummit2026@sciengasummits.com',
+        accentColor: '#3b82f6',
+        accentGlow: 'rgba(59,130,246,0.35)',
     },
 };
