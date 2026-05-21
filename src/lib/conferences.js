@@ -74,7 +74,7 @@ export const CONFERENCE_ACCOUNTS = [
     },
     {
         username: 'CROPSCIENGSUMMIT2026',
-        email: process.env.CROPSCIENG_EMAIL || 'cropscieng@sciengasummits.com',
+        email: process.env.CROPSCIENG_EMAIL || 'cropsciengasummits@sciengasummits.com',
         conferenceId: 'cropscieng',
         displayName: 'CROP SCIENCE AND ENGINEERING 2026',
     },
@@ -259,7 +259,7 @@ export const CONFERENCE_CONFIG = {
         brandTop: 'CROP SCIENCE',
         brandSub: 'SUMMIT 2026',
         footerText: '© Copyright 2026 CROP SCIENCE SUMMIT.',
-        email: 'cropscieng@sciengasummits.com',
+        email: 'cropsciengasummits@sciengasummits.com',
         accentColor: '#16a34a',
         accentGlow: 'rgba(22,163,74,0.35)',
     },
