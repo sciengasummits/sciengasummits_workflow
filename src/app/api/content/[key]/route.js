@@ -6,7 +6,7 @@ import { requireAuth } from '@/lib/auth';
 export async function GET(request, { params }) {
     try {
         await dbConnect();
-        const { key } = await params;
+        const { key } = params;
         const { searchParams } = new URL(request.url);
         const conf = searchParams.get('conference') || 'liutex';
         const item = await SiteContent.findOne({ conference: conf, key });
@@ -23,7 +23,7 @@ export async function PUT(request, { params }) {
 
     try {
         await dbConnect();
-        const { key } = await params;
+        const { key } = params;
         const body = await request.json();
         const { conference: conf = 'fluid', _items, ...bodyData } = body;
 
