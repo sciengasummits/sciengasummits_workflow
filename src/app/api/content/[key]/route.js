@@ -6,7 +6,7 @@ import { requireAuth } from '@/lib/auth';
 export async function GET(request, { params }) {
     try {
         await dbConnect();
-        const { key } = params;
+        const { key } = await params;
         const { searchParams } = new URL(request.url);
         const conf = searchParams.get('conference') || 'advancenano';
         // If the conference is advancenano, fetch data from the external ADVANCENANOSUMMIT2026 API
@@ -34,7 +34,7 @@ export async function PUT(request, { params }) {
 
     try {
         await dbConnect();
-        const { key } = params;
+        const { key } = await params;
         const body = await request.json();
         const { conference: conf = 'fluid', _items, ...bodyData } = body;
 
