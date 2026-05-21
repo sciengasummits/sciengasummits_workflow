@@ -12,7 +12,7 @@ export async function GET(request, { params }) {
         // If the conference is advancenano, fetch data from the external ADVANCENANOSUMMIT2026 API
         if (conf === 'advancenano') {
           try {
-            const external = await import('../../../lib/advancenanoApi.js');
+            const external = await import('../../../../lib/advancenanoApi.js');
             const data = await external.fetchContent(key);
             return NextResponse.json(data);
           } catch (e) {
