@@ -62,7 +62,7 @@ export const CONFERENCE_ACCOUNTS = [
     },
     {
         username: 'POLYMATSUMMIT2026',
-        email: process.env.POLYMAT_EMAIL || 'contact@polymatsummit.com',
+        email: process.env.POLYMAT_EMAIL || 'polymat@sciengasummits.com',
         conferenceId: 'polymat',
         displayName: 'ANNUAL INTERNATIONAL CONFERENCE ON POLYMERS AND COMPOSITE MATERIALS 2026',
     },
@@ -248,7 +248,20 @@ export const CONFERENCE_CONFIG = {
         accentColor: '#0369a1',
         accentGlow: 'rgba(3,105,161,0.35)',
     },
-advancenano: {
+    polymat: {
+        conferenceId: 'polymat',
+        displayName: 'ANNUAL INTERNATIONAL CONFERENCE ON POLYMERS AND COMPOSITE MATERIALS 2026',
+        shortName: 'POLYMAT SUMMIT 2026',
+        logoText: 'PM',
+        logoSub: 'Summit',
+        brandTop: 'POLYMAT',
+        brandSub: 'SUMMIT 2026',
+        footerText: '© Copyright 2026 POLYMAT SUMMIT.',
+        email: 'contact@polymatsummit.com',
+        accentColor: '#3478DF',
+        accentGlow: 'rgba(52,120,223,0.35)',
+    },
+    advancenano: {
         conferenceId: 'advancenano',
         displayName: 'ADVANCE NANO SUMMIT 2026',
         shortName: 'ADVANCE NANO SUMMIT',

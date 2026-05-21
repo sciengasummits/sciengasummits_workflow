@@ -60,7 +60,7 @@ export class RealEmailSender {
                 user: process.env.POLYMAT_SMTP_USER || this._defaultUser,
                 pass: (process.env.POLYMAT_SMTP_PASS || this._defaultPass).replace(/\s/g, ''),
             },
-advancenano: {
+            advancenano: {
                 user: process.env.ADVANCENANO_SMTP_USER || 'advancenanosummit@sciengasummits.com',
                 pass: process.env.ADVANCENANO_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
             },
@@ -565,11 +565,11 @@ advancenano: {
             icogwh:      process.env.ICOGWH_EMAIL,
             icemmae2027: process.env.ICEMMAE_EMAIL,
             polymat:     process.env.POLYMAT_EMAIL,
-advancenano: process.env.ADVANCENANO_EMAIL,
+            advancenano: process.env.ADVANCENANO_EMAIL,
             opticphoton: process.env.OPTIC_EMAIL,
             cropscieng:  process.env.CROPSCIENG_EMAIL,
             cleaneng:    process.env.CLEANENG_EMAIL,
-astrospace:  process.env.ASTRO_EMAIL,
+            astrospace:  process.env.ASTRO_EMAIL,
             condensedphys: process.env.CONDENSEDPHYS_EMAIL,
             airobotsml:  process.env.AIROBOTSML_EMAIL,
         };
