@@ -22,7 +22,6 @@ async function sendOTPEmail(email, otp, username, conferenceId) {
     : conferenceId === 'powereng' ? '#b45309'
     : conferenceId === 'iqces2026' ? '#1e3a8a'
     : conferenceId === 'advancenano' ? '#1e3a8a'
-    : conferenceId === 'airobotsml' ? '#0369a1'
     : conferenceId === 'healthmed' ? '#1e3a8a'
     : '#8b5cf6';
 =======

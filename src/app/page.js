@@ -158,7 +158,7 @@ const CONFERENCE_CONFIG = {
     accentColor: '#0369a1',
     accentGlow: 'rgba(3,105,161,0.35)',
   },
-advancenano: {
+  advancenano: {
     conferenceId: 'advancenano',
     displayName: 'ADVANCE NANO SUMMIT 2026',
     shortName: 'ADVANCE NANO SUMMIT',
@@ -209,30 +209,6 @@ advancenano: {
     email: 'cleanengtech@sciengasummits.com',
     accentColor: '#10b981',
     accentGlow: 'rgba(16,185,129,0.35)',
-  },
-  civilenv: {
-    conferenceId: 'civilenv',
-    displayName: 'CIVIL, ENVIRONMENTAL & ARCHITECTURAL ENGINEERING 2026',
-    shortName: 'CIVILENV SUMMIT',
-    logoText: 'CE',
-    logoSub: 'Summit',
-    brandTop: 'CIVIL, ENVIRONMENTAL',
-    brandSub: '& ARCHITECTURAL ENG.',
-    footerText: '© Copyright 2026 CIVIL, ENVIRONMENTAL & ARCHITECTURAL ENGINEERING SUMMIT.',
-    accentColor: '#059669',
-    accentGlow: 'rgba(5,150,105,0.35)',
-  },
-  airobotsml: {
-    conferenceId: 'airobotsml',
-    displayName: 'ARTIFICIAL INTELLIGENCE, ROBOTICS AND MACHINE LEARNING 2026',
-    shortName: 'AI ROBOTS ML 2026',
-    logoText: 'AI',
-    logoSub: 'Summit',
-    brandTop: 'AI ROBOTS',
-    brandSub: '& MACHINE LEARNING',
-    footerText: '© Copyright 2026 AI ROBOTS ML SUMMIT.',
-    accentColor: '#0ea5e9',
-    accentGlow: 'rgba(14,165,233,0.35)',
   },
 };
 
