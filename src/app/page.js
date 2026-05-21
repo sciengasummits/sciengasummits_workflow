@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Login from '@/components/dashboard/Login';
 import { Info } from 'lucide-react';
 import { setConference, setAuthToken, clearAuth } from '@/lib/api';
+import { CONFERENCE_CONFIG } from '@/lib/conferences';
 import Sidebar from '@/components/dashboard/Sidebar';
 import Topbar from '@/components/dashboard/Topbar';
 import StatsGrid from '@/components/dashboard/StatsGrid';
@@ -45,174 +46,8 @@ import FAQManager from '@/components/dashboard/pages/FAQManager';
 import HeroChairs from '@/components/dashboard/pages/HeroChairs';
 import BrochureDashboard from '@/components/dashboard/pages/Brochure';
 
-/* â”€â”€ Conference config map â”€â”€ */
-const CONFERENCE_CONFIG = {
-  liutex: {
-    conferenceId: 'liutex',
-    displayName: 'LIUTEX VORTEX SUMMIT 2026',
-    shortName: 'LIUTEX SUMMIT',
-    logoText: 'LV',
-    logoSub: 'Summit',
-    brandTop: 'LIUTEX',
-    brandSub: 'VORTEX SUMMIT',
-    footerText: 'Â© Copyright 2026 LIUTEX SUMMIT.',
-    accentColor: '#6366f1',
-    accentGlow: 'rgba(99,102,241,0.35)',
-  },
-  foodagri: {
-    conferenceId: 'foodagri',
-    displayName: 'FOOD AGRI SUMMIT 2026',
-    shortName: 'FOOD AGRI SUMMIT',
-    logoText: 'FA',
-    logoSub: 'Summit',
-    brandTop: 'FOOD AGRI',
-    brandSub: 'SUMMIT 2026',
-    footerText: 'Â© Copyright 2026 FOOD AGRI SUMMIT.',
-    accentColor: '#16a34a',
-    accentGlow: 'rgba(22,163,74,0.35)',
-  },
-  fluid: {
-    conferenceId: 'fluid',
-    displayName: 'FLUID MECHANICS & TURBOMACHINERY 2026',
-    shortName: 'FLUID SUMMIT',
-    logoText: 'FM',
-    logoSub: 'Summit',
-    brandTop: 'FLUID MECHANICS',
-    brandSub: '& TURBOMACHINERY',
-    footerText: 'Â© Copyright 2026 FLUID MECHANICS & TURBOMACHINERY SUMMIT.',
-    accentColor: '#0891b2',
-    accentGlow: 'rgba(8,145,178,0.35)',
-  },
-  renewable: {
-    conferenceId: 'renewable',
-    displayName: 'RENEWABLE ENERGY & CLIMATE CHANGE 2026',
-    shortName: 'RENEWABLE CLI SUMMIT',
-    logoText: 'RE',
-    logoSub: 'Summit',
-    brandTop: 'RENEWABLE ENERGY',
-    brandSub: '& CLIMATE CHANGE',
-    footerText: 'Â© Copyright 2026 RENEWABLE ENERGY & CLIMATE CHANGE SUMMIT.',
-    accentColor: '#16a34a',
-    accentGlow: 'rgba(22,163,74,0.35)',
-  },
-  cyber: {
-    conferenceId: 'cyber',
-    displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026',
-    shortName: 'CYBERQUANTUM SUMMIT',
-    logoText: 'CQ',
-    logoSub: 'Summit',
-    brandTop: 'CYBERQUANTUM',
-    brandSub: 'SUMMIT 2026',
-    footerText: 'Â© Copyright 2026 CYBERQUANTUM SUMMIT.',
-    accentColor: '#2563eb',
-    accentGlow: 'rgba(37,99,235,0.35)',
-  },
-  powereng: {
-    conferenceId: 'powereng',
-    displayName: 'POWER ENERGY & ELECTRICAL ENGINEERING 2026',
-    shortName: 'POWERENG SUMMIT',
-    logoText: 'PE',
-    logoSub: 'Summit',
-    brandTop: 'POWER ENERGY',
-    brandSub: '& ELECTRICAL ENG.',
-    footerText: 'Â© Copyright 2026 POWER ENERGY & ELECTRICAL ENGINEERING SUMMIT.',
-    accentColor: '#d97706',
-    accentGlow: 'rgba(217,119,6,0.35)',
-  },
-  iqce2027: {
-    conferenceId: 'iqce2027',
-    displayName: 'QUANTUM COMPUTING & ENGINEERING SUMMIT 2027',
-    shortName: 'IQCE 2027',
-    logoText: 'QC',
-    logoSub: 'Summit',
-    brandTop: 'QUANTUM COMPUTING',
-    brandSub: '& ENGINEERING 2027',
-    footerText: 'Â© Copyright 2027 QUANTUM COMPUTING & ENGINEERING SUMMIT.',
-    email: 'quantumenginee@sciengasummits.com',
-    accentColor: '#1e3a8a',
-    accentGlow: 'rgba(30,58,138,0.35)',
-  },
-  icogwh: {
-    conferenceId: 'icogwh',
-    displayName: 'OBSTETRICS, GYNECOLOGY AND WOMEN HEALTH 2027',
-    shortName: 'ICOGWH 2027',
-    logoText: 'IC',
-    logoSub: 'Summit',
-    brandTop: 'ICOGWH',
-    brandSub: 'SUMMIT 2027',
-    footerText: 'Â© Copyright 2027 ICOGWH SUMMIT.',
-    email: 'obstetrics@sciengasummits.com',
-    accentColor: '#e11d48',
-    accentGlow: 'rgba(225,29,72,0.35)',
-  },
-  icemmae2027: {
-    conferenceId: 'icemmae2027',
-    displayName: 'MECHANICAL, MECHATRONICS AND AEROSPACE ENGINEERING 2027',
-    shortName: 'ICEMMAE 2027',
-    logoText: 'ME',
-    logoSub: 'Summit',
-    brandTop: 'ICEMMAE',
-    brandSub: 'SUMMIT 2027',
-    footerText: '© Copyright 2027 ICEMMAE SUMMIT.',
-    email: 'icemmae@sciengasummits.com',
-    accentColor: '#0369a1',
-    accentGlow: 'rgba(3,105,161,0.35)',
-  },
-  advancenano: {
-    conferenceId: 'advancenano',
-    displayName: 'ADVANCE NANO SUMMIT 2026',
-    shortName: 'ADVANCE NANO SUMMIT',
-    logoText: 'AN',
-    logoSub: 'Summit',
-    brandTop: 'ADVANCE NANO',
-    brandSub: 'SUMMIT 2026',
-    footerText: '© Copyright 2026 ADVANCE NANO SUMMIT.',
-    email: 'advancenanosummit@sciengasummits.com',
-    accentColor: '#1e3a8a',
-    accentGlow: 'rgba(30,58,138,0.35)',
-  },
-  opticphoton: {
-    conferenceId: 'opticphoton',
-    displayName: 'OPTICS, PHOTONICS AND LASER TECHNOLOGY 2026',
-    shortName: 'OPTIC PHOTON SUMMIT',
-    logoText: 'OP',
-    logoSub: 'Summit',
-    brandTop: 'OPTIC PHOTON',
-    brandSub: 'SUMMIT 2026',
-    footerText: '© Copyright 2026 OPTIC PHOTON SUMMIT.',
-    email: 'opticphotosummit@sciengasummits.com',
-    accentColor: '#3478DF',
-    accentGlow: 'rgba(52,120,223,0.35)',
-  },
-  cropscieng: {
-    conferenceId: 'cropscieng',
-    displayName: 'CROP SCIENCE AND ENGINEERING 2026',
-    shortName: 'CROP SCIENCE SUMMIT',
-    logoText: 'CS',
-    logoSub: 'Summit',
-    brandTop: 'CROP SCIENCE',
-    brandSub: 'SUMMIT 2026',
-    footerText: '© Copyright 2026 CROP SCIENCE AND ENGINEERING SUMMIT.',
-    email: 'cropsciengasummits@sciengasummits.com',
-    accentColor: '#16a34a',
-    accentGlow: 'rgba(22,163,74,0.35)',
-  },
-  cleaneng: {
-    conferenceId: 'cleaneng',
-    displayName: 'CLEAN ENERGY & SUSTAINABLE TECHNOLOGIES 2026',
-    shortName: 'CLEAN ENERGY SUMMIT',
-    logoText: 'CE',
-    logoSub: 'Summit',
-    brandTop: 'CLEAN ENERGY',
-    brandSub: '& SUSTAINABLE TECH.',
-    footerText: '© Copyright 2026 CLEAN ENERGY SUMMIT.',
-    email: 'cleanengtech@sciengasummits.com',
-    accentColor: '#10b981',
-    accentGlow: 'rgba(16,185,129,0.35)',
-  },
-};
 
-/* â”€â”€ Simple page router â”€â”€ */
+/* Ã¢â€ â‚¬Ã¢â€ â‚¬ Simple page router Ã¢â€ â‚¬Ã¢â€ â‚¬ */
 function PageContent({ activeNav, setActiveNav, conf }) {
   switch (activeNav) {
 
@@ -275,7 +110,7 @@ function PageContent({ activeNav, setActiveNav, conf }) {
         <>
           <StatsGrid onCardClick={(id) => setActiveNav(id)} conf={conf} />
           <div className="note-banner">
-            <span className="note-icon">ðŸ“Œ</span>
+            <span className="note-icon">Ã°Å¸â€œÅ’</span>
             <p>
               <strong>Note:</strong>
               {' Session will be Logged out automatically after '}
