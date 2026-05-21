@@ -119,6 +119,13 @@ export const CONFERENCE_ACCOUNTS = [
         conferenceId: 'condensedphys',
         displayName: 'CONDENSED MATTER PHYSICS SUMMIT 2026',
     },
+    {
+        username: 'AIROBOTSML2027',
+        aliases: ['AIROBOTSML2027', 'AIROBOTS2027'],
+        email: process.env.AIROBOTSML_EMAIL || 'airobotsml@sciengasummits.com',
+        conferenceId: 'airobotsml',
+        displayName: 'AI ROBOTS & MACHINE LEARNING SUMMIT 2027',
+    },
 ];
 
 // Conference config for frontend
@@ -343,5 +350,18 @@ export const CONFERENCE_CONFIG = {
         email: 'condensedphyssummit2026@sciengasummits.com',
         accentColor: '#3b82f6',
         accentGlow: 'rgba(59,130,246,0.35)',
+    },
+    airobotsml: {
+        conferenceId: 'airobotsml',
+        displayName: 'AI ROBOTS & MACHINE LEARNING SUMMIT 2027',
+        shortName: 'AI ROBOTS ML SUMMIT',
+        logoText: 'AR',
+        logoSub: 'Summit',
+        brandTop: 'AI ROBOTS',
+        brandSub: '& ML SUMMIT 2027',
+        footerText: '© Copyright 2027 AI ROBOTS & MACHINE LEARNING SUMMIT.',
+        email: 'airobotsml@sciengasummits.com',
+        accentColor: '#4f46e5',
+        accentGlow: 'rgba(79,70,229,0.35)',
     },
 };
