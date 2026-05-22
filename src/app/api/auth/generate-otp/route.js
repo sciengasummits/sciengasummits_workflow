@@ -25,6 +25,7 @@ async function sendOTPEmail(email, otp, username, conferenceId) {
     : conferenceId === 'airobotsml' ? '#4f46e5'
     : conferenceId === 'astrospace' ? '#4f46e5'
     : conferenceId === 'condensedphys' ? '#1d4ed8'
+    : conferenceId === 'wscsn2027' ? '#6b4c2e'
     : '#8b5cf6';
 
   const htmlContent = `
