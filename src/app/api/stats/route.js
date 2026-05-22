@@ -23,10 +23,10 @@ export async function GET(request) {
         const speakerStats = {
             total: allSpeakers.length,
             committee: allSpeakers.filter(s => s.category === 'Committee').length,
-            plenary: allSpeakers.filter(s => s.category === 'Plenary').length,
-            keynote: allSpeakers.filter(s => s.category === 'Keynote').length,
+            plenary: allSpeakers.filter(s => s.category === 'Plenary Speaker').length,
+            keynote: allSpeakers.filter(s => s.category === 'Keynote Speaker').length,
             featured: allSpeakers.filter(s => s.category === 'Featured').length,
-            invited: allSpeakers.filter(s => s.category === 'Invited').length,
+            invited: allSpeakers.filter(s => s.category === 'Invited Speaker').length,
             poster: allSpeakers.filter(s => s.category === 'Poster Presenter').length,
             student: allSpeakers.filter(s => s.category === 'Student').length,
             delegate: allSpeakers.filter(s => s.category === 'Delegate').length,

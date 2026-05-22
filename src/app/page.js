@@ -113,7 +113,7 @@ function PageContent({ activeNav, setActiveNav, conf }) {
         <>
           <StatsGrid onCardClick={(id) => setActiveNav(id)} conf={conf} />
           <div className="note-banner">
-            <span className="note-icon">Ã°Å¸â€œÅ’</span>
+            <span className="note-icon"><Info size={18} /></span>
             <p>
               <strong>Note:</strong>
               {' Session will be Logged out automatically after '}
