@@ -47,6 +47,37 @@ const inp = {
 };
 const textarea = { ...inp, resize: 'vertical', minHeight: '80px' };
 
+/* ── Section key allowlists ────────────────────────────────────────────────
+ * Only the keys listed here will ever be loaded from MongoDB into component
+ * state. Any extra/polluted keys in the DB are silently ignored.
+ * ─────────────────────────────────────────────────────────────────────── */
+const SECTION_KEYS = {
+    hero:         new Set(['subtitle','title','description','conferenceDate','venue',
+                           'countdownTarget','showRegister','showAbstract','showBrochure',
+                           'showAnnouncement','announcementUrl','brochureUrl',
+                           'abstractTemplateUrl','bgImage']),
+    about:        new Set(['subtitle','title','paragraph1','paragraph2','objectives','keyThemes']),
+    stats:        new Set(['title','items']),
+    pricing:      new Set(['title','packages']),
+    marquee:      new Set(['title','items']),
+    brochure:     new Set(['title','description','note','features','pdfUrl',
+                           'digitalTitle','overview','objectives','audience','themes']),
+    partners_logos: new Set(['title','items']),
+};
+
+/**
+ * Returns a new object containing only the keys from `source` that appear in
+ * the provided Set `allowed`. Unknown / polluted keys are dropped.
+ */
+function filterKeys(allowed, source) {
+    if (!source || typeof source !== 'object') return {};
+    const out = {};
+    for (const [k, v] of Object.entries(source)) {
+        if (allowed.has(k)) out[k] = v;
+    }
+    return out;
+}
+
 export default function WebsiteSections({ section, conf }) {
     const activeConf = getConference();
     const confSpecs = conf || CONFERENCE_CONFIG[activeConf] || CONFERENCE_CONFIG.liutex;
@@ -62,6 +93,7 @@ export default function WebsiteSections({ section, conf }) {
         announcementUrl: '/pdfs/announcement.pdf',
         brochureUrl: '/pdfs/brochure.pdf',
         abstractTemplateUrl: '/pdfs/abstract-template.doc',
+        bgImage: '',
     });
 
     const [about, setAbout] = useState({
@@ -140,18 +172,25 @@ export default function WebsiteSections({ section, conf }) {
                     getContent('pricing'), getContent('marquee'), getContent('partners_logos'),
                     getContent('brochure')
                 ]);
-                if (h) setHero(prev => ({
-                    ...prev, ...h,
-                    announcementUrl: h.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf',
-                    brochureUrl: h.brochureUrl || prev.brochureUrl || '/pdfs/brochure.pdf',
-                    abstractTemplateUrl: h.abstractTemplateUrl || prev.abstractTemplateUrl || '/pdfs/abstract-template.doc'
-                }));
-                if (a) setAbout(prev => ({ ...prev, ...a }));
-                if (st) setStats(prev => ({ ...prev, ...st }));
-                if (pr) setPricing(prev => ({ ...prev, ...pr }));
-                if (mq) setMarquee(prev => ({ ...prev, ...mq }));
-                if (pa) setPartners(prev => ({ ...prev, ...pa }));
-                if (br) setBrochure(prev => ({ ...prev, ...br }));
+                // filterKeys ensures only schema-valid fields are loaded into state.
+                // Polluted fields that exist in the DB are silently dropped here,
+                // so they are never reflected back to the server on the next save.
+                if (h) {
+                    const safe = filterKeys(SECTION_KEYS.hero, h);
+                    setHero(prev => ({
+                        ...prev,
+                        ...safe,
+                        announcementUrl: safe.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf',
+                        brochureUrl:     safe.brochureUrl     || prev.brochureUrl     || '/pdfs/brochure.pdf',
+                        abstractTemplateUrl: safe.abstractTemplateUrl || prev.abstractTemplateUrl || '/pdfs/abstract-template.doc',
+                    }));
+                }
+                if (a)  setAbout(prev   => ({ ...prev, ...filterKeys(SECTION_KEYS.about,         a)  }));
+                if (st) setStats(prev   => ({ ...prev, ...filterKeys(SECTION_KEYS.stats,         st) }));
+                if (pr) setPricing(prev => ({ ...prev, ...filterKeys(SECTION_KEYS.pricing,       pr) }));
+                if (mq) setMarquee(prev => ({ ...prev, ...filterKeys(SECTION_KEYS.marquee,       mq) }));
+                if (pa) setPartners(prev=> ({ ...prev, ...filterKeys(SECTION_KEYS.partners_logos, pa) }));
+                if (br) setBrochure(prev=> ({ ...prev, ...filterKeys(SECTION_KEYS.brochure,      br) }));
             } catch (e) { console.warn(e.message); }
             setLoading(false);
         }
