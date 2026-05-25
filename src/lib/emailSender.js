@@ -538,7 +538,7 @@ export class RealEmailSender {
             iqce2027:    process.env.IQCE2027_EMAIL || process.env.IQCES_EMAIL,
             icogwh:      process.env.ICOGWH_EMAIL,
             icemmae2027: process.env.ICEMMAE_EMAIL,
-            polymat:     process.env.POLYMAT_EMAIL,
+            polymat:     'polymat@sciengasummits.com',
             advancenano: process.env.ADVANCENANO_EMAIL,
             opticphoton: process.env.OPTIC_EMAIL,
             cropscieng:  process.env.CROPSCIENG_EMAIL,

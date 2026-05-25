@@ -334,7 +334,7 @@ export default function WebsiteSections({ section, conf }) {
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <input style={{ ...inp, flex: 1 }} value={hero.announcementUrl || ''} onChange={e => setHero(h => ({ ...h, announcementUrl: e.target.value }))} placeholder="/pdfs/announcement.pdf" />
                             {hero.announcementUrl && (
-                                <a href={hero.announcementUrl.startsWith('http') ? hero.announcementUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.announcementUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
+                                <a href={hero.announcementUrl.startsWith('http') ? hero.announcementUrl : `${process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : '')}${hero.announcementUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
                                 </a>
                             )}
@@ -366,7 +366,7 @@ export default function WebsiteSections({ section, conf }) {
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <input style={{ ...inp, flex: 1 }} value={hero.brochureUrl || ''} onChange={e => setHero(h => ({ ...h, brochureUrl: e.target.value }))} placeholder="/pdfs/brochure.pdf" />
                             {hero.brochureUrl && (
-                                <a href={hero.brochureUrl.startsWith('http') ? hero.brochureUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.brochureUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
+                                <a href={hero.brochureUrl.startsWith('http') ? hero.brochureUrl : `${process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : '')}${hero.brochureUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
                                 </a>
                             )}
@@ -398,7 +398,7 @@ export default function WebsiteSections({ section, conf }) {
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <input style={{ ...inp, flex: 1 }} value={hero.abstractTemplateUrl || ''} onChange={e => setHero(h => ({ ...h, abstractTemplateUrl: e.target.value }))} placeholder="/pdfs/abstract-template.doc" />
                             {hero.abstractTemplateUrl && (
-                                <a href={hero.abstractTemplateUrl.startsWith('http') ? hero.abstractTemplateUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.abstractTemplateUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
+                                <a href={hero.abstractTemplateUrl.startsWith('http') ? hero.abstractTemplateUrl : `${process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : '')}${hero.abstractTemplateUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
                                 </a>
                             )}

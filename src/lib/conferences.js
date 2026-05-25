@@ -66,7 +66,7 @@ export const CONFERENCE_ACCOUNTS = [
     {
         username: 'POLYMATSUMMIT2026',
         aliases: ['POLYMAT2026'],
-        email: process.env.POLYMAT_EMAIL || 'polymat@sciengasummits.com',
+        email: 'polymat@sciengasummits.com',
         conferenceId: 'polymat',
         displayName: 'ANNUAL INTERNATIONAL CONFERENCE ON POLYMERS AND COMPOSITE MATERIALS 2026',
     },
@@ -263,7 +263,7 @@ export const CONFERENCE_CONFIG = {
         brandTop: 'POLYMAT',
         brandSub: 'SUMMIT 2026',
         footerText: '© Copyright 2026 POLYMAT SUMMIT.',
-        email: 'contact@polymatsummit.com',
+        email: 'polymat@sciengasummits.com',
         accentColor: '#3478DF',
         accentGlow: 'rgba(52,120,223,0.35)',
     },
