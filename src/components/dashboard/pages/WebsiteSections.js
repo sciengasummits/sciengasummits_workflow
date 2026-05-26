@@ -55,7 +55,7 @@ const SECTION_KEYS = {
     hero:         new Set(['subtitle','title','description','conferenceDate','venue',
                            'countdownTarget','showRegister','showAbstract','showBrochure',
                            'showAnnouncement','announcementUrl','brochureUrl',
-                           'abstractTemplateUrl','bgImage']),
+                           'abstractTemplateUrl','bgImage','bgVideo']),
     about:        new Set(['subtitle','title','paragraph1','paragraph2','objectives','keyThemes']),
     stats:        new Set(['title','items']),
     pricing:      new Set(['title','packages']),
@@ -94,6 +94,7 @@ export default function WebsiteSections({ section, conf }) {
         brochureUrl: '/pdfs/brochure.pdf',
         abstractTemplateUrl: '/pdfs/abstract-template.doc',
         bgImage: '',
+        bgVideo: '',
     });
 
     const [about, setAbout] = useState({
@@ -464,6 +465,52 @@ export default function WebsiteSections({ section, conf }) {
                         </label>
                         <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>
                             Recommended: 1920×1080px or wider. JPG/PNG/WebP. Replaces the default hero background.
+                        </p>
+                    </div>
+                </FR>
+
+                {/* ── Hero Background Video Upload ── */}
+                <FR label="Background Video">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {/* Current preview */}
+                        {hero.bgVideo && (
+                            <div style={{ position: 'relative', display: 'inline-block' }}>
+                                <video
+                                    src={hero.bgVideo}
+                                    controls
+                                    muted
+                                    style={{ width: '100%', maxWidth: '420px', height: '140px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #e2e8f0' }}
+                                />
+                                <button
+                                    onClick={() => setHero(h => ({ ...h, bgVideo: '' }))}
+                                    style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(239,68,68,0.9)', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}
+                                    title="Remove background video"
+                                >
+                                    <X size={13} />
+                                </button>
+                            </div>
+                        )}
+                        {/* Upload button */}
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#f1f5f9', border: '2px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#475569', width: 'fit-content' }}>
+                            <input
+                                type="file"
+                                accept="video/mp4,video/webm"
+                                style={{ display: 'none' }}
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                        const conf = getConference();
+                                        const data = await uploadFile(file, conf);
+                                        if (data.url) setHero(h => ({ ...h, bgVideo: data.url }));
+                                        else alert('Upload failed: no URL returned');
+                                    } catch (err) { alert(`Upload failed: ${err.message}`); }
+                                }}
+                            />
+                            🎥 {hero.bgVideo ? 'Change Background Video' : 'Upload Background Video'}
+                        </label>
+                        <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>
+                            Recommended: Under 10MB (highly compressed mp4/webm).
                         </p>
                     </div>
                 </FR>
