@@ -58,19 +58,23 @@ export class RealEmailSender {
             },
             advancenano: {
                 user: process.env.ADVANCENANO_SMTP_USER || 'advancenanosummit@sciengasummits.com',
-                pass: process.env.ADVANCENANO_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+                pass: (process.env.ADVANCENANO_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD').replace(/\s/g, ''),
             },
             opticphoton: {
                 user: process.env.OPTIC_SMTP_USER || 'opticphotosummit@sciengasummits.com',
-                pass: process.env.OPTIC_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+                pass: (process.env.OPTIC_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD').replace(/\s/g, ''),
             },
             cropscieng: {
                 user: process.env.CROPSCIENG_SMTP_USER || 'cropsciengasummits@sciengasummits.com',
-                pass: process.env.CROPSCIENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+                pass: (process.env.CROPSCIENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD').replace(/\s/g, ''),
             },
             cleaneng: {
                 user: process.env.CLEANENG_SMTP_USER || 'cleanengtech@sciengasummits.com',
-                pass: process.env.CLEANENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+                pass: (process.env.CLEANENG_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD').replace(/\s/g, ''),
+            },
+            healthmed: {
+                user: process.env.HEALTHMED_SMTP_USER || 'healthmedsummit@sciengasummits.com',
+                pass: (process.env.HEALTHMED_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD').replace(/\s/g, ''),
             },
             astrospace: {
                 user: process.env.ASTRO_SMTP_USER || this._defaultUser,
@@ -86,7 +90,7 @@ export class RealEmailSender {
             },
             wscsn2027: {
                 user: process.env.WSCSN_SMTP_USER || 'wscsnsummit@sciengasummits.com',
-                pass: process.env.WSCSN_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD',
+                pass: (process.env.WSCSN_SMTP_PASS || 'REPLACE_WITH_APP_PASSWORD').replace(/\s/g, ''),
             },
         };
 

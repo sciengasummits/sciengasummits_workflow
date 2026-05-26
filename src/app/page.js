@@ -228,23 +228,27 @@ export default function Home() {
         onLogout={handleLogout}
       />
       <div className="main-wrapper">
-        <Topbar
-          onToggleSidebar={() => setCollapsed(c => !c)}
-          eventName={conf.displayName}
-          username={session.username}
-          onLogout={handleLogout}
-          conf={conf}
-        />
-        <main className="page-content">
+        {activeNav !== 'mailbox' && (
+          <Topbar
+            onToggleSidebar={() => setCollapsed(c => !c)}
+            eventName={conf.displayName}
+            username={session.username}
+            onLogout={handleLogout}
+            conf={conf}
+          />
+        )}
+        <main className={`page-content ${activeNav === 'mailbox' ? 'mailbox-fullscreen' : ''}`}>
           <PageContent
             activeNav={activeNav}
             setActiveNav={setActiveNav}
             conf={conf}
           />
         </main>
-        <footer className="page-footer">
-          <span>{conf.footerText}</span>
-        </footer>
+        {activeNav !== 'mailbox' && (
+          <footer className="page-footer">
+            <span>{conf.footerText}</span>
+          </footer>
+        )}
       </div>
     </div>
   );

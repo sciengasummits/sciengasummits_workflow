@@ -191,3 +191,23 @@ export const getDashboardStats = () => request('GET', withConf('/stats'));
 // ── Mail Messages (Contact / Subscribe / Program requests)
 export const getMailMessages = (type) =>
     request('GET', withConf('/mail-messages') + (type ? `&type=${type}` : ''));
+
+// ── Gmail Clone Mailbox Functions
+export const getEmails = (folder = 'inbox', refresh = false) =>
+    request('GET', `/emails?folder=${folder}${refresh ? '&refresh=true' : ''}`);
+
+export const sendComposeEmail = (to, subject, emailBody, draftId) =>
+    request('POST', '/emails', { action: 'send', to, subject, emailBody, draftId });
+
+export const saveDraftEmail = (to, subject, emailBody, draftId) =>
+    request('POST', '/emails', { action: 'draft', to, subject, emailBody, draftId });
+
+export const deleteEmails = (emailIds) =>
+    request('POST', '/emails', { action: 'delete', emailIds });
+
+export const toggleStarEmail = (emailId, isImportant) =>
+    request('POST', '/emails', { action: 'star', emailId, isImportant });
+
+export const markEmailsRead = (emailIds, isRead) =>
+    request('POST', '/emails', { action: 'read', emailIds, isRead });
+
