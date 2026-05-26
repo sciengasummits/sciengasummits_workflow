@@ -47,6 +47,37 @@ const inp = {
 };
 const textarea = { ...inp, resize: 'vertical', minHeight: '80px' };
 
+/* ── Section key allowlists ────────────────────────────────────────────────
+ * Only the keys listed here will ever be loaded from MongoDB into component
+ * state. Any extra/polluted keys in the DB are silently ignored.
+ * ─────────────────────────────────────────────────────────────────────── */
+const SECTION_KEYS = {
+    hero:         new Set(['subtitle','title','description','conferenceDate','venue',
+                           'countdownTarget','showRegister','showAbstract','showBrochure',
+                           'showAnnouncement','announcementUrl','brochureUrl',
+                           'abstractTemplateUrl','bgImage','bgVideo']),
+    about:        new Set(['subtitle','title','paragraph1','paragraph2','objectives','keyThemes']),
+    stats:        new Set(['title','items']),
+    pricing:      new Set(['title','packages']),
+    marquee:      new Set(['title','items']),
+    brochure:     new Set(['title','description','note','features','pdfUrl',
+                           'digitalTitle','overview','objectives','audience','themes']),
+    partners_logos: new Set(['title','items']),
+};
+
+/**
+ * Returns a new object containing only the keys from `source` that appear in
+ * the provided Set `allowed`. Unknown / polluted keys are dropped.
+ */
+function filterKeys(allowed, source) {
+    if (!source || typeof source !== 'object') return {};
+    const out = {};
+    for (const [k, v] of Object.entries(source)) {
+        if (allowed.has(k)) out[k] = v;
+    }
+    return out;
+}
+
 export default function WebsiteSections({ section, conf }) {
     const activeConf = getConference();
     const confSpecs = conf || CONFERENCE_CONFIG[activeConf] || CONFERENCE_CONFIG.liutex;
@@ -62,6 +93,8 @@ export default function WebsiteSections({ section, conf }) {
         announcementUrl: '/pdfs/announcement.pdf',
         brochureUrl: '/pdfs/brochure.pdf',
         abstractTemplateUrl: '/pdfs/abstract-template.doc',
+        bgImage: '',
+        bgVideo: '',
     });
 
     const [about, setAbout] = useState({
@@ -140,18 +173,25 @@ export default function WebsiteSections({ section, conf }) {
                     getContent('pricing'), getContent('marquee'), getContent('partners_logos'),
                     getContent('brochure')
                 ]);
-                if (h) setHero(prev => ({
-                    ...prev, ...h,
-                    announcementUrl: h.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf',
-                    brochureUrl: h.brochureUrl || prev.brochureUrl || '/pdfs/brochure.pdf',
-                    abstractTemplateUrl: h.abstractTemplateUrl || prev.abstractTemplateUrl || '/pdfs/abstract-template.doc'
-                }));
-                if (a) setAbout(prev => ({ ...prev, ...a }));
-                if (st) setStats(prev => ({ ...prev, ...st }));
-                if (pr) setPricing(prev => ({ ...prev, ...pr }));
-                if (mq) setMarquee(prev => ({ ...prev, ...mq }));
-                if (pa) setPartners(prev => ({ ...prev, ...pa }));
-                if (br) setBrochure(prev => ({ ...prev, ...br }));
+                // filterKeys ensures only schema-valid fields are loaded into state.
+                // Polluted fields that exist in the DB are silently dropped here,
+                // so they are never reflected back to the server on the next save.
+                if (h) {
+                    const safe = filterKeys(SECTION_KEYS.hero, h);
+                    setHero(prev => ({
+                        ...prev,
+                        ...safe,
+                        announcementUrl: safe.announcementUrl || prev.announcementUrl || '/pdfs/announcement.pdf',
+                        brochureUrl:     safe.brochureUrl     || prev.brochureUrl     || '/pdfs/brochure.pdf',
+                        abstractTemplateUrl: safe.abstractTemplateUrl || prev.abstractTemplateUrl || '/pdfs/abstract-template.doc',
+                    }));
+                }
+                if (a)  setAbout(prev   => ({ ...prev, ...filterKeys(SECTION_KEYS.about,         a)  }));
+                if (st) setStats(prev   => ({ ...prev, ...filterKeys(SECTION_KEYS.stats,         st) }));
+                if (pr) setPricing(prev => ({ ...prev, ...filterKeys(SECTION_KEYS.pricing,       pr) }));
+                if (mq) setMarquee(prev => ({ ...prev, ...filterKeys(SECTION_KEYS.marquee,       mq) }));
+                if (pa) setPartners(prev=> ({ ...prev, ...filterKeys(SECTION_KEYS.partners_logos, pa) }));
+                if (br) setBrochure(prev=> ({ ...prev, ...filterKeys(SECTION_KEYS.brochure,      br) }));
             } catch (e) { console.warn(e.message); }
             setLoading(false);
         }
@@ -295,7 +335,7 @@ export default function WebsiteSections({ section, conf }) {
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <input style={{ ...inp, flex: 1 }} value={hero.announcementUrl || ''} onChange={e => setHero(h => ({ ...h, announcementUrl: e.target.value }))} placeholder="/pdfs/announcement.pdf" />
                             {hero.announcementUrl && (
-                                <a href={hero.announcementUrl.startsWith('http') ? hero.announcementUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.announcementUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
+                                <a href={hero.announcementUrl.startsWith('http') ? hero.announcementUrl : `${process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : '')}${hero.announcementUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
                                 </a>
                             )}
@@ -327,7 +367,7 @@ export default function WebsiteSections({ section, conf }) {
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <input style={{ ...inp, flex: 1 }} value={hero.brochureUrl || ''} onChange={e => setHero(h => ({ ...h, brochureUrl: e.target.value }))} placeholder="/pdfs/brochure.pdf" />
                             {hero.brochureUrl && (
-                                <a href={hero.brochureUrl.startsWith('http') ? hero.brochureUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.brochureUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
+                                <a href={hero.brochureUrl.startsWith('http') ? hero.brochureUrl : `${process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : '')}${hero.brochureUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
                                 </a>
                             )}
@@ -359,7 +399,7 @@ export default function WebsiteSections({ section, conf }) {
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <input style={{ ...inp, flex: 1 }} value={hero.abstractTemplateUrl || ''} onChange={e => setHero(h => ({ ...h, abstractTemplateUrl: e.target.value }))} placeholder="/pdfs/abstract-template.doc" />
                             {hero.abstractTemplateUrl && (
-                                <a href={hero.abstractTemplateUrl.startsWith('http') ? hero.abstractTemplateUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}${hero.abstractTemplateUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
+                                <a href={hero.abstractTemplateUrl.startsWith('http') ? hero.abstractTemplateUrl : `${process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : '')}${hero.abstractTemplateUrl}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#6366f1' }}>
                                     <ExternalLink size={16} />
                                 </a>
                             )}
@@ -425,6 +465,52 @@ export default function WebsiteSections({ section, conf }) {
                         </label>
                         <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>
                             Recommended: 1920×1080px or wider. JPG/PNG/WebP. Replaces the default hero background.
+                        </p>
+                    </div>
+                </FR>
+
+                {/* ── Hero Background Video Upload ── */}
+                <FR label="Background Video">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {/* Current preview */}
+                        {hero.bgVideo && (
+                            <div style={{ position: 'relative', display: 'inline-block' }}>
+                                <video
+                                    src={hero.bgVideo}
+                                    controls
+                                    muted
+                                    style={{ width: '100%', maxWidth: '420px', height: '140px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #e2e8f0' }}
+                                />
+                                <button
+                                    onClick={() => setHero(h => ({ ...h, bgVideo: '' }))}
+                                    style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(239,68,68,0.9)', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}
+                                    title="Remove background video"
+                                >
+                                    <X size={13} />
+                                </button>
+                            </div>
+                        )}
+                        {/* Upload button */}
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#f1f5f9', border: '2px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#475569', width: 'fit-content' }}>
+                            <input
+                                type="file"
+                                accept="video/mp4,video/webm"
+                                style={{ display: 'none' }}
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                        const conf = getConference();
+                                        const data = await uploadFile(file, conf);
+                                        if (data.url) setHero(h => ({ ...h, bgVideo: data.url }));
+                                        else alert('Upload failed: no URL returned');
+                                    } catch (err) { alert(`Upload failed: ${err.message}`); }
+                                }}
+                            />
+                            🎥 {hero.bgVideo ? 'Change Background Video' : 'Upload Background Video'}
+                        </label>
+                        <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>
+                            Recommended: Under 10MB (highly compressed mp4/webm).
                         </p>
                     </div>
                 </FR>
