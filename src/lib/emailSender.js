@@ -573,7 +573,7 @@ export class RealEmailSender {
             foodagri:    'https://foodagrisummit.sciengasummits.com',
             fluid:       'https://fluidsummit.sciengasummits.com',
             renewable:   'https://recc2026.sciengasummits.com',
-            cyber:       'https://cyberquantumsummit.com',
+            cyber:       'https://cyberquantumsummit2026.sciengasummits.com',
             powereng:    'https://powerenergysummit.com',
             iqce2027:    'https://iqce2027.sciengasummits.com',
             icogwh:      'https://icogwh2027.sciengasummits.com',

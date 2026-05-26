@@ -31,7 +31,7 @@ export const CONFERENCE_ACCOUNTS = [
     {
         username: 'CYBERQUANTUMSUMMIT2026',
         aliases: ['CYBERQUANTUM2026'],
-        email: process.env.CYBER_EMAIL || 'contact@cyberquantumsummit.com',
+        email: process.env.CYBER_EMAIL || 'cyberquantum@sciengasummits.com',
         conferenceId: 'cyber',
         displayName: 'CYBERSECURITY & QUANTUM COMPUTING 2026',
     },

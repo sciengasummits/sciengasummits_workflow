@@ -47,7 +47,7 @@ const CONFERENCE_SITE_URLS = {
     foodagri:    process.env.NEXT_PUBLIC_FOODAGRI_URL    || 'https://foodagrisummit.sciengasummits.com',
     fluid:       process.env.NEXT_PUBLIC_FLUID_URL       || 'https://fluidsummit.sciengasummits.com',
     renewable:   process.env.NEXT_PUBLIC_RENEWABLE_URL   || (IS_DEV ? 'http://127.0.0.1:3000' : 'https://recc2026.sciengasummits.com'),
-    cyber:       process.env.NEXT_PUBLIC_CYBER_URL       || 'https://cyberquantumsummit.com',
+    cyber:       process.env.NEXT_PUBLIC_CYBER_URL       || (IS_DEV ? 'http://127.0.0.1:3000' : 'https://cyberquantumsummit2026.sciengasummits.com'),
     powereng:    process.env.NEXT_PUBLIC_POWERENG_URL    || 'https://powerenergysummit.com',
     iqce2027:    process.env.NEXT_PUBLIC_IQCE2027_URL    || 'https://iqce2027.sciengasummits.com',
     icogwh:      process.env.NEXT_PUBLIC_ICOGWH_URL      || 'https://icogwh2027.sciengasummits.com',
