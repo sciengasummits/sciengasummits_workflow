@@ -104,8 +104,8 @@ const NAV_ITEMS = [
     {
         id: 'location', label: 'Location', icon: <MapPin size={iconSize} />,
         children: [
-            { id: 'venue-hospitality', label: 'Conference Venue', icon: <Building size={childIconSize} /> },
             { id: 'accommodation', label: 'Accommodation', icon: <BedDouble size={childIconSize} /> },
+            { id: 'host-city-attractions', label: 'Host City & Attractions', icon: <Globe size={childIconSize} /> },
         ]
     },
     {
@@ -130,7 +130,7 @@ const NAV_ITEMS = [
     {
         id: 'more', label: 'More', icon: <MoreHorizontal size={iconSize} />,
         children: [
-
+            { id: 'venue-hospitality', label: 'Conference Venue', icon: <Building size={childIconSize} /> },
             { id: 'visa-info', label: 'Visa Info', icon: <Plane size={childIconSize} /> },
             { id: 'faq', label: 'FAQ', icon: <HelpCircle size={childIconSize} /> },
         ]

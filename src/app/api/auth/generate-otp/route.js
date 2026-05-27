@@ -112,20 +112,21 @@ export async function POST(request) {
       used: false
     });
 
+    // Always log OTP in dev mode for easy testing without relying on email delivery
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`\n\n========================================`);
+      console.log(`[generate-otp] DEV MODE - Generated OTP: ${otp}`);
+      console.log(`========================================\n\n`);
+    }
+
     // ── Send email (non-blocking for the user flow) ──
-    const emailResult = await sendOTPEmail(account.email, otp, account.username, account.conferenceId);
+    let emailResult = { success: true };
+    if (process.env.NODE_ENV === 'production') {
+       emailResult = await sendOTPEmail(account.email, otp, account.username, account.conferenceId);
+    }
     
     if (!emailResult.success) {
       console.error(`[generate-otp] Could not send email: ${emailResult.error}`);
-      // Fallback: If in development, log the OTP so we can still test
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(`[generate-otp] DEV FALLBACK - OTP is: ${otp}`);
-      }
-    }
-
-    // Always log OTP in dev mode for easy testing without relying on email delivery
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`[generate-otp] DEV MODE - Generated OTP: ${otp}`);
     }
 
     // ── SECURE: Do NOT include OTP in response ────────────────────

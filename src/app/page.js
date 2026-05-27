@@ -28,6 +28,7 @@ import Collaborations from '@/components/dashboard/pages/Collaborations';
 import Universities from '@/components/dashboard/pages/Universities';
 import VenueHospitality from '@/components/dashboard/pages/VenueHospitality';
 import Accommodation from '@/components/dashboard/pages/Accommodation';
+import HostCityAttractions from '@/components/dashboard/pages/HostCityAttractions';
 import PreviousGlimpses from '@/components/dashboard/pages/PreviousGlimpses';
 import ViewRegistrations from '@/components/dashboard/pages/ViewRegistrations';
 import ViewAbstracts from '@/components/dashboard/pages/ViewAbstracts';
@@ -69,6 +70,7 @@ function PageContent({ activeNav, setActiveNav, conf }) {
     case 'ws-collaborations': return <Collaborations conf={conf} />;
     case 'venue-hospitality': return <VenueHospitality conf={conf} />;
     case 'accommodation': return <Accommodation conf={conf} />;
+    case 'host-city-attractions': return <HostCityAttractions conf={conf} />;
     case 'prev-glimpses': return <PreviousGlimpses conf={conf} />;
     case 'view-registrations': return <ViewRegistrations conf={conf} />;
     case 'view-abstracts': return <ViewAbstracts conf={conf} />;
