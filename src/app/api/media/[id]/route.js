@@ -26,6 +26,7 @@ export async function GET(request, { params }) {
             },
         });
     } catch (err) {
-        return new NextResponse('Server error', { status: 500 });
+        console.error('Error in api/media/[id]:', err);
+        return new NextResponse('Server error: ' + err.message, { status: 500 });
     }
 }
