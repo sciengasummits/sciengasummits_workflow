@@ -12,4 +12,4 @@ const MediaSchema = new mongoose.Schema({
 // Index for faster lookups
 MediaSchema.index({ conference: 1, createdAt: -1 });
 
-export default mongoose.models.Media || mongoose.model('Media', MediaSchema);
+export default mongoose.models.Media || mongoose.model('Media', MediaSchema, 'media');
