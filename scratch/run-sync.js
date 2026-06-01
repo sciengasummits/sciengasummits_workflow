@@ -7,7 +7,7 @@ const path = require('path');
 // Load environment variables from workflow's .env.local
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://LIUTEXVORTEXSUMMIT2026:LIUTEX@ac-oydsouh-shard-00-00.sozesho.mongodb.net:27017,ac-oydsouh-shard-00-01.sozesho.mongodb.net:27017,ac-oydsouh-shard-00-02.sozesho.mongodb.net:27017/?ssl=true&replicaSet=atlas-w8th4c-shard-0&authSource=admin&retryWrites=true&w=majority&appName=LIUTEXVORTEXSUMMIT2026';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://scienga:scienga@ac-blmkilg-shard-00-00.dphtrai.mongodb.net:27017,ac-blmkilg-shard-00-01.dphtrai.mongodb.net:27017,ac-blmkilg-shard-00-02.dphtrai.mongodb.net:27017/?ssl=true&replicaSet=atlas-6k8qyx-shard-0&authSource=admin&appName=SciEng';
 
 const WorkflowEmailSchema = new mongoose.Schema({
     conference: String,
@@ -109,13 +109,13 @@ async function main() {
 
         // Sync folders
         await syncFolder(client, 'wscsn2027', 'INBOX', 'inbox');
-        
+
         try {
             await syncFolder(client, 'wscsn2027', '[Gmail]/Sent Mail', 'sent');
         } catch (_) {
             try {
                 await syncFolder(client, 'wscsn2027', 'Sent', 'sent');
-            } catch (_) {}
+            } catch (_) { }
         }
 
         try {
@@ -123,7 +123,7 @@ async function main() {
         } catch (_) {
             try {
                 await syncFolder(client, 'wscsn2027', 'Drafts', 'drafts');
-            } catch (_) {}
+            } catch (_) { }
         }
 
         try {
@@ -134,7 +134,7 @@ async function main() {
             } catch (_) {
                 try {
                     await syncFolder(client, 'wscsn2027', 'Trash', 'bin');
-                } catch (_) {}
+                } catch (_) { }
             }
         }
 
