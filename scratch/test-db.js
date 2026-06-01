@@ -1,44 +1,46 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+const path = require('path');
 
-const MONGODB_URI = 'mongodb://scienga:scienga@ac-blmkilg-shard-00-00.dphtrai.mongodb.net:27017,ac-blmkilg-shard-00-01.dphtrai.mongodb.net:27017,ac-blmkilg-shard-00-02.dphtrai.mongodb.net:27017/?ssl=true&replicaSet=atlas-6k8qyx-shard-0&authSource=admin&appName=SciEng';
+// Load environment variables from the .env.local file
+require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
 
-const WorkflowEmailSchema = new mongoose.Schema({
-    conference: String,
-    folder: String,
-    uid: Number,
-    from: String,
-    to: String,
-    subject: String,
-    body: String,
-    isRead: Boolean,
-    isImportant: Boolean,
-    createdAt: Date
-});
+dns.setDefaultResultOrder('ipv4first');
 
-const WorkflowEmail = mongoose.models.WorkflowEmail || mongoose.model('WorkflowEmail', WorkflowEmailSchema);
+const mongoOptions = {
+  serverSelectionTimeoutMS: 15000,
+  socketTimeoutMS: 20000,
+  connectTimeoutMS: 15000,
+  family: 4,
+};
 
-async function main() {
-    try {
-        console.log("Connecting to MongoDB...");
-        await mongoose.connect(MONGODB_URI);
-        console.log("Connected!");
-
-        const count = await WorkflowEmail.countDocuments({ conference: 'wscsn2027' });
-        console.log(`Total emails in DB for wscsn2027: ${count}`);
-
-        const mocks = await WorkflowEmail.countDocuments({ conference: 'wscsn2027', uid: { $exists: false } });
-        console.log(`Mock/placeholder emails: ${mocks}`);
-
-        const real = await WorkflowEmail.countDocuments({ conference: 'wscsn2027', uid: { $exists: true } });
-        console.log(`Real Gmail synced emails: ${real}`);
-
-        const sample = await WorkflowEmail.find({ conference: 'wscsn2027' }).limit(3).lean();
-        console.log("Samples:", sample.map(s => ({ folder: s.folder, subject: s.subject, uid: s.uid })));
-
-        await mongoose.disconnect();
-    } catch (err) {
-        console.error(err);
+async function test() {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error('❌ MONGODB_URI is not defined in .env.local');
+    process.exit(1);
+  }
+  
+  console.log('Attempting to connect to MongoDB Atlas...');
+  console.log(`URI: ${uri.replace(/:([^:@]+)@/, ':****@')}`); // obfuscate password
+  
+  try {
+    await mongoose.connect(uri, mongoOptions);
+    console.log('\n======================================================');
+    console.log('✅ SUCCESS! Connection to MongoDB Atlas was successful!');
+    console.log('======================================================\n');
+    process.exit(0);
+  } catch (err) {
+    console.error('\n======================================================');
+    console.error('❌ CONNECTION FAILED!');
+    console.error('Error Details:', err.message);
+    if (err.message.includes('SSL alert number 80') || err.message.includes('tlsv1 alert internal error')) {
+      console.error('\n👉 DIAGNOSIS: MongoDB Atlas is rejecting your public IP address.');
+      console.error('Please make sure your current local public IP is whitelisted.');
     }
+    console.error('======================================================\n');
+    process.exit(1);
+  }
 }
 
-main();
+test();
