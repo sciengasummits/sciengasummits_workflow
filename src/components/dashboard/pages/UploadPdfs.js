@@ -9,6 +9,7 @@ const PDF_FIELDS = [
     { key: 'program', label: 'Tentative Program' },
     { key: 'sponsorship', label: 'Sponsorship Catalog' },
     { key: 'abstract', label: 'Abstract Book' },
+    { key: 'sampleAbstract', label: 'Sample Abstract Template' },
 ];
 
 const MAX_MB = 10;
@@ -76,7 +77,7 @@ function UploadRow({ label, file, onFile, onClear, existingUrl }) {
 
 export default function UploadPdfs() {
     const [files, setFiles] = useState({
-        brochure: null, program: null, sponsorship: null, abstract: null,
+        brochure: null, program: null, sponsorship: null, abstract: null, sampleAbstract: null,
     });
     const [existingUrls, setExistingUrls] = useState({});
     const [uploading, setUploading] = useState(false);
@@ -123,7 +124,7 @@ export default function UploadPdfs() {
             // Save the PDF URL map to site content so pages can reference them
             await updateContent('pdfs', newUrls);
             setExistingUrls(newUrls);
-            setFiles({ brochure: null, program: null, sponsorship: null, abstract: null });
+            setFiles({ brochure: null, program: null, sponsorship: null, abstract: null, sampleAbstract: null });
             setSubmitted(true);
             setTimeout(() => setSubmitted(false), 3000);
         } catch (err) {
