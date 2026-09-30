@@ -14,6 +14,10 @@ export default function ContactSettings({ type }) {
         email: { title: 'Send Email', label: 'Email Address', placeholder: 'contact@liutexvortexsummit.com', field: 'email' },
         phone: { title: 'Call Us Now', label: 'Phone Number', placeholder: '+91 7842090097', field: 'phone' },
         whatsapp: { title: 'WhatsApp', label: 'WhatsApp Number', placeholder: '+91 7842090097', field: 'whatsapp' },
+        address: { title: 'Address', label: 'Office Address', placeholder: 'Outram, Singapore', field: 'address' },
+        workingHours: { title: 'Working Hours', label: 'Business Hours', placeholder: 'Mon - Fri: 9:00 AM - 6:00 PM', field: 'workingHours' },
+        venueAddress: { title: 'Venue Address', label: 'Conference Venue Address', placeholder: 'Holiday Inn Express & Suites...', field: 'venueAddress' },
+        venueMapUrl: { title: 'Venue Map URL', label: 'Google Maps Directions Link', placeholder: 'https://www.google.com/maps/dir/?...', field: 'venueMapUrl' },
     };
 
     const config = labels[type];

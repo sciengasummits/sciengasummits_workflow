@@ -12,6 +12,7 @@ import {
     GraduationCap,
     Presentation,
     Upload,
+    Clock,
     ClipboardList,
     Briefcase,
     Radio,
@@ -62,6 +63,10 @@ const NAV_ITEMS = [
             { id: 'contact-email', label: 'Send Email', icon: <Mail size={childIconSize} /> },
             { id: 'contact-phone', label: 'Call Us Now', icon: <Phone size={childIconSize} /> },
             { id: 'contact-whatsapp', label: 'WhatsApp', icon: <MessageCircle size={childIconSize} /> },
+            { id: 'contact-address', label: 'Office Address', icon: <MapPin size={childIconSize} /> },
+            { id: 'contact-workingHours', label: 'Working Hours', icon: <Clock size={childIconSize} /> },
+            { id: 'contact-venueAddress', label: 'Footer Venue Address', icon: <Building size={childIconSize} /> },
+            { id: 'contact-venueMapUrl', label: 'Footer Venue Map URL', icon: <MapPin size={childIconSize} /> },
         ]
     },
     {

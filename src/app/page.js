@@ -108,6 +108,10 @@ function PageContent({ activeNav, setActiveNav, conf }) {
     case 'contact-email': return <ContactSettings type="email" conf={conf} />;
     case 'contact-phone': return <ContactSettings type="phone" conf={conf} />;
     case 'contact-whatsapp': return <ContactSettings type="whatsapp" conf={conf} />;
+    case 'contact-address': return <ContactSettings type="address" conf={conf} />;
+    case 'contact-workingHours': return <ContactSettings type="workingHours" conf={conf} />;
+    case 'contact-venueAddress': return <ContactSettings type="venueAddress" conf={conf} />;
+    case 'contact-venueMapUrl': return <ContactSettings type="venueMapUrl" conf={conf} />;
 
     default:
       return (
